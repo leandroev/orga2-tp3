@@ -1,1 +1,0 @@
-seed.o: seed.c
