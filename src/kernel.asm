@@ -4,6 +4,12 @@
 ; ==============================================================================
 
 %include "print.mac"
+;; DEFINE
+
+;; EXTERN
+extern GDT_DESC
+
+;; GLOBAL
 
 global start
 
@@ -43,17 +49,35 @@ start:
 
 
     ; Habilitar A20
+    call A20_check
     call A20_enable
+    xchg bx, bx
     ; Cargar la GDT
+    lgdt [GDT_DESC]
 
     ; Setear el bit PE del registro CR0
+    mov eax, CR0
+    or eax, 1
+    mov cr0, eax
     
     ; Saltar a modo protegido
+    jmp (10 << 3) : modo_protegido
 
+BITS 32
+modo_protegido:
     ; Establecer selectores de segmentos
+    xor eax, eax
+    mov ax, (11 << 3)                   ; selector de segmento de datos de nivel 0
+    mov ds, ax
+    mov es, ax
+    mov ss, ax
+    mov gs, ax
+    mov fs, ax
 
     ; Establecer la base de la pila
-    
+    mov ebp, 0x25000
+    mov esp, 0x25000
+
     ; Imprimir mensaje de bienvenida
 
     ; Inicializar pantalla
