@@ -43,7 +43,7 @@ start:
 
 
     ; Habilitar A20
-    
+    call A20_enable
     ; Cargar la GDT
 
     ; Setear el bit PE del registro CR0

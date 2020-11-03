@@ -28,6 +28,11 @@
 /* Indices en la gdt */
 /* -------------------------------------------------------------------------- */
 #define GDT_IDX_NULL_DESC 0
+#define GDT_CODE_0        10
+#define GDT_DATA_0        11
+#define GDT_CODE_3        12
+#define GDT_DATA_3        13
+
 #define GDT_COUNT         35
 
 
