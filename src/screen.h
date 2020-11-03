@@ -34,4 +34,8 @@ void screen_draw_box(uint32_t fInit, uint32_t cInit, uint32_t fSize,
 
 void screen_draw_layout(void);
 
+//Funciones agregadas
+
+void inicializar_pantalla();
+
 #endif //  __SCREEN_H__

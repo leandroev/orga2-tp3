@@ -32,6 +32,7 @@
 #define GDT_DATA_0        11
 #define GDT_CODE_3        12
 #define GDT_DATA_3        13
+#define GDT_VIDEO         14
 
 #define GDT_COUNT         35
 

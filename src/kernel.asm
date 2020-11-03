@@ -8,6 +8,7 @@
 
 ;; EXTERN
 extern GDT_DESC
+extern inicializar_pantalla
 
 ;; GLOBAL
 
@@ -67,7 +68,7 @@ BITS 32
 modo_protegido:
     ; Establecer selectores de segmentos
     xor eax, eax
-    mov ax, (11 << 3)                   ; selector de segmento de datos de nivel 0
+    mov ax, (11 << 3)                   ; 11 - selector de segmento de datos de nivel 0
     mov ds, ax
     mov es, ax
     mov ss, ax
@@ -79,8 +80,10 @@ modo_protegido:
     mov esp, 0x25000
 
     ; Imprimir mensaje de bienvenida
-
+    mov ax, (14 << 3)                   ; 14 - segmento de video
+    mov fs, ax      
     ; Inicializar pantalla
+    call inicializar_pantalla
     
     ; Inicializar el manejador de memoria
  
