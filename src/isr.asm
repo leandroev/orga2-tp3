@@ -18,6 +18,13 @@ extern pic_finish1
 ;; Sched
 extern sched_next_task
 
+;; EXTERNAS
+extern rutina_de_interrupciones
+
+;; GLOBALES
+global _isr32
+global _isr33
+
 ;;
 ;; Definición de MACROS
 ;; -------------------------------------------------------------------------- ;;
@@ -25,20 +32,46 @@ extern sched_next_task
 global _isr%1
 
 _isr%1:
+    pushad 
     mov eax, %1
-    jmp $
-
+    push eax
+    call rutina_de_interrupciones
+    add esp, 4
+    popad
+    iret
 %endmacro
 
 
 ;; Rutina de atención de las EXCEPCIONES
 ;; -------------------------------------------------------------------------- ;;
-;ISR 0
+ISR 0
+ISR 1
+ISR 2
+ISR 3
+ISR 4
+ISR 5
+ISR 6
+ISR 7
+ISR 8
+ISR 9
+ISR 10
+ISR 11
+ISR 12
+ISR 13
+ISR 14
+ISR 16
+ISR 17
+ISR 18
+ISR 19
 
 ;; Rutina de atención del RELOJ
 ;; -------------------------------------------------------------------------- ;;
+_isr32:
+iret
 ;; Rutina de atención del TECLADO
 ;; -------------------------------------------------------------------------- ;;
+_isr33:
+iret
 ;; Rutinas de atención de las SYSCALLS
 ;; -------------------------------------------------------------------------- ;;
 ;; Funciones Auxiliares

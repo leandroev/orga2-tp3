@@ -10,7 +10,7 @@
 #include "isr.h"
 #include "screen.h"
 
-idt_entry_t idt[255] = {0};
+idt_entry_t idt[255] = { 0 };
 
 idt_descriptor_t IDT_DESC = {sizeof(idt) - 1, (uint32_t)&idt};
 
@@ -28,18 +28,102 @@ idt_descriptor_t IDT_DESC = {sizeof(idt) - 1, (uint32_t)&idt};
     }
 */
 
-/*
-#define IDT_ENTRY(numero) \
-    idt[numero].offset_15_0 = (uint16_t) ((uint32_t)(&_isr ## numero) &
-(uint32_t) 0xFFFF); \
-    idt[numero].segsel = (uint16_t) 0x00; \
-    idt[numero].attr = (uint16_t) 0x0000; \
-    idt[numero].offset_31_16 = (uint16_t) ((uint32_t)(&_isr ## numero) >> 16 &
-(uint32_t) 0xFFFF);
-*/
+#define IDT_ENTRY(numero)                                                                          \
+    idt[numero].offset_15_0 = (uint16_t) ((uint32_t)(&_isr ## numero) & (uint32_t) 0xFFFF);        \
+    idt[numero].segsel = (uint16_t) (GDT_CODE_0<<3)/*SEL DE SEG DE COD*/;                           \
+    idt[numero].attr = (uint16_t) 0x8e00;                                                          \
+    idt[numero].offset_31_16 = (uint16_t) ((uint32_t)(&_isr ## numero) >> 16 & (uint32_t) 0xFFFF);
+
 
 
 void idt_init() {
-  // Excepciones
+  IDT_ENTRY(0);
+  IDT_ENTRY(1);
+  IDT_ENTRY(2);
+  IDT_ENTRY(3);
+  IDT_ENTRY(4);
+  IDT_ENTRY(5);
+  IDT_ENTRY(6);
+  IDT_ENTRY(7);
+  IDT_ENTRY(8);
+  IDT_ENTRY(9);
+  IDT_ENTRY(10);
+  IDT_ENTRY(11);
+  IDT_ENTRY(12);
+  IDT_ENTRY(13);
+  IDT_ENTRY(14);
+  IDT_ENTRY(16);
+  IDT_ENTRY(17);
+  IDT_ENTRY(18);
+  IDT_ENTRY(19);
+
+  IDT_ENTRY(32);
+  IDT_ENTRY(33);
+}
+
+void rutina_de_interrupciones(int number){ // Dependiendo del número de interrupción muentra el mensaje de error en pantalla
+
+  switch (number){
+    case 0:
+        print("Divide error",10, 10, C_BG_RED | C_FG_WHITE);
+        break;        
+    case 1:
+        print("Debug exception",10, 10, C_BG_RED | C_FG_WHITE);
+        break;
+    case 2:
+        print("NMI interrupt",10, 10, C_BG_RED | C_FG_WHITE);
+        break;
+    case 3:
+        print("Breakpoint",10, 10, C_BG_RED | C_FG_WHITE);
+        break;
+    case 4:
+        print("Overflow",10, 10, C_BG_RED | C_FG_WHITE);
+        break;
+    case 5:
+        print("BOUND Range Extended",10, 10, C_BG_RED | C_FG_WHITE);
+        break;        
+    case 6:
+        print("Invalid Opcode(Undefined opcode)",10, 10, C_BG_RED | C_FG_WHITE);
+        break;
+    case 7:
+        print("Device not available(No math coprocessor)",10, 10, C_BG_RED | C_FG_WHITE);
+        break;
+    case 8:
+        print("Double fault",10, 10, C_BG_RED | C_FG_WHITE);
+        break;
+    case 9:
+        print("Coprocessor segment overrun(reserved)",10, 10, C_BG_RED | C_FG_WHITE);
+        break;
+    case 10:
+        print("Invalid TSS",10, 10, C_BG_RED | C_FG_WHITE);
+        break;
+    case 11:
+        print("Segment not present",10, 10, C_BG_RED | C_FG_WHITE);
+        break;
+    case 12:
+        print("Stack-segment fault",10, 10, C_BG_RED | C_FG_WHITE);
+        break;
+    case 13:
+        print("General protection",10, 10, C_BG_RED | C_FG_WHITE);
+        break;
+    case 14:
+        print("Page fault",10, 10, C_BG_RED | C_FG_WHITE);
+        break;
+    case 16:
+        print("x87 FPU floating point error(Math fault)",10, 10, C_BG_RED | C_FG_WHITE);
+        break;
+    case 17:
+        print("Alingment check",10, 10, C_BG_RED | C_FG_WHITE);
+        break;
+    case 18:
+        print("Machine Check",10, 10, C_BG_RED | C_FG_WHITE);
+        break;
+    case 19:
+        print("SIMD floating point-exception",10, 10, C_BG_RED | C_FG_WHITE);
+        break;        
+    default:
+        break;
+  }
+
 }
 

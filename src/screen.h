@@ -16,6 +16,7 @@
 #include "colors.h"
 #include "defines.h"
 #include "stdint.h"
+#include "i386.h"
 
 /* Estructura de para acceder a memoria de video */
 typedef struct ca_s {

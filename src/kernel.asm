@@ -10,6 +10,9 @@
 extern GDT_DESC
 extern inicializar_pantalla
 
+extern IDT_DESC
+extern idt_init
+
 ;; GLOBAL
 
 global start
@@ -52,7 +55,7 @@ start:
     ; Habilitar A20
     call A20_check
     call A20_enable
-    xchg bx, bx
+
     ; Cargar la GDT
     lgdt [GDT_DESC]
 
@@ -83,8 +86,9 @@ modo_protegido:
     mov ax, (14 << 3)                   ; 14 - segmento de video
     mov fs, ax      
     ; Inicializar pantalla
-    call inicializar_pantalla
+    call inicializar_pantalla           ; utiliza el selector fs con el valor seteado en las lineas de arriba
     
+
     ; Inicializar el manejador de memoria
  
     ; Inicializar el directorio de paginas
@@ -100,9 +104,14 @@ modo_protegido:
     ; Inicializar el scheduler
 
     ; Inicializar la IDT
-    
+    call idt_init
     ; Cargar IDT
- 
+    lidt [IDT_DESC]
+
+    ; ahora ejecutamos una excepción
+    mov eax, 0
+    div eax
+
     ; Configurar controlador de interrupciones
 
     ; Cargar tarea inicial
