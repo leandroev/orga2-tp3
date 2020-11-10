@@ -29,5 +29,5 @@ extern idt_entry_t idt[];
 extern idt_descriptor_t IDT_DESC;
 
 void idt_init(void);
-
+void rutina_de_interrupciones(int number);
 #endif //  __IDT_H__

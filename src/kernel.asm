@@ -12,7 +12,8 @@ extern inicializar_pantalla
 
 extern IDT_DESC
 extern idt_init
-
+extern pic_reset
+extern pic_enable
 ;; GLOBAL
 
 global start
@@ -108,16 +109,18 @@ modo_protegido:
     ; Cargar IDT
     lidt [IDT_DESC]
 
-    ; ahora ejecutamos una excepción
-    mov eax, 0
-    div eax
+    ; Prueba excepción
+    ; mov eax, 0
+    ; div eax
 
     ; Configurar controlador de interrupciones
+    call pic_reset
+    call pic_enable
 
     ; Cargar tarea inicial
 
     ; Habilitar interrupciones
-
+    sti
     ; Saltar a la primera tarea: Idle
 
     ; Ciclar infinitamente (por si algo sale mal...)

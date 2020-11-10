@@ -34,6 +34,12 @@ idt_descriptor_t IDT_DESC = {sizeof(idt) - 1, (uint32_t)&idt};
     idt[numero].attr = (uint16_t) 0x8e00;                                                          \
     idt[numero].offset_31_16 = (uint16_t) ((uint32_t)(&_isr ## numero) >> 16 & (uint32_t) 0xFFFF);
 
+#define IDT_ENTRY_SYSTEM(numero)                                                                           \
+    idt[numero].offset_15_0 = (uint16_t) ((uint32_t)(&_isr ## numero) & (uint32_t) 0xFFFF);         \
+    idt[numero].segsel = (uint16_t) 0x48;                                                           \
+    idt[numero].attr = (uint16_t) 0xEE00;                                                           \
+    idt[numero].offset_31_16 = (uint16_t) ((uint32_t)(&_isr ## numero) >> 16 & (uint32_t) 0xFFFF);
+
 
 
 void idt_init() {
@@ -59,6 +65,11 @@ void idt_init() {
 
   IDT_ENTRY(32);
   IDT_ENTRY(33);
+
+  IDT_ENTRY_SYSTEM(88);
+  IDT_ENTRY_SYSTEM(89);
+  IDT_ENTRY_SYSTEM(100);
+  IDT_ENTRY_SYSTEM(123);
 }
 
 void rutina_de_interrupciones(int number){ // Dependiendo del número de interrupción muentra el mensaje de error en pantalla
