@@ -13,5 +13,5 @@
 
 void sched_init();
 uint16_t sched_next_task();
-
+void imprimir_libretas();
 #endif //  __SCHED_H__

@@ -7,6 +7,14 @@
 */
 
 #include "sched.h"
+#include "colors.h"
+#include "screen.h"
+
+void imprimir_libretas(){
+	print("Integrante 1: 218/16",10, 10, C_BG_RED | C_FG_WHITE);
+	print("Integrante 2: 258/16",10, 12, C_BG_RED | C_FG_WHITE);
+	print("Integrante 3: 951/12",10, 14, C_BG_RED | C_FG_WHITE);
+}
 
 
 void sched_init(void) {

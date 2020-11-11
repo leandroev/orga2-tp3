@@ -14,6 +14,7 @@
 #define MMU_P (1 << 0)
 #define MMU_W (1 << 1)
 #define MMU_U (1 << 2)
+#define PAG_P 1
 
 #define PAGE_SIZE 4096
 

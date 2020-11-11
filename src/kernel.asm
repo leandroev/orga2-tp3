@@ -14,6 +14,9 @@ extern IDT_DESC
 extern idt_init
 extern pic_reset
 extern pic_enable
+extern mmu_init
+extern mmu_init_kernel_dir
+extern imprimir_libretas
 ;; GLOBAL
 
 global start
@@ -88,15 +91,21 @@ modo_protegido:
     mov fs, ax      
     ; Inicializar pantalla
     call inicializar_pantalla           ; utiliza el selector fs con el valor seteado en las lineas de arriba
-    
 
+    xchg bx, bx
     ; Inicializar el manejador de memoria
- 
+    call mmu_init
     ; Inicializar el directorio de paginas
-    
+    call mmu_init_kernel_dir
     ; Cargar directorio de paginas
-
+    mov cr3, eax
     ; Habilitar paginacion
+    mov eax, cr0
+    or eax, 0x80000000
+    mov cr0, eax
+
+    ;Prueba Impresion de libretas
+    call imprimir_libretas
     
     ; Inicializar tss
 
