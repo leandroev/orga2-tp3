@@ -17,6 +17,8 @@ extern pic_enable
 extern mmu_init
 extern mmu_init_kernel_dir
 extern imprimir_libretas
+extern mmu_init_task_dir
+extern cambiar_fondo
 ;; GLOBAL
 
 global start
@@ -131,6 +133,19 @@ modo_protegido:
     ; Habilitar interrupciones
     sti
     ; Saltar a la primera tarea: Idle
+
+    ;;---Prueba mmu_init_task_dir
+    mov eax, 4
+    push eax
+    mov eax, 0x10000
+    push eax
+    mov eax, 0x1D00000
+    push eax
+    push eax
+    call mmu_init_task_dir
+    add esp, 16
+    mov cr3, eax
+    call cambiar_fondo
 
     ; Ciclar infinitamente (por si algo sale mal...)
     mov eax, 0xFFFF

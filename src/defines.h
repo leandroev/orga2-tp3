@@ -11,11 +11,13 @@
 /* MMU */
 /* -------------------------------------------------------------------------- */
 
-#define MMU_P (1 << 0)
-#define MMU_W (1 << 1)
-#define MMU_U (1 << 2)
-#define PAG_P 1
-
+#define MMU_P   (1 << 0)
+#define MMU_W   (1 << 1)
+#define MMU_U   (1 << 2)
+#define PAG_P  	(0x00000001)
+#define PAG_US  (0x00000004)
+#define PAG_RW  (0x00000002)
+#define PAG_R   (0x00000000)
 #define PAGE_SIZE 4096
 
 /* Misc */
@@ -34,7 +36,6 @@
 #define GDT_CODE_3        12
 #define GDT_DATA_3        13
 #define GDT_VIDEO         14
-
 #define GDT_COUNT         35
 
 
@@ -70,8 +71,6 @@
 #define KERNEL_PAGE_DIR     (0x00025000)
 #define KERNEL_PAGE_TABLE_0 (0x00026000)
 #define KERNEL_STACK        (0x00025000)
-
-#define INICIO_DE_PAGINA_LIBRE_KERNEL 0x100000
-#define INICIO_DE_PAGINA_LIRE_TAREA   0x400000
-
+#define INICIO_DE_PAGINAS_LIBRES (0X00027000)
+#define INICIO_DE_PAGINAS_LIBRES_TAREAS (0x400000)
 #endif //  __DEFINES_H__

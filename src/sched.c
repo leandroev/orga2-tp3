@@ -16,6 +16,9 @@ void imprimir_libretas(){
 	print("Integrante 3: 951/12",10, 14, C_BG_RED | C_FG_WHITE);
 }
 
+void cambiar_fondo(){
+	print(" ",0, 0, C_BG_RED | C_FG_WHITE);
+}
 
 void sched_init(void) {
 }
