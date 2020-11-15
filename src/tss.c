@@ -63,7 +63,8 @@ void tss_init(void) {
     gdt[TSS_INITIAL].base_23_16 = ((uint32_t)&tss_initial << 8) >> 24;
     gdt[TSS_INITIAL].base_31_24 = (uint32_t)(&tss_initial) >> 24;
 }
-
+/*
 void task_init(uint32_t task_type, uint8_t task_index) {  // Por ahora estos parametros
   
 }
+*/
