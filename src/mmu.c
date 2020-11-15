@@ -17,7 +17,7 @@ void mmu_init(void) {
 }
 
 paddr_t mmu_next_free_kernel_page(void) { 
-  unsigned int pagina_libre = proxima_pagina_libre;
+  paddr_t pagina_libre = proxima_pagina_libre;
   proxima_pagina_libre += PAGE_SIZE;
   return pagina_libre;
 }
@@ -162,7 +162,7 @@ paddr_t mmu_init_task_dir(paddr_t phy_start, vaddr_t virt_star, paddr_t code_sta
     }
     
     //Desmapeo
-    breakpoint();
+    //fbreakpoint();
     for (size_t i = 0; i < pages; ++i)
     {
         mmu_unmap_page(cr3Actual,virt_star + i*PAGE_SIZE); // desmapeo 4kb

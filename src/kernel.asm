@@ -94,7 +94,6 @@ modo_protegido:
     ; Inicializar pantalla
     call inicializar_pantalla           ; utiliza el selector fs con el valor seteado en las lineas de arriba
 
-    xchg bx, bx
     ; Inicializar el manejador de memoria
     call mmu_init
     ; Inicializar el directorio de paginas
@@ -135,18 +134,17 @@ modo_protegido:
     ; Saltar a la primera tarea: Idle
 
     ;;---Prueba mmu_init_task_dir
-    mov eax, 4
-    push eax
-    mov eax, 0x10000
-    push eax
-    mov eax, 0x1D00000
-    push eax
-    push eax
+    xchg bx, bx
+    push 0x4
+    push 0x10000
+    push 0x1D00000
+    push 0x1D00000
     call mmu_init_task_dir
     add esp, 16
+    xchg bx, bx
     mov cr3, eax
     call cambiar_fondo
-
+    xchg bx, bx
     ; Ciclar infinitamente (por si algo sale mal...)
     mov eax, 0xFFFF
     mov ebx, 0xFFFF

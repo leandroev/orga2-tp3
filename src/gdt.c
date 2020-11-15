@@ -106,7 +106,39 @@ gdt_entry_t gdt[GDT_COUNT] = {
             .db = 0x1,              /* db           */
             .g = 0x00,              /* g            */
             .base_31_24 = 0x00,     /* base[31:24]  */
-        }
+        },
+    [TSS_INITIAL] = 
+      {
+            .limit_15_0 = 0X0067,   /* limit[0:15]  */
+            .base_15_0 = 0x0000,    /* base[0:15]   */   
+            .base_23_16 = 0x00,     /* base[23:16]  */   
+            .type = 0x9,            /* type         */
+            .s = 0x00,              /* s            */
+            .dpl = 0x00,            /* dpl          */
+            .p = 0x01,              /* p            */
+            .limit_19_16 = 0x00,    /* limit[16:19] */
+            .avl = 0x0,             /* avl          */
+            .l = 0x0,               /* l            */
+            .db = 0x0,              /* db           */
+            .g = 0x00,              /* g            */
+            .base_31_24 = 0x00,     /* base[31:24]  */
+      }, 
+    [TSS_IDLE] = 
+      {
+            .limit_15_0 = 0X0067,   /* limit[0:15]  */
+            .base_15_0 = 0x0000,    /* base[0:15]   */   
+            .base_23_16 = 0X00,     /* base[23:16]  */   
+            .type = 0x9,            /* type         */
+            .s = 0x00,              /* s            */
+            .dpl = 0x00,            /* dpl          */
+            .p = 0x01,              /* p            */
+            .limit_19_16 = 0x00,    /* limit[16:19] */
+            .avl = 0x0,             /* avl          */
+            .l = 0x0,               /* l            */
+            .db = 0x0,              /* db           */
+            .g = 0x00,              /* g            */
+            .base_31_24 = 0x00,     /* base[31:24]  */
+     }
 };
 
 gdt_descriptor_t GDT_DESC = {

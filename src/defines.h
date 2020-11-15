@@ -36,6 +36,9 @@
 #define GDT_CODE_3        12
 #define GDT_DATA_3        13
 #define GDT_VIDEO         14
+#define TSS_INITIAL       15
+#define TSS_IDLE          16
+
 #define GDT_COUNT         35
 
 
