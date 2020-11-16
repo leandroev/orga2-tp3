@@ -57,5 +57,6 @@ extern tss_t tss_initial;
 extern tss_t tss_idle;
 
 void tss_init(void);
+void task_init(tss_t* new_tss,paddr_t phy_task, vaddr_t virt_task, paddr_t task_code, size_t pages);
 
 #endif //  __TSS_H__

@@ -64,6 +64,7 @@
 #define TASK_PAGES        4
 
 /* Direcciones fisicas de codigos */
+#define IDLE_CODE (0x18000)
 /* -------------------------------------------------------------------------- */
 /* En estas direcciones estan los códigos de todas las tareas. De aqui se
  * copiaran al destino indicado por TASK_<X>_PHY_START.
