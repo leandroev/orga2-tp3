@@ -5,6 +5,8 @@
 
 %include "print.mac"
 ;; DEFINE
+%define TSS_INITAIL     15
+%define TSS_IDLE        16
 
 ;; EXTERN
 extern GDT_DESC
@@ -19,6 +21,8 @@ extern mmu_init_kernel_dir
 extern imprimir_libretas
 extern mmu_init_task_dir
 extern cambiar_fondo
+extern mmu_map_page
+extern tss_init
 ;; GLOBAL
 
 global start
@@ -109,6 +113,7 @@ modo_protegido:
     call imprimir_libretas
     
     ; Inicializar tss
+    call tss_init
 
     ; Inicializar tss de la tarea Idle
 
@@ -116,25 +121,37 @@ modo_protegido:
 
     ; Inicializar la IDT
     call idt_init
+
     ; Cargar IDT
     lidt [IDT_DESC]
-
-    ; Prueba excepción
-    ; mov eax, 0
-    ; div eax
 
     ; Configurar controlador de interrupciones
     call pic_reset
     call pic_enable
 
     ; Cargar tarea inicial
+    mov ax, (TSS_INITAIL << 3)
+    ltr ax
 
     ; Habilitar interrupciones
+    call pic_reset
+    call pic_enable
     sti
     ; Saltar a la primera tarea: Idle
-
+    jmp (TSS_IDLE << 3):0
     ;;---Prueba mmu_init_task_dir
+    
+    push 0x7
+    push 0x400000
+    push 0x5e0123
+    mov eax, cr3
+    push eax
+    call mmu_map_page
     xchg bx, bx
+    
+    mov dword[0x5e0123], 0xCAFEEEE
+
+
     push 0x4
     push 0x10000
     push 0x1D00000

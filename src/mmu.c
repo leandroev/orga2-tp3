@@ -121,7 +121,7 @@ void mmu_unmap_page(uint32_t cr3, vaddr_t virt) {
     tlbflush();
 }
 
-paddr_t mmu_init_task_dir(paddr_t phy_start, vaddr_t virt_star, paddr_t code_start, size_t pages) {
+paddr_t mmu_init_task_dir(paddr_t phy_start, vaddr_t virt_star, paddr_t code_start, uint32_t pages) {
     
     /****KERNEL****/
 
@@ -130,43 +130,38 @@ paddr_t mmu_init_task_dir(paddr_t phy_start, vaddr_t virt_star, paddr_t code_sta
     uint32_t attrS = 0x00000007;
 
     //Mapeamos los primero 4MB con identity maping
-    for (int i = 0; i < 1024; ++i)
-    {
-        mmu_map_page(cr3,i*PAGE_SIZE,i*PAGE_SIZE,attrS);
+    for (uint32_t i = 0; i < 1024; ++i) {
+        mmu_map_page(cr3, i*PAGE_SIZE, i*PAGE_SIZE, attrS);
     }
 
     /****TAREA****/
 
-    //Mapeo los 16kib  de la tarea 
-    for (size_t i = 0; i < pages; ++i)
-    {
+    //Mapeo los 16kb  de la tarea 
+    for (uint32_t i = 0; i < pages; ++i) {
         mmu_map_page(cr3,virt_star + i*PAGE_SIZE, phy_start + i*PAGE_SIZE,attrS); // mapeo 4kb
     }
     
     //Copio la tarea
     paddr_t cr3Actual = rcr3();
     
-    //Mapeo los 16kib  de la tarea 
-    for (size_t i = 0; i < pages; ++i)
-    {
+    //Mapeo los 16kb  de la tarea 
+    for (uint32_t i = 0; i < pages; ++i) {
         mmu_map_page(cr3Actual,virt_star + i*PAGE_SIZE, phy_start + i*PAGE_SIZE,attrS); // mapeo 4kb
     }
 
     uint32_t* src = (uint32_t*) code_start; 
     uint32_t* dst = (uint32_t*) virt_star;
     
-    for (size_t i = 0; i < 1024*pages; ++i)
-    {
+    for (uint32_t i = 0; i < 1024*pages; ++i) {
         dst[i] = src[i];
-        
     }
     
     //Desmapeo
     //fbreakpoint();
-    for (size_t i = 0; i < pages; ++i)
-    {
-        mmu_unmap_page(cr3Actual,virt_star + i*PAGE_SIZE); // desmapeo 4kb
+    for (uint32_t i = 0; i < pages; ++i) {
+        mmu_unmap_page(cr3Actual, virt_star + i*PAGE_SIZE); // desmapeo 4kb
     }
+    
     tlbflush();
     return cr3;
 
