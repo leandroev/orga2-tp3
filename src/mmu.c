@@ -11,7 +11,7 @@
 
 #include "kassert.h"
 
-unsigned int proxima_pagina_libre;
+paddr_t proxima_pagina_libre;
 void mmu_init(void) {
     proxima_pagina_libre = INICIO_DE_PAGINAS_LIBRES;
 }
@@ -128,12 +128,12 @@ paddr_t mmu_init_task_dir(paddr_t phy_start, vaddr_t virt_star, paddr_t code_sta
     //Pedimos memoria para el nuevo directorio del kernel
     paddr_t cr3 = mmu_next_free_kernel_page();
     uint32_t attrS = 0x00000007;
-
+    
     //Mapeamos los primero 4MB con identity maping
     for (uint32_t i = 0; i < 1024; ++i) {
         mmu_map_page(cr3, i*PAGE_SIZE, i*PAGE_SIZE, attrS);
     }
-
+    
     /****TAREA****/
 
     //Mapeo los 16kb  de la tarea 

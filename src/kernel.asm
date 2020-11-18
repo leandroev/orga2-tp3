@@ -102,6 +102,7 @@ modo_protegido:
     call mmu_init
     ; Inicializar el directorio de paginas
     call mmu_init_kernel_dir
+
     ; Cargar directorio de paginas
     mov cr3, eax
     ; Habilitar paginacion
@@ -137,20 +138,6 @@ modo_protegido:
     call pic_reset
     call pic_enable
     sti
-    ; Saltar a la primera tarea: Idle
-    jmp (TSS_IDLE << 3):0
-    ;;---Prueba mmu_init_task_dir
-    
-    push 0x7
-    push 0x400000
-    push 0x5e0123
-    mov eax, cr3
-    push eax
-    call mmu_map_page
-    xchg bx, bx
-    
-    mov dword[0x5e0123], 0xCAFEEEE
-
 
     push 0x4
     push 0x10000
@@ -158,10 +145,13 @@ modo_protegido:
     push 0x1D00000
     call mmu_init_task_dir
     add esp, 16
-    xchg bx, bx
     mov cr3, eax
     call cambiar_fondo
-    xchg bx, bx
+    ; Saltar a la primera tarea: Idle
+    jmp (TSS_IDLE << 3):0
+    ;;---Prueba mmu_init_task_dir
+
+
     ; Ciclar infinitamente (por si algo sale mal...)
     mov eax, 0xFFFF
     mov ebx, 0xFFFF
