@@ -72,9 +72,9 @@
 
 /* Direcciones fisicas de directorios y tablas de paginas del KERNEL */
 /* -------------------------------------------------------------------------- */
-#define KERNEL_PAGE_DIR     (0x00025000)
-#define KERNEL_PAGE_TABLE_0 (0x00026000)
-#define KERNEL_STACK        (0x00025000)
-#define INICIO_DE_PAGINAS_LIBRES (0X00027000)
-#define INICIO_DE_PAGINAS_LIBRES_TAREAS (0x400000)
+#define KERNEL_PAGE_DIR                 0x00025000
+#define KERNEL_PAGE_TABLE_0             0x00026000
+#define KERNEL_STACK                    0x00025000
+#define INICIO_DE_PAGINAS_LIBRES        0X100000
+#define INICIO_DE_PAGINAS_LIBRES_TAREAS 0x400000
 #endif //  __DEFINES_H__
