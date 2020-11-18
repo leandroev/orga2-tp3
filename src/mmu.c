@@ -22,7 +22,7 @@ paddr_t mmu_next_free_kernel_page(void) {
   return pagina_libre;
 }
 
-paddr_t mmu_init_kernel_dir(void) {
+paddr_t mmu_init_kernel_dir(void) {  // Mapea los primeros 4MB de memoria con identity mapping
 	pd_entry* pd = (pd_entry*) KERNEL_PAGE_DIR;
 	
 	for (int i = 1; i < 1024; ++i)
@@ -46,7 +46,7 @@ paddr_t mmu_init_kernel_dir(void) {
     /* Inicializamos la Kernel Page table */
     pt_entry* pt = (pt_entry*) KERNEL_PAGE_TABLE_0;
 
-    for (int i = 0; i < 1024; ++i)
+    for (uint32_t i = 0; i < 1024; ++i)
     {
     	pt[i].dir_base = i;
     	pt[i].disponible = 0;
