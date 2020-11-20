@@ -37,7 +37,7 @@ idt_descriptor_t IDT_DESC = {sizeof(idt) - 1, (uint32_t)&idt};
 
 #define IDT_ENTRY_SYSTEM(numero)                                                                           \
     idt[numero].offset_15_0 = (uint16_t) ((uint32_t)(&_isr ## numero) & (uint32_t) 0xFFFF);         \
-    idt[numero].segsel = (uint16_t) 0x48;                                                           \
+    idt[numero].segsel = (uint16_t) (GDT_CODE_0 << 3);                                                           \
     idt[numero].attr = (uint16_t) 0xEE00;                                                           \
     idt[numero].offset_31_16 = (uint16_t) ((uint32_t)(&_isr ## numero) >> 16 & (uint32_t) 0xFFFF);
 
