@@ -68,12 +68,3 @@ void screen_draw_box(uint32_t fInit, uint32_t cInit, uint32_t fSize,
     }
   }
 }
-
-//Funciones agregadas
-
-void inicializar_pantalla(){
-    screen_draw_box(0,0,40,80, ' ', C_BG_LIGHT_GREY);
-    screen_draw_box(42,6,4,10, ' ', C_BG_RED);
-    screen_draw_box(42,64,4,10, ' ', C_BG_BLUE);
-}
-

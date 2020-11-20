@@ -10,7 +10,7 @@
 #include "isr.h"
 #include "screen.h"
 
-idt_entry_t idt[255] = { 0 };
+idt_entry_t idt[255] = {0};
 
 idt_descriptor_t IDT_DESC = {sizeof(idt) - 1, (uint32_t)&idt};
 
@@ -28,10 +28,11 @@ idt_descriptor_t IDT_DESC = {sizeof(idt) - 1, (uint32_t)&idt};
     }
 */
 
+
 #define IDT_ENTRY(numero)                                                                          \
     idt[numero].offset_15_0 = (uint16_t) ((uint32_t)(&_isr ## numero) & (uint32_t) 0xFFFF);        \
     idt[numero].segsel = (uint16_t) (GDT_CODE_0<<3)/*SEL DE SEG DE COD*/;                           \
-    idt[numero].attr = (uint16_t) 0x8e00;                                                          \
+    idt[numero].attr = (uint16_t) 0x8E00;                                                          \
     idt[numero].offset_31_16 = (uint16_t) ((uint32_t)(&_isr ## numero) >> 16 & (uint32_t) 0xFFFF);
 
 #define IDT_ENTRY_SYSTEM(numero)                                                                           \
@@ -42,7 +43,9 @@ idt_descriptor_t IDT_DESC = {sizeof(idt) - 1, (uint32_t)&idt};
 
 
 
+
 void idt_init() {
+    // Excepciones
   IDT_ENTRY(0);
   IDT_ENTRY(1);
   IDT_ENTRY(2);
@@ -62,7 +65,6 @@ void idt_init() {
   IDT_ENTRY(17);
   IDT_ENTRY(18);
   IDT_ENTRY(19);
-
   IDT_ENTRY(32);
   IDT_ENTRY(33);
 
@@ -70,7 +72,10 @@ void idt_init() {
   IDT_ENTRY_SYSTEM(89);
   IDT_ENTRY_SYSTEM(100);
   IDT_ENTRY_SYSTEM(123);
+    
 }
+
+
 
 void rutina_de_interrupciones(int number){ // Dependiendo del número de interrupción muentra el mensaje de error en pantalla
 
@@ -137,4 +142,3 @@ void rutina_de_interrupciones(int number){ // Dependiendo del número de interru
   }
 
 }
-

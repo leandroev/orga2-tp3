@@ -28,8 +28,6 @@ BITS 32
 sched_task_offset:     dd 0xFFFFFFFF
 sched_task_selector:   dw 0xFFFF
 
-
-
 ;;Seccion de codigo
 
 
@@ -77,6 +75,15 @@ _isr32:
     pushad
     call pic_finish1 ; Indica que la interrupcion fue antendida
     call next_clock ; Imprimir el reloj del sistema
+    xchg bx,bx
+    call sched_next_task 
+    str cx
+    cmp ax, cx
+    je .fin
+    mov [sched_task_selector],ax
+    jmp far [sched_task_offset]
+    
+    .fin:
     popad
     iret
 ;; -------------------------------------------------------------------------- ;;

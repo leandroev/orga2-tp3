@@ -22,7 +22,7 @@ void mmu_unmap_page(uint32_t cr3, vaddr_t virt);
 
 paddr_t mmu_init_kernel_dir(void);
 
-paddr_t mmu_init_task_dir(paddr_t phy_start, vaddr_t virt_star, paddr_t code_start, uint32_t pages);
+paddr_t mmu_init_task_dir(paddr_t phy_start, vaddr_t virt_star, paddr_t code_start, size_t pages);
 
 /* Struct de una entrada de la PDE */
 typedef struct str_pd_entry {

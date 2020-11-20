@@ -38,6 +38,8 @@
 #define GDT_VIDEO         14
 #define TSS_INITIAL       15
 #define TSS_IDLE          16
+#define TSS_RICK          17
+#define TSS_MORTY         18
 
 #define GDT_COUNT         35
 
@@ -64,17 +66,23 @@
 #define TASK_PAGES        4
 
 /* Direcciones fisicas de codigos */
-#define IDLE_CODE (0x18000)
+#define RICK_CODE_PHY  (0x01D00000)
+#define MORTY_CODE_PHY (0x01D04000)
+
+
 /* -------------------------------------------------------------------------- */
 /* En estas direcciones estan los códigos de todas las tareas. De aqui se
  * copiaran al destino indicado por TASK_<X>_PHY_START.
  */
+#define RICK_CODE  (0x10000)
+#define MORTY_CODE (0x14000)
+#define IDLE_CODE (0x18000)
 
 /* Direcciones fisicas de directorios y tablas de paginas del KERNEL */
 /* -------------------------------------------------------------------------- */
-#define KERNEL_PAGE_DIR                 0x00025000
-#define KERNEL_PAGE_TABLE_0             0x00026000
-#define KERNEL_STACK                    0x00025000
-#define INICIO_DE_PAGINAS_LIBRES        0X100000
-#define INICIO_DE_PAGINAS_LIBRES_TAREAS 0x400000
+#define KERNEL_PAGE_DIR     (0x00025000)
+#define KERNEL_PAGE_TABLE_0 (0x00026000)
+#define KERNEL_STACK        (0x00025000)
+#define INICIO_DE_PAGINAS_LIBRES (0x100000)
+#define INICIO_DE_PAGINAS_LIBRES_TAREAS (0x400000)
 #endif //  __DEFINES_H__

@@ -55,8 +55,12 @@ typedef struct str_tss {
 
 extern tss_t tss_initial;
 extern tss_t tss_idle;
+extern tss_t tss_rick;
+extern tss_t tss_morty;
 
 void tss_init(void);
 void task_init(tss_t* new_tss,paddr_t phy_task, vaddr_t virt_task, paddr_t task_code, size_t pages);
+void tss_init_idle(void);
+void tss_init_gdt(void);
 
 #endif //  __TSS_H__

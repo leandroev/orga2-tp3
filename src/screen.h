@@ -16,7 +16,6 @@
 #include "colors.h"
 #include "defines.h"
 #include "stdint.h"
-#include "i386.h"
 
 /* Estructura de para acceder a memoria de video */
 typedef struct ca_s {
@@ -34,9 +33,5 @@ void screen_draw_box(uint32_t fInit, uint32_t cInit, uint32_t fSize,
                      uint32_t cSize, uint8_t character, uint8_t attr);
 
 void screen_draw_layout(void);
-
-//Funciones agregadas
-
-void inicializar_pantalla();
 
 #endif //  __SCREEN_H__
