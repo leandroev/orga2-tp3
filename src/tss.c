@@ -89,23 +89,25 @@ void tss_init(void) {
     task_init(&tss_morty,MORTY_CODE_PHY,TASK_CODE_VIRTUAL,MORTY_CODE,TASK_PAGES);
 }
 
-void task_init(tss_t* new_tss,paddr_t phy_task, vaddr_t virt_task, paddr_t task_code, size_t pages)
+void task_init(tss_t* new_tss, paddr_t phy_task, vaddr_t virt_task, paddr_t task_code, size_t pages)
 {
-    breakpoint();
     *new_tss = (tss_t) {0};
     new_tss->eip = virt_task;
     new_tss->cr3 = mmu_init_task_dir(phy_task,virt_task,task_code,pages);
     new_tss->esp = virt_task + pages*PAGE_SIZE;
-    new_tss->esp0 = mmu_next_free_kernel_page() + PAGE_SIZE;
-    new_tss->ss0 = GDT_DATA_0 << 3;
-    new_tss->cs = GDT_CODE_3<<3;
-    new_tss->ds = GDT_DATA_3<<3;
-    new_tss->eflags = 0x202;
-    new_tss->ss = GDT_DATA_3<<3;
-    new_tss->es = GDT_DATA_3<<3;
-    new_tss->ds = GDT_DATA_3<<3;
-    new_tss->fs = GDT_DATA_3<<3;
-    new_tss->gs = GDT_DATA_3<<3;
     new_tss->ebp = virt_task + pages*PAGE_SIZE;
+    new_tss->esp0 = mmu_next_free_kernel_page();
+    new_tss->ss0 = GDT_DATA_0 << 3;
+    new_tss->cs = (GDT_CODE_3 << 3) + 3;
+    new_tss->ds = (GDT_DATA_3 << 3) + 3;
+    new_tss->eflags = 0x202;
+    new_tss->ss = (GDT_DATA_3 << 3) + 3;
+    new_tss->es = (GDT_DATA_3 << 3) + 3;
+    new_tss->ds = (GDT_DATA_3 << 3) + 3;
+    new_tss->fs = (GDT_DATA_3 << 3) + 3;
+    new_tss->gs = (GDT_DATA_3 << 3) + 3;
+    new_tss->iomap = 0xFFFF;
+    //breakpoint();
+    //lcr3((uint32_t)new_tss->cr3);
 }
 

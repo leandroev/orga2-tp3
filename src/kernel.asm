@@ -112,7 +112,7 @@ BITS 32
     ; Imprimir mensaje de bienvenida
 
     ; Inicializar pantalla
-   
+
     ; Inicializar el manejador de memoria
     call mmu_init
     ; Inicializar el directorio de paginas
@@ -150,7 +150,6 @@ BITS 32
     call pic_reset
     call pic_enable
 
-    xchg bx, bx
     ; Cargar tarea inicial
     mov ax, (TSS_INITAIL << 3)
     ltr ax
@@ -171,7 +170,6 @@ BITS 32
     ; push eax
     ; call mmu_init_task_dir
     ; add esp, 16
-    ; xchg bx, bx
     ; mov cr3, eax
     ; call cambiar_fondo
     

@@ -75,7 +75,6 @@ _isr32:
     pushad
     call pic_finish1 ; Indica que la interrupcion fue antendida
     call next_clock ; Imprimir el reloj del sistema
-    xchg bx,bx
     call sched_next_task 
     str cx
     cmp ax, cx
