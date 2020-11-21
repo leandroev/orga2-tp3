@@ -125,7 +125,7 @@ BITS 32
     mov cr0, eax
 
     ;;Prueba Impresion de libretas
-    call imprimir_libretas
+    ;call imprimir_libretas
     
     ; Inicializamos los descriptores de la tss
     call tss_init_gdt

@@ -9,22 +9,47 @@
 #include "sched.h"
 #include "colors.h"
 #include "screen.h"
-
-
-#define IDLE    0
-#define RICK    1
-#define MORTY   2
-#define RICK_MrMs1  3
-#define RICK_MrMs2  4
-#define RICK_MrMs3  5
-#define MORTY_MrMs1 6
-#define NORTY_MrMs2 7
-#define NORTY_MrMs3 8
+#include "defines.h"
 
 
 sched sched_task[3];
 uint32_t current_task;
 
+void iniciar_pantalla(){
+
+	screen_draw_box(0, 0, CANT_FILAS, CANT_COLUMNAS, 1, 0x55); 	//Imicio pantalla CANT_COLUMNASxCANT_FILAS
+	screen_draw_box(41, 0, 10, CANT_COLUMNAS, 1, 0x33);				//Inicio panel CANT_COLUMNASx09
+
+	//screen_draw_box(42, 26, 7, 26, 1, 0x66); 
+	for (int i = 0; i < 10; ++i)
+	{
+		if (i<3)
+		{
+			print("O",30+2*i,44,0x0F);
+		}
+		else
+		{
+			print("-",30+2*i,44,0x0F);
+			print("-",30+2*i,46,0x0F);
+		}
+
+	}
+
+	screen_draw_box(44,4,3,9,1,0x44); //Panel rick 
+	print_dec(0,7,5,45,0x0F); //Puntaje Inicial
+
+	screen_draw_box(44,67,3,9,1,0x11);//Panel morty
+	print_dec(0,7,68,45,0x0F);//Puntaje Inicial
+	
+	//print("R",sched_task[RICKC137].pos_x,sched_task[RICKC137].pos_y,0x04);
+	//print("R",sched_task[RICKD248].pos_x,sched_task[RICKD248].pos_y,0x01);
+	//print("M",sched_task[MORTYC137].pos_x,sched_task[MORTYC137].pos_y,0x04);
+	//print("M",sched_task[MORTYD248].pos_x,sched_task[MORTYD248].pos_y,0x01);
+	//print("C",sched_task[CRONENBERG1].pos_x,sched_task[CRONENBERG1].pos_y,0x06);
+	//print("C",sched_task[CRONENBERG2].pos_x,sched_task[CRONENBERG2].pos_y,0x06);
+	//print("C",sched_task[CRONENBERG3].pos_x,sched_task[CRONENBERG3].pos_y,0x06);
+		
+}
 
 
 void sched_init(void) {
@@ -36,6 +61,7 @@ void sched_init(void) {
 		sched_task[i].tss_selector = ((i+16)<<3); //a partir de la 17 se encuentras los tss de cada tarea	
 	}
 
+	iniciar_pantalla();
 }
 
 uint16_t sched_next_task() {
@@ -46,11 +72,6 @@ uint16_t sched_next_task() {
 	}
     return sched_task[current_task].tss_selector;
 }
-
-
-
-
-
 
 
 

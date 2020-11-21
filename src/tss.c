@@ -107,7 +107,5 @@ void task_init(tss_t* new_tss, paddr_t phy_task, vaddr_t virt_task, paddr_t task
     new_tss->fs = (GDT_DATA_3 << 3) + 3;
     new_tss->gs = (GDT_DATA_3 << 3) + 3;
     new_tss->iomap = 0xFFFF;
-    //breakpoint();
-    //lcr3((uint32_t)new_tss->cr3);
 }
 

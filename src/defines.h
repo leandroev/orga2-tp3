@@ -78,6 +78,26 @@
 #define MORTY_CODE (0x14000)
 #define IDLE_CODE (0x18000)
 
+/**/
+// Defines para sched.c
+
+
+#define IDLE    0
+#define RICK    1
+#define MORTY   2
+#define RICK_MrMs1  3
+#define RICK_MrMs2  4
+#define RICK_MrMs3  5
+#define MORTY_MrMs1 6
+#define NORTY_MrMs2 7
+#define NORTY_MrMs3 8
+
+#define CANT_COLUMNAS 80
+#define CANT_FILAS    40
+/**/
+
+
+
 /* Direcciones fisicas de directorios y tablas de paginas del KERNEL */
 /* -------------------------------------------------------------------------- */
 #define KERNEL_PAGE_DIR     (0x00025000)
