@@ -9,13 +9,54 @@
 #include "sched.h"
 #include "colors.h"
 #include "screen.h"
-#include "defines.h"
+#include "prng.h"
 
 uint32_t screen_debug;
 uint32_t act_debug;
 
 sched sched_task[3];
 uint32_t current_task;
+
+void sched_init(void) {
+	//Inicializamos el scheduler
+	screen_debug = 0;
+	act_debug = 0;
+	current_task = 0;
+	for (uint8_t i = 0; i < 3 ; ++i)
+	{
+		sched_task[i].is_alive = 1;
+		sched_task[i].tss_selector = ((i+16)<<3); //a partir de la 17 se encuentras los tss de cada tarea	
+	}
+
+	iniciar_pantalla();
+
+	spread_megaSeeds();
+
+	int100_look(13, 21);
+	print("X", 13, 21, C_FG_DARK_GREY | C_BG_BLACK);
+}
+
+uint16_t sched_next_task() {
+	current_task = (current_task + 1) % 3;
+	while(sched_task[current_task].is_alive == 0){
+
+		current_task = (current_task + 1) % 3;
+	}
+    return sched_task[current_task].tss_selector;
+}
+
+
+void killcurrent_task(){
+	sched_task[current_task].is_alive = 0;
+	if ( current_task == RICK || current_task == MORTY)
+	{	
+		print("GAME OVER",35,15,0x0F);
+		// print("Universe-D248 Wins",30,17,0x09);
+		
+	}
+	//jump_toIdle();
+
+}
 
 void iniciar_pantalla(){
 
@@ -54,42 +95,55 @@ void iniciar_pantalla(){
 }
 
 
-void sched_init(void) {
-	//Inicializamos el scheduler
-	screen_debug = 0;
-	act_debug = 0;
-	current_task = 0;
-	for (uint8_t i = 0; i < 3 ; ++i)
-	{
-		sched_task[i].is_alive = 1;
-		sched_task[i].tss_selector = ((i+16)<<3); //a partir de la 17 se encuentras los tss de cada tarea	
+void spread_megaSeeds(){
+
+	megaSeeds tmp;
+
+	for (uint32_t i = 0; i < TOTAL_SEEDS; i++){
+		tmp.position_x = rand() % CANT_COLUMNAS;
+		tmp.position_y = rand() % CANT_FILAS;
+		seedsOnMap[i] = tmp;
+
+		print("$", tmp.position_x, tmp.position_y, C_FG_WHITE | C_BG_BROWN);
 	}
-
-	iniciar_pantalla();
-}
-
-uint16_t sched_next_task() {
-	current_task = (current_task + 1) % 3;
-	while(sched_task[current_task].is_alive == 0){
-
-		current_task = (current_task + 1) % 3;
-	}
-    return sched_task[current_task].tss_selector;
-}
-
-
-void killcurrent_task(){
-	sched_task[current_task].is_alive = 0;
-	if ( current_task == RICK || current_task == MORTY)
-	{	
-		print("GAME OVER",35,15,0x0F);
-		// print("Universe-D248 Wins",30,17,0x09);
-		
-	}
-	//jump_toIdle();
 
 }
 
+int abs(int number) {
+	if(number < 0)
+		return -number;
+	else
+		return number;
+	
+}
+
+void int100_look(uint32_t position_x, uint32_t position_y) {
+
+	uint32_t tmp_x = abs(position_x - seedsOnMap[0].position_x);
+	uint32_t tmp_y = abs(position_y - seedsOnMap[0].position_y);
+
+	uint32_t steps = tmp_x + tmp_y;
+	uint32_t mostNearSeed = 0;
+
+
+	for (uint32_t i = 1; i < TOTAL_SEEDS; i++) {
+		tmp_x = abs(position_x - seedsOnMap[i].position_x);
+		tmp_y = abs(position_y - seedsOnMap[i].position_y);
+
+		if(steps > (tmp_x + tmp_y)) {
+			steps = tmp_x + tmp_y;
+			mostNearSeed = i;
+		}
+	}
+	
+	print("(", 34, 40, C_FG_WHITE | C_BG_BROWN);
+	print_dec(seedsOnMap[mostNearSeed].position_x, 2, 35, 40, C_FG_WHITE | C_BG_BROWN);
+	print("-",37, 40, C_FG_WHITE | C_BG_BROWN);
+	print_dec(seedsOnMap[mostNearSeed].position_y, 2, 38, 40, C_FG_WHITE | C_BG_BROWN);
+	print(")",40, 40, C_FG_WHITE | C_BG_BROWN);
+
+	print("$",seedsOnMap[mostNearSeed].position_x, seedsOnMap[mostNearSeed].position_y, C_FG_BLACK | C_BG_GREEN);
+}
 
 
 

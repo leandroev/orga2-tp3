@@ -11,6 +11,13 @@
 
 #include "types.h"
 #include "i386.h"
+#include "defines.h"
+
+//Functions
+int abs(int number) ;
+void int100_look(uint32_t position_x, uint32_t position_y);
+void spread_megaSeeds();
+
 
 void sched_init();
 uint16_t sched_next_task();
@@ -24,6 +31,7 @@ void killcurrent_task();
 void set_modo_debug();
 uint32_t check_screen_debug();
 uint32_t check_act_debug();
+void iniciar_pantalla();
 
 typedef struct str_sched {
 	uint8_t is_alive;
@@ -32,6 +40,13 @@ typedef struct str_sched {
 
 extern sched sched_task[3];
 extern void jump_toIdle();
+
+typedef struct semillas {
+	uint32_t position_x;
+	uint32_t position_y;
+}megaSeeds;
+
+megaSeeds seedsOnMap[TOTAL_SEEDS];
 
 
 #endif //  __SCHED_H__
