@@ -14,6 +14,16 @@ extern rutina_de_interrupciones
 extern pic_finish1
 ;--Sched
 extern sched_next_task
+;--killcurrent task
+extern killcurrent_task
+;--imprimir registros
+extern imprimir_registros
+
+extern set_modo_debug
+
+extern check_screen_debug
+
+extern check_act_debug
 
     ;;GLOBAL
 global _isr32
@@ -22,11 +32,13 @@ global _isr88
 global _isr89
 global _isr100
 global _isr123
-
+global jump_toIdle
 BITS 32
 ;; Seccion de datos
 sched_task_offset:     dd 0xFFFFFFFF
 sched_task_selector:   dw 0xFFFF
+
+
 
 ;;Seccion de codigo
 
@@ -37,11 +49,79 @@ sched_task_selector:   dw 0xFFFF
 global _isr%1
 
 _isr%1:
+    sub esp, 5*4
+
+    push edx
+    push eax
+    push es
+    
+    ;xchg bx, bx
+    
+    ;obtenemos SS3
+    mov eax, [esp+4*12]
+    mov es, ax
+    ;obtenemos ESP3
+    mov eax, [esp+4*11]
+
+    ;no se por que esto funciona
+    add eax, 8
+
+    ;buscamos los 5 elementos del stack de nivel 3
+    mov edx, [es:eax]
+    mov [esp+4*7], edx
+    add eax, 4
+    
+    mov edx, [es:eax] 
+    mov [esp+4*6], edx
+    add eax, 4
+
+    mov edx, [es:eax] 
+    mov [esp+4*5], edx
+    add eax, 4
+
+    mov edx, [es:eax] 
+    mov [esp+4*4], edx
+    add eax, 4
+
+    mov edx, [es:eax] 
+    mov [esp+4*3], edx
+
+    pop es
+    pop eax
+    pop edx
+
     pushad
+    ;colocamos los valores de la tarea en la pila
+    ;xchg bx, bx
+    mov eax, [esp+4*16] ;ESP3
+    mov [esp+4*3], eax
+
+    ;push cs
+    mov eax, [esp+4*14] ; CS3
+    push eax
+
+    push ds
+    push es
+    push fs
+    push gs
+
+    ;push ss
+    mov eax, [esp+4*22] ; SS3
+    push eax
+
+    ;pushfd
+    mov eax, [esp+4*21] ;EFLAGS
+    push eax
+
+    mov eax, [esp+4*20]
+    push eax
+    pushad
+    call imprimir_registros
     mov eax, %1
     push eax
     call rutina_de_interrupciones
     add esp, 4
+    call killcurrent_task
     popad
     iret
 %endmacro
@@ -90,6 +170,17 @@ _isr32:
 _isr33:
     pushad
     in al, 0x60 ; Captura una tecla
+    cmp al, 0x15 ; verifico si toque la y
+    jne .seguir
+    
+    ;activo modo debug
+    call set_modo_debug
+    call check_screen_debug
+    cmp eax, 1
+    jne .seguir
+    ;Imprimir registros
+    call imprimir_registros
+    .seguir:
     push eax
     call printScanCode ;Rutina para Imprimir el ScanCode
     add esp,4
@@ -205,22 +296,63 @@ printScanCode:
     .fin:
     popad
     ret
+
+
+;; Rutina de salto a la tarea idle
+;;-----------------------------------------------------------------------------;;
+jump_toIdle:
+    jmp 0X0080:0
+
+ 
+
+
+
+
 ;; -------------------------------------------------------------------------- ;;
 ;; Rutinas de atención de las SYSCALLS
+%define TSS_IDLE        16
+
 _isr88:
     mov eax, 0x58
+    mov bx, (TSS_IDLE << 3)
+    str cx
+    cmp bx, cx
+    jz .fin
+    call jump_toIdle
+    
+    .fin:
     iret
 
 _isr89:
     mov eax, 0x59
+    mov bx, (TSS_IDLE << 3)
+    str cx
+    cmp bx, cx
+    jz .fin
+    call jump_toIdle
+    
+    .fin:
     iret
 
 _isr100:
     mov eax, 0x64
+    mov bx, (TSS_IDLE << 3)
+    str cx
+    cmp bx, cx
+    jz .fin
+    call jump_toIdle
+    
+    .fin:
     iret
 
 _isr123:
     mov eax, 0x7B
+    mov bx, (TSS_IDLE << 3)
+    str cx
+    cmp bx, cx
+    call jump_toIdle
+    
+    .fin:
     iret
 
 ;; -------------------------------------------------------------------------- ;;

@@ -146,6 +146,7 @@ BITS 32
     ;;---Prueba idt
     ; mov eax,0
     ; div eax
+    
     ; Configurar controlador de interrupciones
     call pic_reset
     call pic_enable
