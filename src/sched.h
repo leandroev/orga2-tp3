@@ -34,21 +34,30 @@ void set_modo_debug();
 uint32_t check_screen_debug();
 uint32_t check_act_debug();
 void iniciar_pantalla();
+uint32_t int88(paddr_t code_phy,uint32_t pos_x, uint32_t pos_y);
+int next_tss(tss_mrms* tss_str);
+paddr_t next_esp0(paddr_t* esp0_str);
+bool right_postition(uint32_t pos_x, uint32_t pos_y);
 
 typedef struct str_sched {
 	uint8_t is_alive;
 	uint16_t tss_selector;
+	uint8_t id;
+	int pos_x;
+	int pos_y;
 }__attribute__((__packed__, aligned (8))) sched;
 
-extern sched sched_task[3];
-extern void jump_toIdle();
 
 typedef struct semillas {
 	uint32_t position_x;
 	uint32_t position_y;
+	uint8_t assimilated;
 }megaSeeds;
 
+extern void jump_toIdle();
+extern sched sched_task[3];
 megaSeeds seedsOnMap[TOTAL_SEEDS];
+paddr_t pilas_0[20];
 
 
 #endif //  __SCHED_H__

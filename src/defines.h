@@ -28,6 +28,9 @@
 // X Columnas
 #define SIZE_M 80
 
+#define TRUE  1
+#define FALSE 0
+
 /* Indices en la gdt */
 /* -------------------------------------------------------------------------- */
 #define GDT_IDX_NULL_DESC 0

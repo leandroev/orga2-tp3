@@ -27,6 +27,9 @@ extern check_act_debug
 ;--int 100 look
 extern int100_look
 
+;--int 88
+extern int88
+
 ;;GLOBAL
 global _isr32
 global _isr33
@@ -317,14 +320,13 @@ jump_toIdle:
 %define TSS_IDLE        16
 
 _isr88:
-    mov eax, 0x58
-    mov bx, (TSS_IDLE << 3)
-    str cx
-    cmp bx, cx
-    jz .fin
-    ;call jump_toIdle
-    
-    .fin:
+    pushad
+    push ecx
+    push ebx
+    push eax
+    call int88
+    add esp, 12
+    popad
     iret
 
 _isr89:
@@ -333,22 +335,30 @@ _isr89:
     str cx
     cmp bx, cx
     jz .fin
-    ;call jump_toIdle
+    call jump_toIdle
     
     .fin:
     iret
 
 _isr100: ; y = esp - 1, x = esp
-    pushad
-    mov eax, x 
-    push eax
-    mov ebx, y
-    push ebx
-    call int100_look
-    add esp, 8
-    popad
-    mov eax, [x]
-    mov ebx, [y]
+    xchg bx, bx
+    mov eax, 0x64
+    mov bx, (TSS_IDLE << 3)
+    str cx
+    cmp bx, cx
+    jz .fin
+    call jump_toIdle
+    ; pushad
+    ; mov eax, x 
+    ; push eax
+    ; mov ebx, y
+    ; push ebx
+    ; call int100_look
+    ; add esp, 8
+    ; popad
+    ; mov eax, [x]
+    ; mov ebx, [y]
+    .fin:
     iret
 
 _isr123:
@@ -356,7 +366,7 @@ _isr123:
     mov bx, (TSS_IDLE << 3)
     str cx
     cmp bx, cx
-    ;call jump_toIdle
+    call jump_toIdle
     
     .fin:
     iret

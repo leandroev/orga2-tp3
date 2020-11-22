@@ -8,7 +8,7 @@ void task(void) {
   
   int8_t* x = (int8_t*) 0x200000;  
   int8_t* y = (int8_t*) 0x200004;
-  breakpoint();
+  // breakpoint();
   syscall_look(x, y);
 
   while (1) {

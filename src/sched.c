@@ -14,7 +14,8 @@
 uint32_t screen_debug;
 uint32_t act_debug;
 uint32_t current_task;
-
+uint32_t score_rick;
+uint32_t score_morty;
 sched sched_task[3];
 
 void sched_init(void) {
@@ -23,13 +24,19 @@ void sched_init(void) {
 	act_debug = 0;
 	current_task = 0;
 	for (uint8_t i = 0; i < 3 ; ++i)
-	{
-		sched_task[i].is_alive = 1;
+	{	
+		sched_task[i].pos_x = -1;
+		sched_task[i].pos_y = -1;
+		sched_task[i].id = i;
+		sched_task[i].is_alive = TRUE;
 		sched_task[i].tss_selector = ((i+16)<<3); //a partir de la 16 se encuentras los tss de cada tarea	
 	}
 
 	for (uint8_t i = 3; i < 23 ; ++i)
 	{
+		sched_task[i].pos_x = -1;
+		sched_task[i].pos_y = -1;
+		sched_task[i].id = i;
 		sched_task[i].is_alive = 0;
 		sched_task[i].tss_selector = ((i+16)<<3); //a partir de la 17 se encuentras los tss de cada tarea	
 	}
@@ -75,14 +82,74 @@ int next_tss(tss_mrms* tss_str) {
 	return -1;
 }
 
+paddr_t next_esp0(paddr_t* esp0_str) {
+	for (int i = 0; i < 20; ++i)
+	{
+		if (esp0_str[i] != 0)
+		{
+			return esp0_str[i];
+		}
+	}
+	return 0;
+}
+
+bool right_postition(uint32_t pos_x, uint32_t pos_y){
+	if(pos_x < 40  && pos_y < 80 ){
+		return TRUE;
+	}
+	return FALSE;
+}
+
+
 uint32_t int88(paddr_t code_phy,uint32_t pos_x, uint32_t pos_y){
 	if (current_task == RICK || current_task == MORTY){
+		/*verificar si es una posicion valida*/
+		if (!right_postition(pos_x, pos_y))
+		{
+			killcurrent_task();
+			return 0;
+		}
+		
 		/*if en posx,posy hay una semilla*/
 		for (uint32_t i = 0; i < TOTAL_SEEDS; i++) {
 			if(seedsOnMap[i].position_x == pos_x && seedsOnMap[i].position_y == pos_y){
-				//hacer algo
-				/*verificar si es una posicion valida*/
-
+				int index;
+				if (current_task == RICK){
+					//verf slot
+					index = next_tss(tss_Rickmrms);
+					if (index == -1)
+					{
+						jump_toIdle();
+						return 0;
+					}else{
+						//semilla asimilada
+						seedsOnMap[i].assimilated = TRUE;
+						/*actualizar puntaje*/
+						score_rick = score_rick + 425;
+						/*Actualizar pantalla*/
+						jump_toIdle();
+						return 0;
+	
+					}
+				}else{//morty
+					//verf slot
+					index = next_tss(tss_Mortymrms);
+					if (index == -1)
+					{
+						jump_toIdle();
+						return 0;
+					}else{
+						//semilla asimilada
+						seedsOnMap[i].assimilated = TRUE;
+						/*actualizar puntaje*/
+						score_morty = score_morty + 425;
+						/*Actualizar pantalla*/
+						jump_toIdle();
+						return 0;
+	
+					}
+				}
+				
 			}
 		}
 		
@@ -92,31 +159,38 @@ uint32_t int88(paddr_t code_phy,uint32_t pos_x, uint32_t pos_y){
 			int index = next_tss(tss_Rickmrms);
 			if (index == -1)
 			{
+				jump_toIdle();
 				return 0;
 			}else{
-				tss_Rickmrms[index].in_use = 1;
+
+				tss_Rickmrms[index].in_use = TRUE;
 				vaddr_t virt_task = 0x08000000+index*PAGE_SIZE;
 				paddr_t map_phy = INICIO_DE_PAGINAS_LIBRES_TAREAS + (2*PAGE_SIZE*pos_x) +(2*PAGE_SIZE*80*pos_y);
-				task_init(&tss_Rickmrms[index].task_seg,map_phy,virt_task,code_phy,2);
-				sched_task[index + 3].is_alive = 1;
+				task_init(&tss_Rickmrms[index].task_seg,map_phy,virt_task,code_phy,2,next_esp0(pilas_0));
+				sched_task[index + 3].is_alive = TRUE;
+				sched_task[index + 3].pos_x = pos_x;
+				sched_task[index + 3].pos_y = pos_y;
+				//reseteo pantalla? verficar
+				jump_toIdle();
 				return virt_task;
-
 			}
 
-		}else{
+		}else{//morty
 			//verifico si hay slots disponibles
 			int index = next_tss(tss_Mortymrms);
 			if (index == -1)
 			{
 				return 0;
 			}else{
-				tss_Mortymrms[index].in_use = 1;
+				tss_Mortymrms[index].in_use = TRUE;
 				vaddr_t virt_task = 0x0800A000 + index*PAGE_SIZE;
 				paddr_t map_phy = INICIO_DE_PAGINAS_LIBRES_TAREAS + (2*PAGE_SIZE*pos_x) +(2*PAGE_SIZE*80*pos_y);
-				task_init(&tss_Mortymrms[index].task_seg,map_phy,virt_task,code_phy,2);
-				sched_task[index + 13].is_alive = 1;
+				task_init(&tss_Mortymrms[index].task_seg,map_phy,virt_task,code_phy,2,next_esp0(pilas_0));
+				sched_task[index + 13].is_alive = TRUE;
+				sched_task[index + 13].pos_x = pos_x;
+				sched_task[index + 13].pos_y = pos_y;
+				jump_toIdle();
 				return virt_task;
-
 			}
 			
 		}
@@ -137,14 +211,12 @@ void iniciar_pantalla(){
 	screen_draw_box(41, 0, 10, CANT_COLUMNAS, 1, 0x33);				//Inicio panel CANT_COLUMNASx09
 
 	//screen_draw_box(42, 26, 7, 26, 1, 0x66); 
-	for (int i = 0; i < 10; ++i)
-	{
-		if (i<3)
-		{
+	for (int i = 0; i < 10; ++i){
+		
+		if (i<3){
 			print("O",30+2*i,44,0x0F);
 		}
-		else
-		{
+		else{
 			print("-",30+2*i,44,0x0F);
 			print("-",30+2*i,46,0x0F);
 		}
@@ -176,6 +248,7 @@ void spread_megaSeeds(){
 		tmp.position_x = rand() % CANT_COLUMNAS;
 		tmp.position_y = rand() % CANT_FILAS;
 		seedsOnMap[i] = tmp;
+		seedsOnMap[i].assimilated = FALSE;
 
 		print("$", tmp.position_x, tmp.position_y, C_FG_WHITE | C_BG_BROWN);
 	}
