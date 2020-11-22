@@ -12,6 +12,7 @@
 #include "types.h"
 #include "i386.h"
 #include "defines.h"
+#include "tss.h"
 
 //Functions
 int abs(int number) ;

@@ -41,7 +41,29 @@
 #define TSS_RICK          17
 #define TSS_MORTY         18
 
-#define GDT_COUNT         35
+#define TSS_RICK_MrMs0    19
+#define TSS_RICK_MrMs1    20
+#define TSS_RICK_MrMs2    21
+#define TSS_RICK_MrMs3    22
+#define TSS_RICK_MrMs4    23
+#define TSS_RICK_MrMs5    24
+#define TSS_RICK_MrMs6    25
+#define TSS_RICK_MrMs7    26
+#define TSS_RICK_MrMs8    27
+#define TSS_RICK_MrMs9    28
+
+#define TSS_MORTY_MrMs0   29
+#define TSS_MORTY_MrMs1   30
+#define TSS_MORTY_MrMs2   31
+#define TSS_MORTY_MrMs3   32
+#define TSS_MORTY_MrMs4   33
+#define TSS_MORTY_MrMs5   34
+#define TSS_MORTY_MrMs6   35
+#define TSS_MORTY_MrMs7   36
+#define TSS_MORTY_MrMs8   37
+#define TSS_MORTY_MrMs9   38
+
+#define GDT_COUNT         39
 
 
 /* Offsets en la gdt */
@@ -85,18 +107,33 @@
 #define IDLE    0
 #define RICK    1
 #define MORTY   2
-#define RICK_MrMs1  3
-#define RICK_MrMs2  4
-#define RICK_MrMs3  5
-#define MORTY_MrMs1 6
-#define NORTY_MrMs2 7
-#define NORTY_MrMs3 8
+#define RICK_MrMs0   3
+#define RICK_MrMs1   4
+#define RICK_MrMs2   5
+#define RICK_MrMs3   6
+#define RICK_MrMs4   7
+#define RICK_MrMs5   8
+#define RICK_MrMs6   9
+#define RICK_MrMs7   10
+#define RICK_MrMs8   11
+#define RICK_MrMs9   12
+#define MORTY_MrMs0  13
+#define NORTY_MrMs1  14
+#define NORTY_MrMs2  15
+#define NORTY_MrMs3  16
+#define NORTY_MrMs4  17
+#define NORTY_MrMs5  18
+#define NORTY_MrMs6  19
+#define NORTY_MrMs7  20
+#define NORTY_MrMs8  21
+#define NORTY_MrMs9  22
 
 #define TOTAL_SEEDS 30
 
 #define CANT_COLUMNAS 80
 #define CANT_FILAS    40
 /**/
+
 
 
 

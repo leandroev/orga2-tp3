@@ -13,9 +13,9 @@
 
 uint32_t screen_debug;
 uint32_t act_debug;
+uint32_t current_task;
 
 sched sched_task[3];
-uint32_t current_task;
 
 void sched_init(void) {
 	//Inicializamos el scheduler
@@ -25,9 +25,14 @@ void sched_init(void) {
 	for (uint8_t i = 0; i < 3 ; ++i)
 	{
 		sched_task[i].is_alive = 1;
-		sched_task[i].tss_selector = ((i+16)<<3); //a partir de la 17 se encuentras los tss de cada tarea	
+		sched_task[i].tss_selector = ((i+16)<<3); //a partir de la 16 se encuentras los tss de cada tarea	
 	}
 
+	for (uint8_t i = 3; i < 23 ; ++i)
+	{
+		sched_task[i].is_alive = 0;
+		sched_task[i].tss_selector = ((i+16)<<3); //a partir de la 17 se encuentras los tss de cada tarea	
+	}
 	iniciar_pantalla();
 
 	spread_megaSeeds();
@@ -57,6 +62,72 @@ void killcurrent_task(){
 	//jump_toIdle();
 
 }
+
+
+int next_tss(tss_mrms* tss_str) {
+	for (int i = 0; i < 10; ++i)
+	{
+		if (tss_str[i].in_use != 1)
+		{
+			return i;
+		}
+	}
+	return -1;
+}
+
+uint32_t int88(paddr_t code_phy,uint32_t pos_x, uint32_t pos_y){
+	if (current_task == RICK || current_task == MORTY){
+		
+		/*if en posx,posy hay una semilla*/
+		/*verificar si es una posicion valida*/
+		
+		if (current_task == RICK)
+		{	
+			//verifico si hay slots disponibles
+			int index = next_tss(tss_Rickmrms);
+			if (index == -1)
+			{
+				return 0;
+			}else{
+				tss_Rickmrms[index].in_use = 1;
+				vaddr_t virt_task = 0x08000000+index*PAGE_SIZE;
+				paddr_t map_phy = INICIO_DE_PAGINAS_LIBRES_TAREAS + (2*PAGE_SIZE*pos_x) +(2*PAGE_SIZE*80*pos_y);
+				task_init(&tss_Rickmrms[index].task_seg,map_phy,virt_task,code_phy,2);
+				sched_task[index + 3].is_alive = 1;
+				return virt_task;
+
+			}
+
+		}else{
+			//verifico si hay slots disponibles
+			int index = next_tss(tss_Mortymrms);
+			if (index == -1)
+			{
+				return 0;
+			}else{
+				tss_Mortymrms[index].in_use = 1;
+				vaddr_t virt_task = 0x0800A000 + index*PAGE_SIZE;
+				paddr_t map_phy = INICIO_DE_PAGINAS_LIBRES_TAREAS + (2*PAGE_SIZE*pos_x) +(2*PAGE_SIZE*80*pos_y);
+				task_init(&tss_Mortymrms[index].task_seg,map_phy,virt_task,code_phy,2);
+				sched_task[index + 13].is_alive = 1;
+				return virt_task;
+
+			}
+			
+		}
+	
+	}else{
+
+		killcurrent_task();
+		return 0;
+	}
+
+
+
+}
+
+
+
 
 void iniciar_pantalla(){
 

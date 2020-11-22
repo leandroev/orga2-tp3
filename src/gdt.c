@@ -169,7 +169,328 @@ gdt_entry_t gdt[GDT_COUNT] = {
               .db = 0x0,              /* db           */
               .g = 0x00,              /* g            */
               .base_31_24 = 0x00,     /* base[31:24]  */
+       },
+    [TSS_RICK_MrMs0] = //19
+        {
+              .limit_15_0 = 0X0067,   /* limit[0:15]  */
+              .base_15_0 = 0x0000,    /* base[0:15]   */   
+              .base_23_16 = 0X00,     /* base[23:16]  */   
+              .type = 0x9,            /* type         */
+              .s = 0x00,              /* s            */
+              .dpl = 0x00,            /* dpl          */
+              .p = 0x01,              /* p            */
+              .limit_19_16 = 0x00,    /* limit[16:19] */
+              .avl = 0x0,             /* avl          */
+              .l = 0x0,               /* l            */
+              .db = 0x0,              /* db           */
+              .g = 0x00,              /* g            */
+              .base_31_24 = 0x00,     /* base[31:24]  */
+       },
+    [TSS_RICK_MrMs1] = //20
+        {
+              .limit_15_0 = 0X0067,   /* limit[0:15]  */
+              .base_15_0 = 0x0000,    /* base[0:15]   */   
+              .base_23_16 = 0X00,     /* base[23:16]  */   
+              .type = 0x9,            /* type         */
+              .s = 0x00,              /* s            */
+              .dpl = 0x00,            /* dpl          */
+              .p = 0x01,              /* p            */
+              .limit_19_16 = 0x00,    /* limit[16:19] */
+              .avl = 0x0,             /* avl          */
+              .l = 0x0,               /* l            */
+              .db = 0x0,              /* db           */
+              .g = 0x00,              /* g            */
+              .base_31_24 = 0x00,     /* base[31:24]  */
+       },
+    [TSS_RICK_MrMs2] = //21
+        {
+              .limit_15_0 = 0X0067,   /* limit[0:15]  */
+              .base_15_0 = 0x0000,    /* base[0:15]   */   
+              .base_23_16 = 0X00,     /* base[23:16]  */   
+              .type = 0x9,            /* type         */
+              .s = 0x00,              /* s            */
+              .dpl = 0x00,            /* dpl          */
+              .p = 0x01,              /* p            */
+              .limit_19_16 = 0x00,    /* limit[16:19] */
+              .avl = 0x0,             /* avl          */
+              .l = 0x0,               /* l            */
+              .db = 0x0,              /* db           */
+              .g = 0x00,              /* g            */
+              .base_31_24 = 0x00,     /* base[31:24]  */
+       },
+    [TSS_RICK_MrMs3] = //22
+        {
+              .limit_15_0 = 0X0067,   /* limit[0:15]  */
+              .base_15_0 = 0x0000,    /* base[0:15]   */   
+              .base_23_16 = 0X00,     /* base[23:16]  */   
+              .type = 0x9,            /* type         */
+              .s = 0x00,              /* s            */
+              .dpl = 0x00,            /* dpl          */
+              .p = 0x01,              /* p            */
+              .limit_19_16 = 0x00,    /* limit[16:19] */
+              .avl = 0x0,             /* avl          */
+              .l = 0x0,               /* l            */
+              .db = 0x0,              /* db           */
+              .g = 0x00,              /* g            */
+              .base_31_24 = 0x00,     /* base[31:24]  */
+       },
+    [TSS_RICK_MrMs4] = //23
+        {
+              .limit_15_0 = 0X0067,   /* limit[0:15]  */
+              .base_15_0 = 0x0000,    /* base[0:15]   */   
+              .base_23_16 = 0X00,     /* base[23:16]  */   
+              .type = 0x9,            /* type         */
+              .s = 0x00,              /* s            */
+              .dpl = 0x00,            /* dpl          */
+              .p = 0x01,              /* p            */
+              .limit_19_16 = 0x00,    /* limit[16:19] */
+              .avl = 0x0,             /* avl          */
+              .l = 0x0,               /* l            */
+              .db = 0x0,              /* db           */
+              .g = 0x00,              /* g            */
+              .base_31_24 = 0x00,     /* base[31:24]  */
+       },
+    [TSS_RICK_MrMs5] = //24
+        {
+              .limit_15_0 = 0X0067,   /* limit[0:15]  */
+              .base_15_0 = 0x0000,    /* base[0:15]   */   
+              .base_23_16 = 0X00,     /* base[23:16]  */   
+              .type = 0x9,            /* type         */
+              .s = 0x00,              /* s            */
+              .dpl = 0x00,            /* dpl          */
+              .p = 0x01,              /* p            */
+              .limit_19_16 = 0x00,    /* limit[16:19] */
+              .avl = 0x0,             /* avl          */
+              .l = 0x0,               /* l            */
+              .db = 0x0,              /* db           */
+              .g = 0x00,              /* g            */
+              .base_31_24 = 0x00,     /* base[31:24]  */
+       },
+    [TSS_RICK_MrMs6] = //25
+        {
+              .limit_15_0 = 0X0067,   /* limit[0:15]  */
+              .base_15_0 = 0x0000,    /* base[0:15]   */   
+              .base_23_16 = 0X00,     /* base[23:16]  */   
+              .type = 0x9,            /* type         */
+              .s = 0x00,              /* s            */
+              .dpl = 0x00,            /* dpl          */
+              .p = 0x01,              /* p            */
+              .limit_19_16 = 0x00,    /* limit[16:19] */
+              .avl = 0x0,             /* avl          */
+              .l = 0x0,               /* l            */
+              .db = 0x0,              /* db           */
+              .g = 0x00,              /* g            */
+              .base_31_24 = 0x00,     /* base[31:24]  */
+       },
+    [TSS_RICK_MrMs7] = //26
+        {
+              .limit_15_0 = 0X0067,   /* limit[0:15]  */
+              .base_15_0 = 0x0000,    /* base[0:15]   */   
+              .base_23_16 = 0X00,     /* base[23:16]  */   
+              .type = 0x9,            /* type         */
+              .s = 0x00,              /* s            */
+              .dpl = 0x00,            /* dpl          */
+              .p = 0x01,              /* p            */
+              .limit_19_16 = 0x00,    /* limit[16:19] */
+              .avl = 0x0,             /* avl          */
+              .l = 0x0,               /* l            */
+              .db = 0x0,              /* db           */
+              .g = 0x00,              /* g            */
+              .base_31_24 = 0x00,     /* base[31:24]  */
+       },
+    [TSS_RICK_MrMs8] = //27
+        {
+              .limit_15_0 = 0X0067,   /* limit[0:15]  */
+              .base_15_0 = 0x0000,    /* base[0:15]   */   
+              .base_23_16 = 0X00,     /* base[23:16]  */   
+              .type = 0x9,            /* type         */
+              .s = 0x00,              /* s            */
+              .dpl = 0x00,            /* dpl          */
+              .p = 0x01,              /* p            */
+              .limit_19_16 = 0x00,    /* limit[16:19] */
+              .avl = 0x0,             /* avl          */
+              .l = 0x0,               /* l            */
+              .db = 0x0,              /* db           */
+              .g = 0x00,              /* g            */
+              .base_31_24 = 0x00,     /* base[31:24]  */
+       },
+    [TSS_RICK_MrMs9] = //28
+        {
+              .limit_15_0 = 0X0067,   /* limit[0:15]  */
+              .base_15_0 = 0x0000,    /* base[0:15]   */   
+              .base_23_16 = 0X00,     /* base[23:16]  */   
+              .type = 0x9,            /* type         */
+              .s = 0x00,              /* s            */
+              .dpl = 0x00,            /* dpl          */
+              .p = 0x01,              /* p            */
+              .limit_19_16 = 0x00,    /* limit[16:19] */
+              .avl = 0x0,             /* avl          */
+              .l = 0x0,               /* l            */
+              .db = 0x0,              /* db           */
+              .g = 0x00,              /* g            */
+              .base_31_24 = 0x00,     /* base[31:24]  */
+       },
+    [TSS_MORTY_MrMs0] = //29
+        {
+              .limit_15_0 = 0X0067,   /* limit[0:15]  */
+              .base_15_0 = 0x0000,    /* base[0:15]   */   
+              .base_23_16 = 0X00,     /* base[23:16]  */   
+              .type = 0x9,            /* type         */
+              .s = 0x00,              /* s            */
+              .dpl = 0x00,            /* dpl          */
+              .p = 0x01,              /* p            */
+              .limit_19_16 = 0x00,    /* limit[16:19] */
+              .avl = 0x0,             /* avl          */
+              .l = 0x0,               /* l            */
+              .db = 0x0,              /* db           */
+              .g = 0x00,              /* g            */
+              .base_31_24 = 0x00,     /* base[31:24]  */
+       },
+    [TSS_MORTY_MrMs1] = //30
+        {
+              .limit_15_0 = 0X0067,   /* limit[0:15]  */
+              .base_15_0 = 0x0000,    /* base[0:15]   */   
+              .base_23_16 = 0X00,     /* base[23:16]  */   
+              .type = 0x9,            /* type         */
+              .s = 0x00,              /* s            */
+              .dpl = 0x00,            /* dpl          */
+              .p = 0x01,              /* p            */
+              .limit_19_16 = 0x00,    /* limit[16:19] */
+              .avl = 0x0,             /* avl          */
+              .l = 0x0,               /* l            */
+              .db = 0x0,              /* db           */
+              .g = 0x00,              /* g            */
+              .base_31_24 = 0x00,     /* base[31:24]  */
+       },
+    [TSS_MORTY_MrMs2] = //31
+        {
+              .limit_15_0 = 0X0067,   /* limit[0:15]  */
+              .base_15_0 = 0x0000,    /* base[0:15]   */   
+              .base_23_16 = 0X00,     /* base[23:16]  */   
+              .type = 0x9,            /* type         */
+              .s = 0x00,              /* s            */
+              .dpl = 0x00,            /* dpl          */
+              .p = 0x01,              /* p            */
+              .limit_19_16 = 0x00,    /* limit[16:19] */
+              .avl = 0x0,             /* avl          */
+              .l = 0x0,               /* l            */
+              .db = 0x0,              /* db           */
+              .g = 0x00,              /* g            */
+              .base_31_24 = 0x00,     /* base[31:24]  */
+       },
+    [TSS_MORTY_MrMs3] = //32
+        {
+              .limit_15_0 = 0X0067,   /* limit[0:15]  */
+              .base_15_0 = 0x0000,    /* base[0:15]   */   
+              .base_23_16 = 0X00,     /* base[23:16]  */   
+              .type = 0x9,            /* type         */
+              .s = 0x00,              /* s            */
+              .dpl = 0x00,            /* dpl          */
+              .p = 0x01,              /* p            */
+              .limit_19_16 = 0x00,    /* limit[16:19] */
+              .avl = 0x0,             /* avl          */
+              .l = 0x0,               /* l            */
+              .db = 0x0,              /* db           */
+              .g = 0x00,              /* g            */
+              .base_31_24 = 0x00,     /* base[31:24]  */
+       },
+    [TSS_MORTY_MrMs4] = //33
+        {
+              .limit_15_0 = 0X0067,   /* limit[0:15]  */
+              .base_15_0 = 0x0000,    /* base[0:15]   */   
+              .base_23_16 = 0X00,     /* base[23:16]  */   
+              .type = 0x9,            /* type         */
+              .s = 0x00,              /* s            */
+              .dpl = 0x00,            /* dpl          */
+              .p = 0x01,              /* p            */
+              .limit_19_16 = 0x00,    /* limit[16:19] */
+              .avl = 0x0,             /* avl          */
+              .l = 0x0,               /* l            */
+              .db = 0x0,              /* db           */
+              .g = 0x00,              /* g            */
+              .base_31_24 = 0x00,     /* base[31:24]  */
+       },
+    [TSS_MORTY_MrMs5] = //34
+        {
+              .limit_15_0 = 0X0067,   /* limit[0:15]  */
+              .base_15_0 = 0x0000,    /* base[0:15]   */   
+              .base_23_16 = 0X00,     /* base[23:16]  */   
+              .type = 0x9,            /* type         */
+              .s = 0x00,              /* s            */
+              .dpl = 0x00,            /* dpl          */
+              .p = 0x01,              /* p            */
+              .limit_19_16 = 0x00,    /* limit[16:19] */
+              .avl = 0x0,             /* avl          */
+              .l = 0x0,               /* l            */
+              .db = 0x0,              /* db           */
+              .g = 0x00,              /* g            */
+              .base_31_24 = 0x00,     /* base[31:24]  */
+       },
+    [TSS_MORTY_MrMs6] = //35
+        {
+              .limit_15_0 = 0X0067,   /* limit[0:15]  */
+              .base_15_0 = 0x0000,    /* base[0:15]   */   
+              .base_23_16 = 0X00,     /* base[23:16]  */   
+              .type = 0x9,            /* type         */
+              .s = 0x00,              /* s            */
+              .dpl = 0x00,            /* dpl          */
+              .p = 0x01,              /* p            */
+              .limit_19_16 = 0x00,    /* limit[16:19] */
+              .avl = 0x0,             /* avl          */
+              .l = 0x0,               /* l            */
+              .db = 0x0,              /* db           */
+              .g = 0x00,              /* g            */
+              .base_31_24 = 0x00,     /* base[31:24]  */
+       },
+    [TSS_MORTY_MrMs7] = //36
+        {
+              .limit_15_0 = 0X0067,   /* limit[0:15]  */
+              .base_15_0 = 0x0000,    /* base[0:15]   */   
+              .base_23_16 = 0X00,     /* base[23:16]  */   
+              .type = 0x9,            /* type         */
+              .s = 0x00,              /* s            */
+              .dpl = 0x00,            /* dpl          */
+              .p = 0x01,              /* p            */
+              .limit_19_16 = 0x00,    /* limit[16:19] */
+              .avl = 0x0,             /* avl          */
+              .l = 0x0,               /* l            */
+              .db = 0x0,              /* db           */
+              .g = 0x00,              /* g            */
+              .base_31_24 = 0x00,     /* base[31:24]  */
+       },
+    [TSS_MORTY_MrMs8] = //37
+        {
+              .limit_15_0 = 0X0067,   /* limit[0:15]  */
+              .base_15_0 = 0x0000,    /* base[0:15]   */   
+              .base_23_16 = 0X00,     /* base[23:16]  */   
+              .type = 0x9,            /* type         */
+              .s = 0x00,              /* s            */
+              .dpl = 0x00,            /* dpl          */
+              .p = 0x01,              /* p            */
+              .limit_19_16 = 0x00,    /* limit[16:19] */
+              .avl = 0x0,             /* avl          */
+              .l = 0x0,               /* l            */
+              .db = 0x0,              /* db           */
+              .g = 0x00,              /* g            */
+              .base_31_24 = 0x00,     /* base[31:24]  */
+       },
+    [TSS_MORTY_MrMs9] = //38
+        {
+              .limit_15_0 = 0X0067,   /* limit[0:15]  */
+              .base_15_0 = 0x0000,    /* base[0:15]   */   
+              .base_23_16 = 0X00,     /* base[23:16]  */   
+              .type = 0x9,            /* type         */
+              .s = 0x00,              /* s            */
+              .dpl = 0x00,            /* dpl          */
+              .p = 0x01,              /* p            */
+              .limit_19_16 = 0x00,    /* limit[16:19] */
+              .avl = 0x0,             /* avl          */
+              .l = 0x0,               /* l            */
+              .db = 0x0,              /* db           */
+              .g = 0x00,              /* g            */
+              .base_31_24 = 0x00,     /* base[31:24]  */
        }
+
     
 };
 
