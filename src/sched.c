@@ -126,9 +126,6 @@ uint32_t int88(paddr_t code_phy,uint32_t pos_x, uint32_t pos_y){
 
 }
 
-
-
-
 void iniciar_pantalla(){
 
 	screen_draw_box(0, 0, CANT_FILAS, CANT_COLUMNAS, 1, 0x55); 	//Imicio pantalla CANT_COLUMNASxCANT_FILAS
@@ -180,15 +177,22 @@ void spread_megaSeeds(){
 
 }
 
-int abs(int number) {
-	if(number < 0)
-		return -number;
-	else
-		return number;
-	
+uint32_t int123_move(int position_x, int position_y) {
+	position_x = 0;
+	position_y = 0;
+	return position_x + position_y;
 }
 
 void int100_look(uint32_t position_x, uint32_t position_y) {
+
+	/*
+	if(current_task == RICK || current_task == MORTY){
+		position_x = -1;
+		position_y = -1;
+	} else {
+		
+	}
+	*/
 
 	uint32_t tmp_x = abs(position_x - seedsOnMap[0].position_x);
 	uint32_t tmp_y = abs(position_y - seedsOnMap[0].position_y);
@@ -282,10 +286,6 @@ void imprimir_registros(uint32_t eip, uint32_t eflags,uint16_t ss,uint16_t gs,ui
 
 }
 
-
-
-
-
 void set_modo_debug()
 {
 	if (screen_debug == 1){
@@ -315,4 +315,20 @@ void imprimir_libretas(){
 
 void cambiar_fondo(){
 	print(" ",0, 0, C_BG_RED | C_FG_WHITE);
+}
+
+int abs(int number) {
+	if(number < 0)
+		return -number;
+	else
+		return number;
+	
+}
+
+int modulo(int numero,int base){
+	if(numero > 0){
+		return numero % base;
+	}else{
+		return (numero + base) % base;
+	}
 }

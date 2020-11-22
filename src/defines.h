@@ -128,7 +128,7 @@
 #define NORTY_MrMs8  21
 #define NORTY_MrMs9  22
 
-#define TOTAL_SEEDS 30
+#define TOTAL_SEEDS 40
 
 #define CANT_COLUMNAS 80
 #define CANT_FILAS    40
