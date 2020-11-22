@@ -24,8 +24,10 @@ extern set_modo_debug
 extern check_screen_debug
 
 extern check_act_debug
+;--int 100 look
+extern int100_look
 
-    ;;GLOBAL
+;;GLOBAL
 global _isr32
 global _isr33
 global _isr88
@@ -35,10 +37,12 @@ global _isr123
 global jump_toIdle
 BITS 32
 ;; Seccion de datos
-sched_task_offset:     dd 0xFFFFFFFF
-sched_task_selector:   dw 0xFFFF
+sched_task_offset:      dd 0xFFFFFFFF
+sched_task_selector:    dw 0xFFFF
 
-
+;; memory
+x:             dd 0x0
+y:             dd 0x0 
 
 ;;Seccion de codigo
 
@@ -318,7 +322,7 @@ _isr88:
     str cx
     cmp bx, cx
     jz .fin
-    call jump_toIdle
+    ;call jump_toIdle
     
     .fin:
     iret
@@ -329,20 +333,22 @@ _isr89:
     str cx
     cmp bx, cx
     jz .fin
-    call jump_toIdle
+    ;call jump_toIdle
     
     .fin:
     iret
 
-_isr100:
-    mov eax, 0x64
-    mov bx, (TSS_IDLE << 3)
-    str cx
-    cmp bx, cx
-    jz .fin
-    call jump_toIdle
-    
-    .fin:
+_isr100: ; y = esp - 1, x = esp
+    pushad
+    mov eax, x 
+    push eax
+    mov ebx, y
+    push ebx
+    call int100_look
+    add esp, 8
+    popad
+    mov eax, [x]
+    mov ebx, [y]
     iret
 
 _isr123:
@@ -350,7 +356,7 @@ _isr123:
     mov bx, (TSS_IDLE << 3)
     str cx
     cmp bx, cx
-    call jump_toIdle
+    ;call jump_toIdle
     
     .fin:
     iret

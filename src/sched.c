@@ -37,7 +37,7 @@ void sched_init(void) {
 
 	spread_megaSeeds();
 
-	int100_look(13, 21);
+	//int100_look(13, 21);
 	print("X", 13, 21, C_FG_DARK_GREY | C_BG_BLACK);
 }
 
@@ -77,9 +77,14 @@ int next_tss(tss_mrms* tss_str) {
 
 uint32_t int88(paddr_t code_phy,uint32_t pos_x, uint32_t pos_y){
 	if (current_task == RICK || current_task == MORTY){
-		
 		/*if en posx,posy hay una semilla*/
-		/*verificar si es una posicion valida*/
+		for (uint32_t i = 0; i < TOTAL_SEEDS; i++) {
+			if(seedsOnMap[i].position_x == pos_x && seedsOnMap[i].position_y == pos_y){
+				//hacer algo
+				/*verificar si es una posicion valida*/
+
+			}
+		}
 		
 		if (current_task == RICK)
 		{	
@@ -183,7 +188,7 @@ uint32_t int123_move(int position_x, int position_y) {
 	return position_x + position_y;
 }
 
-void int100_look(uint32_t position_x, uint32_t position_y) {
+void int100_look(uint32_t* position_x, uint32_t* position_y) {
 
 	/*
 	if(current_task == RICK || current_task == MORTY){
@@ -193,17 +198,17 @@ void int100_look(uint32_t position_x, uint32_t position_y) {
 		
 	}
 	*/
-
-	uint32_t tmp_x = abs(position_x - seedsOnMap[0].position_x);
-	uint32_t tmp_y = abs(position_y - seedsOnMap[0].position_y);
+	//falta una estructura que diga la posicion de un mr meeseek
+	uint32_t tmp_x = abs(*position_x - seedsOnMap[0].position_x);
+	uint32_t tmp_y = abs(*position_y - seedsOnMap[0].position_y);
 
 	uint32_t steps = tmp_x + tmp_y;
 	uint32_t mostNearSeed = 0;
 
 
 	for (uint32_t i = 1; i < TOTAL_SEEDS; i++) {
-		tmp_x = abs(position_x - seedsOnMap[i].position_x);
-		tmp_y = abs(position_y - seedsOnMap[i].position_y);
+		tmp_x = abs(*position_x - seedsOnMap[i].position_x);
+		tmp_y = abs(*position_y - seedsOnMap[i].position_y);
 
 		if(steps > (tmp_x + tmp_y)) {
 			steps = tmp_x + tmp_y;
@@ -217,6 +222,8 @@ void int100_look(uint32_t position_x, uint32_t position_y) {
 	print_dec(seedsOnMap[mostNearSeed].position_y, 2, 38, 40, C_FG_WHITE | C_BG_BROWN);
 	print(")",40, 40, C_FG_WHITE | C_BG_BROWN);
 
+	*position_x = seedsOnMap[mostNearSeed].position_x;
+	*position_y = seedsOnMap[mostNearSeed].position_y;
 	print("$",seedsOnMap[mostNearSeed].position_x, seedsOnMap[mostNearSeed].position_y, C_FG_BLACK | C_BG_GREEN);
 }
 
