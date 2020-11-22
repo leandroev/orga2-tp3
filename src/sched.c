@@ -170,7 +170,6 @@ uint32_t int88(paddr_t code_phy,uint32_t pos_x, uint32_t pos_y){
 				return 0;
 			}else{
 
-				breakpoint();
 				tss_Rickmrms[index].in_use = TRUE;
 				vaddr_t virt_task = 0x08000000+index*PAGE_SIZE;
 				paddr_t map_phy = INICIO_DE_PAGINAS_LIBRES_TAREAS + (2*PAGE_SIZE*pos_x) +(2*PAGE_SIZE*80*pos_y);

@@ -61,9 +61,7 @@ _isr%1:
     push edx
     push eax
     push es
-    
-    ;xchg bx, bx
-    
+        
     ;obtenemos SS3
     mov eax, [esp+4*12]
     mov es, ax
@@ -99,7 +97,6 @@ _isr%1:
 
     pushad
     ;colocamos los valores de la tarea en la pila
-    ;xchg bx, bx
     mov eax, [esp+4*16] ;ESP3
     mov [esp+4*3], eax
 
@@ -320,13 +317,6 @@ jump_toIdle:
 %define TSS_IDLE        16
 
 _isr88:
-    ; mov eax, 0x58
-    ; mov bx, (TSS_IDLE << 3)
-    ; str cx
-    ; cmp bx, cx
-    ; jz .fin
-    ; call jump_toIdle
-
     pushad
     push ecx
     push ebx
@@ -334,49 +324,34 @@ _isr88:
     call int88
     add esp, 12
     popad
-    ; .fin:
     iret
 
 _isr89:
-    mov eax, 0x59
     ; mov bx, (TSS_IDLE << 3)
     ; str cx
     ; cmp bx, cx
     ; jz .fin
     ; call jump_toIdle
-    
-    .fin:
     iret
 
 _isr100: ; y = esp - 1, x = esp
-    ; xchg bx, bx
-    mov eax, 0x64
-    ; mov bx, (TSS_IDLE << 3)
-    ; str cx
-    ; cmp bx, cx
-    ; jz .fin
-    ; call jump_toIdle
-    ; pushad
-    ; mov eax, x 
-    ; push eax
-    ; mov ebx, y
-    ; push ebx
-    ; call int100_look
-    ; add esp, 8
-    ; popad
-    ; mov eax, [x]
-    ; mov ebx, [y]
-    .fin:
+    pushad
+    mov eax, x 
+    push eax
+    mov ebx, y
+    push ebx
+    call int100_look
+    add esp, 8
+    popad
+    mov eax, [x]
+    mov ebx, [y]
     iret
 
 _isr123:
-    mov eax, 0x7B
     ; mov bx, (TSS_IDLE << 3)
     ; str cx
     ; cmp bx, cx
     ; call jump_toIdle
-    
-    .fin:
     iret
 
 ;; -------------------------------------------------------------------------- ;;

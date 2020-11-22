@@ -4,12 +4,7 @@
 void meeseks1_func(void);
 
 void task(void) {
-  //syscall_meeseeks((uint32_t)&meeseks1_func, 40, 25);
-  
-  int8_t* x = (int8_t*) 0x200000;  
-  int8_t* y = (int8_t*) 0x200004;
-  // breakpoint();
-  syscall_look(x, y);
+  syscall_meeseeks((uint32_t)&meeseks1_func, 40, 25);
 
   while (1) {
     __asm volatile("nop");
