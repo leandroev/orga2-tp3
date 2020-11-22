@@ -48,9 +48,6 @@ void sched_init(void) {
 	{
 		pilas_0[i] = 0;
 	}
-
-	//int100_look(13, 21);
-	print("X", 13, 21, C_FG_DARK_GREY | C_BG_BLACK);
 }
 
 uint16_t sched_next_task() {
@@ -103,9 +100,6 @@ bool right_postition(uint32_t pos_x, uint32_t pos_y){
 	}
 	return FALSE;
 }
-
-
-
 
 
 uint32_t int88(paddr_t code_phy,uint32_t pos_x, uint32_t pos_y){
@@ -251,7 +245,7 @@ void reset_screen(){
 	{
 		if (seedsOnMap[i].assimilated == FALSE)
 		{
-			print("$", seedsOnMap[i].position_x, seedsOnMap[i].position_y, C_FG_WHITE | C_BG_BROWN);			
+			print("$", seedsOnMap[i].position_x, seedsOnMap[i].position_y, C_FG_WHITE | C_BG_BLACK);			
 		}
 	}
 	//Restauro Mr Meeseeks RICK
@@ -259,7 +253,7 @@ void reset_screen(){
 	{
 		if (sched_task[i].is_alive == TRUE)
 		{
-			print("R", sched_task[i].pos_x, sched_task[i].pos_y, 0x04);
+			print("R", sched_task[i].pos_x, sched_task[i].pos_y, C_FG_WHITE | C_BG_RED);
 		}
 
 	}
@@ -269,7 +263,7 @@ void reset_screen(){
 		
 		if (sched_task[i].is_alive == TRUE)
 		{
-			print("M", sched_task[i].pos_x, sched_task[i].pos_y, 0x01);
+			print("M", sched_task[i].pos_x, sched_task[i].pos_y, C_FG_WHITE | C_BG_BLUE);
 		}
 	}
 
@@ -291,7 +285,7 @@ void spread_megaSeeds(){
 		seedsOnMap[i] = tmp;
 		seedsOnMap[i].assimilated = FALSE;
 
-		print("$", tmp.position_x, tmp.position_y, C_FG_WHITE | C_BG_BROWN);
+		print("$", tmp.position_x, tmp.position_y, C_FG_WHITE | C_BG_BLACK);
 	}
 
 }
@@ -329,16 +323,10 @@ void int100_look(uint32_t* position_x, uint32_t* position_y) {
 			mostNearSeed = i;
 		}
 	}
-	
-	print("(", 34, 40, C_FG_WHITE | C_BG_BROWN);
-	print_dec(seedsOnMap[mostNearSeed].position_x, 2, 35, 40, C_FG_WHITE | C_BG_BROWN);
-	print("-",37, 40, C_FG_WHITE | C_BG_BROWN);
-	print_dec(seedsOnMap[mostNearSeed].position_y, 2, 38, 40, C_FG_WHITE | C_BG_BROWN);
-	print(")",40, 40, C_FG_WHITE | C_BG_BROWN);
 
 	*position_x = seedsOnMap[mostNearSeed].position_x;
 	*position_y = seedsOnMap[mostNearSeed].position_y;
-	print("$",seedsOnMap[mostNearSeed].position_x, seedsOnMap[mostNearSeed].position_y, C_FG_BLACK | C_BG_GREEN);
+	print("$",seedsOnMap[mostNearSeed].position_x, seedsOnMap[mostNearSeed].position_y, C_FG_WHITE | C_BG_BLACK);
 }
 
 
