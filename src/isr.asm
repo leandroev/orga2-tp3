@@ -162,7 +162,7 @@ _isr32:
     pushad
     call pic_finish1 ; Indica que la interrupcion fue antendida
     call next_clock ; Imprimir el reloj del sistema
-    call sched_next_task 
+    call sched_next_task
     str cx
     cmp ax, cx
     je .fin
@@ -320,6 +320,13 @@ jump_toIdle:
 %define TSS_IDLE        16
 
 _isr88:
+    ; mov eax, 0x58
+    ; mov bx, (TSS_IDLE << 3)
+    ; str cx
+    ; cmp bx, cx
+    ; jz .fin
+    ; call jump_toIdle
+
     pushad
     push ecx
     push ebx
@@ -327,27 +334,28 @@ _isr88:
     call int88
     add esp, 12
     popad
+    ; .fin:
     iret
 
 _isr89:
     mov eax, 0x59
-    mov bx, (TSS_IDLE << 3)
-    str cx
-    cmp bx, cx
-    jz .fin
-    call jump_toIdle
+    ; mov bx, (TSS_IDLE << 3)
+    ; str cx
+    ; cmp bx, cx
+    ; jz .fin
+    ; call jump_toIdle
     
     .fin:
     iret
 
 _isr100: ; y = esp - 1, x = esp
-    xchg bx, bx
+    ; xchg bx, bx
     mov eax, 0x64
-    mov bx, (TSS_IDLE << 3)
-    str cx
-    cmp bx, cx
-    jz .fin
-    call jump_toIdle
+    ; mov bx, (TSS_IDLE << 3)
+    ; str cx
+    ; cmp bx, cx
+    ; jz .fin
+    ; call jump_toIdle
     ; pushad
     ; mov eax, x 
     ; push eax
@@ -363,10 +371,10 @@ _isr100: ; y = esp - 1, x = esp
 
 _isr123:
     mov eax, 0x7B
-    mov bx, (TSS_IDLE << 3)
-    str cx
-    cmp bx, cx
-    call jump_toIdle
+    ; mov bx, (TSS_IDLE << 3)
+    ; str cx
+    ; cmp bx, cx
+    ; call jump_toIdle
     
     .fin:
     iret

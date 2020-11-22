@@ -16,7 +16,7 @@ uint32_t act_debug;
 uint32_t current_task;
 uint32_t score_rick;
 uint32_t score_morty;
-sched sched_task[3];
+sched sched_task[23];
 
 void sched_init(void) {
 	//Inicializamos el scheduler
@@ -37,33 +37,37 @@ void sched_init(void) {
 		sched_task[i].pos_x = -1;
 		sched_task[i].pos_y = -1;
 		sched_task[i].id = i;
-		sched_task[i].is_alive = 0;
-		sched_task[i].tss_selector = ((i+16)<<3); //a partir de la 17 se encuentras los tss de cada tarea	
+		sched_task[i].is_alive = FALSE;
+		sched_task[i].tss_selector = ((i+16)<<3); //a partir de la 19 se encuentras los tss de cada tarea	
 	}
-	iniciar_pantalla();
+	screen_init();
 
 	spread_megaSeeds();
+
+	for (int i = 0; i < 20; ++i)
+	{
+		pilas_0[i] = 0;
+	}
 
 	//int100_look(13, 21);
 	print("X", 13, 21, C_FG_DARK_GREY | C_BG_BLACK);
 }
 
 uint16_t sched_next_task() {
-	current_task = (current_task + 1) % 3;
-	while(sched_task[current_task].is_alive == 0){
+	current_task = (current_task + 1) % 23;
+	while(sched_task[current_task].is_alive == FALSE){
 
-		current_task = (current_task + 1) % 3;
+		current_task = (current_task + 1) % 23;
 	}
     return sched_task[current_task].tss_selector;
 }
 
 
 void killcurrent_task(){
-	sched_task[current_task].is_alive = 0;
+	sched_task[current_task].is_alive = FALSE;
 	if ( current_task == RICK || current_task == MORTY)
 	{	
 		print("GAME OVER",35,15,0x0F);
-		// print("Universe-D248 Wins",30,17,0x09);
 		
 	}
 	//jump_toIdle();
@@ -94,11 +98,14 @@ paddr_t next_esp0(paddr_t* esp0_str) {
 }
 
 bool right_postition(uint32_t pos_x, uint32_t pos_y){
-	if(pos_x < 40  && pos_y < 80 ){
+	if(pos_x < 80  && pos_y < 40 ){
 		return TRUE;
 	}
 	return FALSE;
 }
+
+
+
 
 
 uint32_t int88(paddr_t code_phy,uint32_t pos_x, uint32_t pos_y){
@@ -119,7 +126,7 @@ uint32_t int88(paddr_t code_phy,uint32_t pos_x, uint32_t pos_y){
 					index = next_tss(tss_Rickmrms);
 					if (index == -1)
 					{
-						jump_toIdle();
+						// jump_toIdle();
 						return 0;
 					}else{
 						//semilla asimilada
@@ -127,7 +134,8 @@ uint32_t int88(paddr_t code_phy,uint32_t pos_x, uint32_t pos_y){
 						/*actualizar puntaje*/
 						score_rick = score_rick + 425;
 						/*Actualizar pantalla*/
-						jump_toIdle();
+						reset_screen();
+						// jump_toIdle();
 						return 0;
 	
 					}
@@ -136,7 +144,7 @@ uint32_t int88(paddr_t code_phy,uint32_t pos_x, uint32_t pos_y){
 					index = next_tss(tss_Mortymrms);
 					if (index == -1)
 					{
-						jump_toIdle();
+						// jump_toIdle();
 						return 0;
 					}else{
 						//semilla asimilada
@@ -144,12 +152,11 @@ uint32_t int88(paddr_t code_phy,uint32_t pos_x, uint32_t pos_y){
 						/*actualizar puntaje*/
 						score_morty = score_morty + 425;
 						/*Actualizar pantalla*/
-						jump_toIdle();
+						reset_screen();
+						// jump_toIdle();
 						return 0;
-	
 					}
-				}
-				
+				}				
 			}
 		}
 		
@@ -159,10 +166,11 @@ uint32_t int88(paddr_t code_phy,uint32_t pos_x, uint32_t pos_y){
 			int index = next_tss(tss_Rickmrms);
 			if (index == -1)
 			{
-				jump_toIdle();
+				// jump_toIdle();
 				return 0;
 			}else{
 
+				breakpoint();
 				tss_Rickmrms[index].in_use = TRUE;
 				vaddr_t virt_task = 0x08000000+index*PAGE_SIZE;
 				paddr_t map_phy = INICIO_DE_PAGINAS_LIBRES_TAREAS + (2*PAGE_SIZE*pos_x) +(2*PAGE_SIZE*80*pos_y);
@@ -171,7 +179,8 @@ uint32_t int88(paddr_t code_phy,uint32_t pos_x, uint32_t pos_y){
 				sched_task[index + 3].pos_x = pos_x;
 				sched_task[index + 3].pos_y = pos_y;
 				//reseteo pantalla? verficar
-				jump_toIdle();
+				reset_screen();
+				// jump_toIdle();
 				return virt_task;
 			}
 
@@ -189,10 +198,11 @@ uint32_t int88(paddr_t code_phy,uint32_t pos_x, uint32_t pos_y){
 				sched_task[index + 13].is_alive = TRUE;
 				sched_task[index + 13].pos_x = pos_x;
 				sched_task[index + 13].pos_y = pos_y;
-				jump_toIdle();
+				//reseteo pantalla? verficar
+				reset_screen();
+				// jump_toIdle();
 				return virt_task;
-			}
-			
+			}			
 		}
 	
 	}else{
@@ -200,16 +210,22 @@ uint32_t int88(paddr_t code_phy,uint32_t pos_x, uint32_t pos_y){
 		killcurrent_task();
 		return 0;
 	}
-
-
-
 }
 
-void iniciar_pantalla(){
+
+
+void screen_init(){
 
 	screen_draw_box(0, 0, CANT_FILAS, CANT_COLUMNAS, 1, 0x55); 	//Imicio pantalla CANT_COLUMNASxCANT_FILAS
 	screen_draw_box(41, 0, 10, CANT_COLUMNAS, 1, 0x33);				//Inicio panel CANT_COLUMNASx09
 
+
+	screen_draw_box(44,4,3,9,1,0x44); //Panel rick 
+	print_dec(score_rick,7,5,45,0x0F); //Puntaje Inicial
+
+	screen_draw_box(44,67,3,9,1,0x11);//Panel morty
+	print_dec(score_morty,7,68,45,0x0F);//Puntaje Inicial
+	
 	//screen_draw_box(42, 26, 7, 26, 1, 0x66); 
 	for (int i = 0; i < 10; ++i){
 		
@@ -223,21 +239,47 @@ void iniciar_pantalla(){
 
 	}
 
-	screen_draw_box(44,4,3,9,1,0x44); //Panel rick 
-	print_dec(0,7,5,45,0x0F); //Puntaje Inicial
-
-	screen_draw_box(44,67,3,9,1,0x11);//Panel morty
-	print_dec(0,7,68,45,0x0F);//Puntaje Inicial
 	
-	//print("R",sched_task[RICKC137].pos_x,sched_task[RICKC137].pos_y,0x04);
-	//print("R",sched_task[RICKD248].pos_x,sched_task[RICKD248].pos_y,0x01);
-	//print("M",sched_task[MORTYC137].pos_x,sched_task[MORTYC137].pos_y,0x04);
-	//print("M",sched_task[MORTYD248].pos_x,sched_task[MORTYD248].pos_y,0x01);
-	//print("C",sched_task[CRONENBERG1].pos_x,sched_task[CRONENBERG1].pos_y,0x06);
-	//print("C",sched_task[CRONENBERG2].pos_x,sched_task[CRONENBERG2].pos_y,0x06);
-	//print("C",sched_task[CRONENBERG3].pos_x,sched_task[CRONENBERG3].pos_y,0x06);
 		
 }
+
+
+void reset_screen(){
+	//Imicio pantalla CANT_COLUMNASxCANT_FILAS
+	screen_draw_box(0,0,CANT_FILAS,CANT_COLUMNAS,1,0x55);
+	//restaturo semillas 
+	for (int i = 0; i < TOTAL_SEEDS; ++i)
+	{
+		if (seedsOnMap[i].assimilated == FALSE)
+		{
+			print("$", seedsOnMap[i].position_x, seedsOnMap[i].position_y, C_FG_WHITE | C_BG_BROWN);			
+		}
+	}
+	//Restauro Mr Meeseeks RICK
+	for (int i = 3; i < 13; ++i)
+	{
+		if (sched_task[i].is_alive == TRUE)
+		{
+			print("R", sched_task[i].pos_x, sched_task[i].pos_y, 0x04);
+		}
+
+	}
+	//Restauro Mr Meeseeks MORTY
+	for (int i = 13; i < 23; ++i)
+	{
+		
+		if (sched_task[i].is_alive == TRUE)
+		{
+			print("M", sched_task[i].pos_x, sched_task[i].pos_y, 0x01);
+		}
+	}
+
+	//Seteo puntajes
+	print_dec(score_rick,7,5,45,0x0F);
+	print_dec(score_morty,7,68,45,0x0F);
+
+}
+
 
 
 void spread_megaSeeds(){
@@ -372,7 +414,7 @@ void set_modo_debug()
 		act_debug = 1;
 		screen_debug = 0;
 		//reseteo pantalla
-		iniciar_pantalla();
+		reset_screen();
 	}else{
 		screen_debug = 1;
 		act_debug = 0;

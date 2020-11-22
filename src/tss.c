@@ -83,18 +83,18 @@ void tss_init_gdt(void) {
     for (int i = 0; i < 10; ++i)
     {
         tss_Rickmrms[i].in_use = 0;
-        gdt[i+19].base_15_0  = ((uint32_t)&tss_Rickmrms[i] << 16) >> 16;
-        gdt[i+19].base_23_16 = ((uint32_t)&tss_Rickmrms[i] << 8) >> 24;
-        gdt[i+19].base_31_24 = (uint32_t)(&tss_Rickmrms[i]) >> 24;
+        gdt[i+19].base_15_0  = ((uint32_t)&tss_Rickmrms[i].task_seg << 16) >> 16;
+        gdt[i+19].base_23_16 = ((uint32_t)&tss_Rickmrms[i].task_seg << 8) >> 24;
+        gdt[i+19].base_31_24 = (uint32_t)(&tss_Rickmrms[i].task_seg) >> 24;
         
     }
 
     for (int i = 0; i < 10; ++i)
     {
         tss_Mortymrms[i].in_use = 0;
-        gdt[i+29].base_15_0  = ((uint32_t)&tss_Mortymrms[i] << 16) >> 16;
-        gdt[i+29].base_23_16 = ((uint32_t)&tss_Mortymrms[i] << 8) >> 24;
-        gdt[i+29].base_31_24 = (uint32_t)(&tss_Mortymrms[i]) >> 24;
+        gdt[i+29].base_15_0  = ((uint32_t)&tss_Mortymrms[i].task_seg << 16) >> 16;
+        gdt[i+29].base_23_16 = ((uint32_t)&tss_Mortymrms[i].task_seg << 8) >> 24;
+        gdt[i+29].base_31_24 = (uint32_t)(&tss_Mortymrms[i].task_seg) >> 24;
         
     }
 
