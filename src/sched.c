@@ -217,7 +217,101 @@ uint32_t int88(paddr_t code_phy,uint32_t pos_x, uint32_t pos_y){
 	}
 }
 
+void use_portal_gun() {
+		/* //rand() % 10;
+		*/
 
+		uint32_t random_task = rand() % 10;		//tarea aleatoria del equipo contrario
+		uint32_t position_x = rand() % CANT_FILAS;
+		uint32_t position_y = rand() % CANT_COLUMNAS;
+		uint32_t current_cr3;
+		uint32_t old_cr3;
+		vaddr_t virt_task;
+		paddr_t new_phy;
+		uint32_t attrs = 0x7;
+
+		if(current_task > 2 && current_task < 13) {
+			/*Tareas de Rick*/
+			//Copiar el código de sched_task[current_task] a la nueva posición
+			random_task += 13;
+			if(sched_task[random_task].is_alive == FALSE) {
+				return;
+			}
+			//Entonces sigue viva
+			sched_task[random_task].pos_x = position_x;
+			sched_task[random_task].pos_y = position_y;
+			random_task -= 13;
+
+			virt_task = 0x800A000 + random_task * PAGE_SIZE;
+			new_phy = INICIO_DE_PAGINAS_LIBRES_TAREAS + (2*PAGE_SIZE*position_x) +(2*PAGE_SIZE*80*position_y);
+			current_cr3 = tss_Mortymrms[random_task].task_seg.cr3;
+			old_cr3 = rcr3();
+
+			lcr3(current_cr3);
+
+			mmu_map_page(current_cr3, new_phy, new_phy, attrs); 
+			mmu_map_page(current_cr3, new_phy + PAGE_SIZE, new_phy + PAGE_SIZE, attrs); 
+
+			uint32_t* src = (uint32_t*) virt_task;
+			uint32_t* dst = (uint32_t*) new_phy;
+			
+			for (int i = 0; i < 2048; ++i)
+			{
+				dst[i] = src[i];
+			}
+			
+			mmu_unmap_page(current_cr3, new_phy);
+			mmu_unmap_page(current_cr3, new_phy + PAGE_SIZE);
+			
+			mmu_unmap_page(current_cr3, virt_task);
+			mmu_unmap_page(current_cr3, virt_task + PAGE_SIZE);
+
+			mmu_map_page(current_cr3, virt_task, new_phy, attrs); 
+			mmu_map_page(current_cr3, virt_task + PAGE_SIZE, new_phy + PAGE_SIZE, attrs); 
+
+			lcr3(old_cr3);
+		} else if (current_task > 12 && current_task < 23) {
+			/*Tareas de Morty*/
+			random_task += 3; 
+			if(sched_task[random_task].is_alive == FALSE) {
+				return;
+			}
+			// Sigue viva
+			sched_task[random_task].pos_x = position_x;
+			sched_task[random_task].pos_y = position_y;
+			random_task -= 3;
+
+			virt_task = 0x8000000 + random_task * PAGE_SIZE;
+			new_phy = INICIO_DE_PAGINAS_LIBRES_TAREAS + (2*PAGE_SIZE*position_x) +(PAGE_SIZE*80*position_y);
+			current_cr3 = tss_Rickmrms[random_task].task_seg.cr3;
+			old_cr3 = rcr3();
+
+			lcr3(current_cr3);
+
+			mmu_map_page(current_cr3, new_phy, new_phy, attrs); 
+			mmu_map_page(current_cr3, new_phy + PAGE_SIZE, new_phy + PAGE_SIZE, attrs); 
+
+			uint32_t* src = (uint32_t*) virt_task;
+			uint32_t* dst = (uint32_t*) new_phy;
+			
+			for (int i = 0; i < 2048; ++i)
+			{
+				dst[i] = src[i];
+			}
+			
+			mmu_unmap_page(current_cr3, new_phy);
+			mmu_unmap_page(current_cr3, new_phy + PAGE_SIZE);
+			
+			mmu_unmap_page(current_cr3, virt_task);
+			mmu_unmap_page(current_cr3, virt_task + PAGE_SIZE);
+
+			mmu_map_page(current_cr3, virt_task, new_phy, attrs); 
+			mmu_map_page(current_cr3, virt_task + PAGE_SIZE, new_phy + PAGE_SIZE, attrs); 
+
+			lcr3(old_cr3);
+		}
+	reset_screen();
+}
 
 void screen_init(){
 

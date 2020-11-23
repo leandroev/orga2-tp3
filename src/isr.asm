@@ -22,8 +22,13 @@ extern imprimir_registros
 extern int100_look
 ;--int 88
 extern int88
+;--int 89
+extern use_portal_gun
 ;--int 123
 extern int123_move
+
+extern reset_screen
+
 
 
 extern check_act_debug
@@ -168,6 +173,7 @@ _isr32:
     jmp far [sched_task_offset]
     
     .fin:
+    ;call reset_screen
     popad
     iret
 ;; -------------------------------------------------------------------------- ;;
@@ -328,11 +334,9 @@ _isr88:
     iret
 
 _isr89:
-    ; mov bx, (TSS_IDLE << 3)
-    ; str cx
-    ; cmp bx, cx
-    ; jz .fin
-    ; call jump_toIdle
+    pushad
+    call use_portal_gun
+    popad
     iret
 
 _isr100: ; y = esp - 1, x = esp
