@@ -18,18 +18,18 @@ extern sched_next_task
 extern killcurrent_task
 ;--imprimir registros
 extern imprimir_registros
-
-extern set_modo_debug
-
-extern check_screen_debug
-
-extern check_act_debug
 ;--int 100 look
 extern int100_look
-
 ;--int 88
 extern int88
+;--int 123
+extern int123_move
 
+
+extern check_act_debug
+extern set_modo_debug
+extern check_screen_debug
+extern reset_MrMsCel
 ;;GLOBAL
 global _isr32
 global _isr33
@@ -158,7 +158,8 @@ ISR 19
 _isr32:
     pushad
     call pic_finish1 ; Indica que la interrupcion fue antendida
-    call next_clock ; Imprimir el reloj del sistema
+    call next_clock ; prit el reloj del sistema
+    call reset_MrMsCel; set MrMs ticks
     call sched_next_task
     str cx
     cmp ax, cx
@@ -348,10 +349,15 @@ _isr100: ; y = esp - 1, x = esp
     iret
 
 _isr123:
-    ; mov bx, (TSS_IDLE << 3)
-    ; str cx
-    ; cmp bx, cx
-    ; call jump_toIdle
+    sub esp, 4
+    pushad
+    push ebx
+    push eax
+    call int123_move
+    mov [esp+10*4],eax
+    add esp, 8
+    popad
+    pop eax
     iret
 
 ;; -------------------------------------------------------------------------- ;;

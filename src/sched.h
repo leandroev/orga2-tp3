@@ -41,6 +41,7 @@ paddr_t next_esp0(paddr_t* esp0_str);
 bool right_postition(uint32_t pos_x, uint32_t pos_y);
 void reset_screen();
 uint32_t make_positive(int x, int divisor);
+uint32_t distMan(uint32_t curr_posx,uint32_t curr_posy,int desp_x,int desp_y);
 
 typedef struct str_sched {
 	uint8_t is_alive;
@@ -48,6 +49,8 @@ typedef struct str_sched {
 	uint8_t id;
 	int pos_x;
 	int pos_y;
+	int distCel;
+	int ticks;
 }__attribute__((__packed__, aligned (8))) sched;
 
 
@@ -57,6 +60,7 @@ typedef struct semillas {
 	uint8_t assimilated;
 }megaSeeds;
 
+extern void reset_MrMsCel();
 extern void jump_toIdle();
 extern sched sched_task[23];
 megaSeeds seedsOnMap[TOTAL_SEEDS];

@@ -25,8 +25,10 @@ void sched_init(void) {
 	current_task = 0;
 	for (uint8_t i = 0; i < 3 ; ++i)
 	{	
-		sched_task[i].pos_x = -1;
-		sched_task[i].pos_y = -1;
+		sched_task[i].distCel = -1;
+		sched_task[i].ticks   = -1;
+		sched_task[i].pos_x   = -1;
+		sched_task[i].pos_y   = -1;
 		sched_task[i].id = i;
 		sched_task[i].is_alive = TRUE;
 		sched_task[i].tss_selector = ((i+16)<<3); //a partir de la 16 se encuentras los tss de cada tarea	
@@ -34,8 +36,10 @@ void sched_init(void) {
 
 	for (uint8_t i = 3; i < 23 ; ++i)
 	{
-		sched_task[i].pos_x = -1;
-		sched_task[i].pos_y = -1;
+		sched_task[i].ticks   = -1;
+		sched_task[i].distCel = -1;
+		sched_task[i].pos_x   = -1;
+		sched_task[i].pos_y   = -1;
 		sched_task[i].id = i;
 		sched_task[i].is_alive = FALSE;
 		sched_task[i].tss_selector = ((i+16)<<3); //a partir de la 19 se encuentras los tss de cada tarea	
@@ -171,6 +175,10 @@ uint32_t int88(paddr_t code_phy,uint32_t pos_x, uint32_t pos_y){
 				sched_task[index + 3].is_alive = TRUE;
 				sched_task[index + 3].pos_x = pos_x;
 				sched_task[index + 3].pos_y = pos_y;
+				sched_task[index + 3].distCel = 7;
+				sched_task[index + 3].ticks = 2;
+
+
 				//reseteo pantalla? verficar
 				reset_screen();
 				// jump_toIdle();
@@ -185,12 +193,16 @@ uint32_t int88(paddr_t code_phy,uint32_t pos_x, uint32_t pos_y){
 				return 0;
 			}else{
 				tss_Mortymrms[index].in_use = TRUE;
-				vaddr_t virt_task = 0x0800A000 + index*PAGE_SIZE;
+				vaddr_t virt_task = 0x08000000 + index*PAGE_SIZE;
 				paddr_t map_phy = INICIO_DE_PAGINAS_LIBRES_TAREAS + (2*PAGE_SIZE*pos_x) +(2*PAGE_SIZE*80*pos_y);
 				task_init(&tss_Mortymrms[index].task_seg,map_phy,virt_task,code_phy,2,next_esp0(pilas_0));
 				sched_task[index + 13].is_alive = TRUE;
 				sched_task[index + 13].pos_x = pos_x;
 				sched_task[index + 13].pos_y = pos_y;
+				sched_task[index + 13].distCel = 7;
+				sched_task[index + 13].ticks = 2;
+
+
 				//reseteo pantalla? verficar
 				reset_screen();
 				// jump_toIdle();
@@ -315,16 +327,24 @@ int search_megaSeeds(uint32_t pos_x, uint32_t pos_y){
 
 }
 
+uint32_t distMan(uint32_t curr_posx,uint32_t curr_posy,int desp_x,int desp_y){
+	return abs(curr_posx-desp_x) + abs(curr_posy-desp_y);
+}
+
 uint32_t int123_move(int desp_x, int desp_y) {
 	uint32_t curr_posx = sched_task[current_task].pos_x; 
 	uint32_t curr_posy = sched_task[current_task].pos_y;
 	uint32_t newpos_x	= make_positive((curr_posx + desp_x) % CANT_COLUMNAS, CANT_COLUMNAS);
 	uint32_t newpos_y	= make_positive((curr_posy + desp_y) % CANT_FILAS, CANT_FILAS);
 	
-	if (current_task == RICK || current_task == MORTY)
-	{
+	if (current_task == RICK || current_task == MORTY){
 		killcurrent_task();
 	}
+	// if (distMan(curr_posx,curr_posy,desp_x,desp_y) > 7){
+
+	// 	return 0;
+	// }
+
 	if (move_assimilated(newpos_x,newpos_y)){
 
 		//assimilated seed, kill current task and save the kernel stack
@@ -333,9 +353,12 @@ uint32_t int123_move(int desp_x, int desp_y) {
 		sched_task[current_task].is_alive = FALSE;
 		tss_t current_tss;
 		if (current_task < 13){
+			score_rick = score_rick + 425;
 			current_tss = tss_Rickmrms[current_task-3].task_seg;
 		}else{
 			current_tss = tss_Mortymrms[current_task-13].task_seg;
+			score_morty = score_morty + 425;
+
 		}
 		paddr_t pila_0 = current_tss.esp0;
 		int i = 0;
@@ -348,6 +371,7 @@ uint32_t int123_move(int desp_x, int desp_y) {
 			}
 			i++;
 		}
+		reset_screen();
 		return 0;		
 	}else{
 
@@ -394,7 +418,13 @@ uint32_t int123_move(int desp_x, int desp_y) {
 
 		//mapping new physical address
 		mmu_map_page(current_cr3,virt_task,new_phy,attrS); 
-		mmu_map_page(current_cr3,virt_task+PAGE_SIZE,new_phy+PAGE_SIZE,attrS); 
+		mmu_map_page(current_cr3,virt_task+PAGE_SIZE,new_phy+PAGE_SIZE,attrS);
+
+		//reset positicion
+		sched_task[current_task].pos_x = newpos_x;
+		sched_task[current_task].pos_y = newpos_y;
+
+		reset_screen(); 
 		return 1;
 	}
 }
@@ -548,5 +578,24 @@ int modulo(int numero,int base){
 		return numero % base;
 	}else{
 		return (numero + base) % base;
+	}
+}
+
+void reset_MrMsCel(){
+	for (int i = 3; i < 23; ++i)
+	{
+		if (sched_task[i].distCel ==1)
+		{
+			sched_task[i].ticks = -1; 
+		}	
+		if (sched_task[i].ticks == 0)
+		{
+			sched_task[i].ticks = 2;
+			sched_task[i].distCel--; 
+		}
+		if (sched_task[i].ticks > 0)
+		{
+			sched_task[i].ticks--;
+		}	
 	}
 }
