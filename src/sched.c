@@ -298,35 +298,33 @@ uint32_t int123_move(int position_x, int position_y) {
 
 void int100_look(uint32_t* position_x, uint32_t* position_y) {
 
-	/*
 	if(current_task == RICK || current_task == MORTY){
-		position_x = -1;
-		position_y = -1;
-	} else {
+		*position_x = -1;
+		*position_y = -1;
+	} else if (current_task > MORTY) { 
 		
-	}
-	*/
-	//falta una estructura que diga la posicion de un mr meeseek
-	uint32_t tmp_x = abs(*position_x - seedsOnMap[0].position_x);
-	uint32_t tmp_y = abs(*position_y - seedsOnMap[0].position_y);
+		uint32_t tmp_x = abs(sched_task[current_task].pos_x - seedsOnMap[0].position_x);
+		uint32_t tmp_y = abs(sched_task[current_task].pos_y - seedsOnMap[0].position_y);
 
-	uint32_t steps = tmp_x + tmp_y;
-	uint32_t mostNearSeed = 0;
+		uint32_t steps = tmp_x + tmp_y;
+		uint32_t mostNearSeed = 0;
 
 
-	for (uint32_t i = 1; i < TOTAL_SEEDS; i++) {
-		tmp_x = abs(*position_x - seedsOnMap[i].position_x);
-		tmp_y = abs(*position_y - seedsOnMap[i].position_y);
+		for (uint32_t i = 1; i < TOTAL_SEEDS; i++) {
+			tmp_x = abs(sched_task[current_task].pos_x - seedsOnMap[i].position_x);
+			tmp_y = abs(sched_task[current_task].pos_y - seedsOnMap[i].position_y);
 
-		if(steps > (tmp_x + tmp_y)) {
-			steps = tmp_x + tmp_y;
-			mostNearSeed = i;
+			if(steps > (tmp_x + tmp_y)) {
+				steps = tmp_x + tmp_y;
+				mostNearSeed = i;
+			}
 		}
+
+		*position_x = seedsOnMap[mostNearSeed].position_x;
+		*position_y = seedsOnMap[mostNearSeed].position_y;
+		print("$",seedsOnMap[mostNearSeed].position_x, seedsOnMap[mostNearSeed].position_y, C_FG_WHITE | C_BG_GREEN);
 	}
 
-	*position_x = seedsOnMap[mostNearSeed].position_x;
-	*position_y = seedsOnMap[mostNearSeed].position_y;
-	print("$",seedsOnMap[mostNearSeed].position_x, seedsOnMap[mostNearSeed].position_y, C_FG_WHITE | C_BG_BLACK);
 }
 
 
