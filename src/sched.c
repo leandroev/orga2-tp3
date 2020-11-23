@@ -290,10 +290,113 @@ void spread_megaSeeds(){
 
 }
 
-uint32_t int123_move(int position_x, int position_y) {
-	position_x = 0;
-	position_y = 0;
-	return position_x + position_y;
+bool move_assimilated(uint32_t pos_x, uint32_t pos_y){
+	for (int i = 0; i < TOTAL_SEEDS; ++i){
+
+		if (seedsOnMap[i].assimilated == FALSE){
+			if (seedsOnMap[i].position_x == pos_x && seedsOnMap[i].position_y == pos_y )
+			{
+				return TRUE;
+			}
+		}
+	}
+	return FALSE;
+
+}
+//always take a valid position
+int search_megaSeeds(uint32_t pos_x, uint32_t pos_y){
+
+	for (int i = 0; i < TOTAL_SEEDS; i++) {
+		if(seedsOnMap[i].position_x == pos_x && seedsOnMap[i].position_y == pos_y){
+			return i;	
+		}
+	}
+	return -1;
+
+}
+
+uint32_t int123_move(int desp_x, int desp_y) {
+	uint32_t curr_posx = sched_task[current_task].pos_x; 
+	uint32_t curr_posy = sched_task[current_task].pos_y;
+	uint32_t newpos_x	= make_positive((curr_posx + desp_x) % CANT_COLUMNAS, CANT_COLUMNAS);
+	uint32_t newpos_y	= make_positive((curr_posy + desp_y) % CANT_FILAS, CANT_FILAS);
+	
+	if (current_task == RICK || current_task == MORTY)
+	{
+		killcurrent_task();
+	}
+	if (move_assimilated(newpos_x,newpos_y)){
+
+		//assimilated seed, kill current task and save the kernel stack
+		int index = search_megaSeeds(newpos_x,newpos_y);
+		seedsOnMap[index].assimilated = TRUE;
+		sched_task[current_task].is_alive = FALSE;
+		tss_t current_tss;
+		if (current_task < 13){
+			current_tss = tss_Rickmrms[current_task-3].task_seg;
+		}else{
+			current_tss = tss_Mortymrms[current_task-13].task_seg;
+		}
+		paddr_t pila_0 = current_tss.esp0;
+		int i = 0;
+		while( i < 20)
+		{
+			if (pilas_0[i] == 0){
+
+				pilas_0[i] = pila_0;
+				i = 20;
+			}
+			i++;
+		}
+		return 0;		
+	}else{
+
+		int index;
+		vaddr_t virt_task;
+		tss_t current_tss; 
+		if (current_task < 13){
+			current_tss = tss_Rickmrms[current_task-3].task_seg;
+			index = current_task-3;
+			virt_task = 0x08000000 + index*PAGE_SIZE;
+		}else{
+			index = current_task-13;
+			virt_task = 0x0800A000 + index*PAGE_SIZE;
+			current_tss = tss_Mortymrms[current_task-13].task_seg;
+		}
+		
+		// uint32_t old_posx = sched_task[current_task].pos_x;
+		// uint32_t old_posy = sched_task[current_task].pos_y;
+		// paddr_t old_phy = INICIO_DE_PAGINAS_LIBRES_TAREAS + (2*PAGE_SIZE*old_posx) +(2*PAGE_SIZE*80*old_posy);
+		paddr_t new_phy = INICIO_DE_PAGINAS_LIBRES_TAREAS + (2*PAGE_SIZE*newpos_x) +(2*PAGE_SIZE*80*newpos_y);
+		uint32_t attrS = 0x00000007;
+		
+
+		//temporal mapping wiht identity mapping
+		uint32_t current_cr3 = current_tss.cr3;
+		mmu_map_page(current_cr3,new_phy,new_phy,attrS); //4kb
+		mmu_map_page(current_cr3,new_phy+PAGE_SIZE,new_phy+PAGE_SIZE,attrS); //4kb
+		
+		//code copy from the virtual address
+		uint32_t* src = (uint32_t*) virt_task;
+		uint32_t* dst = (uint32_t*) new_phy;
+		for (int i = 0; i < 2048; ++i)
+		{
+			dst[i] = src[i];
+		}
+
+		//unmapping temporal
+		mmu_unmap_page(current_cr3,new_phy);
+		mmu_unmap_page(current_cr3,new_phy+PAGE_SIZE);
+
+		//unmapping old virtual address
+		mmu_unmap_page(current_cr3,virt_task); 
+		mmu_unmap_page(current_cr3,virt_task+PAGE_SIZE);
+
+		//mapping new physical address
+		mmu_map_page(current_cr3,virt_task,new_phy,attrS); 
+		mmu_map_page(current_cr3,virt_task+PAGE_SIZE,new_phy+PAGE_SIZE,attrS); 
+		return 1;
+	}
 }
 
 void int100_look(uint32_t* position_x, uint32_t* position_y) {
@@ -326,7 +429,6 @@ void int100_look(uint32_t* position_x, uint32_t* position_y) {
 	}
 
 }
-
 
 
 //funciones auxiliares
@@ -392,6 +494,15 @@ void imprimir_registros(uint32_t eip, uint32_t eflags,uint16_t ss,uint16_t gs,ui
 
 
 }
+
+uint32_t make_positive(int x, int divisor){
+	if(x<0){
+		return x+divisor;
+	} else {
+		return x;
+	}
+}
+
 
 void set_modo_debug()
 {
