@@ -257,7 +257,7 @@ void use_portal_gun() {
         sched_task[random_task].pos_y = position_y;
         random_task -= 13;
 
-        virt_task = 0x800A000 + random_task * PAGE_SIZE;
+        virt_task = 0x8000000 + random_task * PAGE_SIZE;
         new_phy = INICIO_DE_PAGINAS_LIBRES_TAREAS + (2 * PAGE_SIZE * position_x) + (2 * PAGE_SIZE * 80 * position_y);
         current_cr3 = tss_Mortymrms[random_task].task_seg.cr3;
         old_cr3 = rcr3();
@@ -378,7 +378,7 @@ uint32_t int123_move(int desp_x, int desp_y) {
             virt_task = 0x08000000 + index * PAGE_SIZE;
         } else {
             index = current_task - 13;
-            virt_task = 0x0800A000 + index * PAGE_SIZE;
+            virt_task = 0x08000000 + index * PAGE_SIZE;
             current_tss = tss_Mortymrms[current_task - 13].task_seg;
         }
 
