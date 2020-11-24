@@ -88,6 +88,7 @@
 
 // direccion virtual del codigo
 #define TASK_CODE_VIRTUAL 0x01D00000
+#define TASK_CODE_MR_MEESEEKS 0x08000000
 #define TASK_PAGES        4
 
 /* Direcciones fisicas de codigos */

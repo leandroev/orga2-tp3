@@ -183,7 +183,7 @@ uint32_t int88(paddr_t code_phy, uint32_t pos_x, uint32_t pos_y) {
             } else {
 
                 tss_Rickmrms[index].in_use = TRUE;
-                vaddr_t virt_task = 0x08000000 + index * PAGE_SIZE;
+                vaddr_t virt_task = TASK_CODE_MR_MEESEEKS + index * PAGE_SIZE;
                 paddr_t map_phy =
                         INICIO_DE_PAGINAS_LIBRES_TAREAS + (2 * PAGE_SIZE * pos_x) + (2 * PAGE_SIZE * 80 * pos_y);
                 task_init(&tss_Rickmrms[index].task_seg, map_phy, virt_task, code_phy, 2, next_esp0(pilas_0));
@@ -207,7 +207,7 @@ uint32_t int88(paddr_t code_phy, uint32_t pos_x, uint32_t pos_y) {
                 return 0;
             } else {
                 tss_Mortymrms[index].in_use = TRUE;
-                vaddr_t virt_task = 0x08000000 + index * PAGE_SIZE;
+                vaddr_t virt_task = TASK_CODE_MR_MEESEEKS + index * PAGE_SIZE;
                 paddr_t map_phy =
                         INICIO_DE_PAGINAS_LIBRES_TAREAS + (2 * PAGE_SIZE * pos_x) + (2 * PAGE_SIZE * 80 * pos_y);
                 task_init(&tss_Mortymrms[index].task_seg, map_phy, virt_task, code_phy, 2, next_esp0(pilas_0));
@@ -257,7 +257,7 @@ void use_portal_gun() {
         sched_task[random_task].pos_y = position_y;
         random_task -= 13;
 
-        virt_task = 0x8000000 + random_task * PAGE_SIZE;
+        virt_task =  + random_task * PAGE_SIZE;
         new_phy = INICIO_DE_PAGINAS_LIBRES_TAREAS + (2 * PAGE_SIZE * position_x) + (2 * PAGE_SIZE * 80 * position_y);
         current_cr3 = tss_Mortymrms[random_task].task_seg.cr3;
         old_cr3 = rcr3();
@@ -295,7 +295,7 @@ void use_portal_gun() {
         sched_task[random_task].pos_y = position_y;
         random_task -= 3;
 
-        virt_task = 0x8000000 + random_task * PAGE_SIZE;
+        virt_task = TASK_CODE_MR_MEESEEKS + random_task * PAGE_SIZE;
         new_phy = INICIO_DE_PAGINAS_LIBRES_TAREAS + (2 * PAGE_SIZE * position_x) + (PAGE_SIZE * 80 * position_y);
         current_cr3 = tss_Rickmrms[random_task].task_seg.cr3;
         old_cr3 = rcr3();
@@ -375,10 +375,10 @@ uint32_t int123_move(int desp_x, int desp_y) {
         if (current_task < 13) {
             current_tss = tss_Rickmrms[current_task - 3].task_seg;
             index = current_task - 3;
-            virt_task = 0x08000000 + index * PAGE_SIZE;
+            virt_task = TASK_CODE_MR_MEESEEKS + index * PAGE_SIZE;
         } else {
             index = current_task - 13;
-            virt_task = 0x08000000 + index * PAGE_SIZE;
+            virt_task = TASK_CODE_MR_MEESEEKS + index * PAGE_SIZE;
             current_tss = tss_Mortymrms[current_task - 13].task_seg;
         }
 
