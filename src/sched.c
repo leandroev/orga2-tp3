@@ -249,8 +249,9 @@ void use_portal_gun() {
         /*Tareas de Rick*/
         //Copiar el código de sched_task[current_task] a la nueva posición
         random_task += 13;
-        if (sched_task[random_task].is_alive == FALSE) {
-            return;
+        while (sched_task[random_task].is_alive == FALSE) {
+            random_task = rand() % 10;
+            random_task += 13;
         }
         //Entonces sigue viva
         sched_task[random_task].pos_x = position_x;
@@ -287,8 +288,10 @@ void use_portal_gun() {
     } else if (current_task > 12 && current_task < 23) {
         /*Tareas de Morty*/
         random_task += 3;
-        if (sched_task[random_task].is_alive == FALSE) {
-            return;
+        
+        while (sched_task[random_task].is_alive == FALSE) {
+            random_task = rand() % 10;
+            random_task += 3;
         }
         // Sigue viva
         sched_task[random_task].pos_x = position_x;
