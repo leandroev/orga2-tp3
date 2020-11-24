@@ -92,23 +92,6 @@ BITS 32
     mov esp, 0x25000
     mov ebp, 0x25000
     
-    ;;---Inicializar pantalla 
-    ; mov ax, (14<<3) ;Cargo el segmento de video
-    ; mov fs, ax
-    ; mov eax, 80
-    ; mov edi, 40
-    ; mul edi
-    ; xor esi,esi
-    ; .pintar:
-    ; 	cmp eax,0
-    ; 	jz .salir
-    ; 	mov word [fs:esi],0XDDAA 
-    ; 	add esi, 2
-    ; 	dec eax
-    ; 	jmp .pintar
-    ; .salir:
-
-
     ; Imprimir mensaje de bienvenida
 
     ; Inicializar pantalla
@@ -160,19 +143,6 @@ BITS 32
     
     ; Saltar a la primera tarea: Idle
     jmp (TSS_IDLE << 3):0
-
-    ;;---Prueba mmu_init_task_dir
-    ; mov eax, 4
-    ; push eax
-    ; mov eax, 0x10000
-    ; push eax
-    ; mov eax, 0x1D00000
-    ; push eax
-    ; push eax
-    ; call mmu_init_task_dir
-    ; add esp, 16
-    ; mov cr3, eax
-    ; call cambiar_fondo
     
     ; Ciclar infinitamente (por si algo sale mal...)
     mov eax, 0xFFFF
