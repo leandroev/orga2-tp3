@@ -60,6 +60,33 @@ uint16_t sched_next_task() {
     return sched_task[current_task].tss_selector;
 }
 
+void screen_init() {
+
+    screen_draw_box(0, 0, CANT_FILAS, CANT_COLUMNAS, 1, 0x55);    //Imicio pantalla CANT_COLUMNASxCANT_FILAS
+    screen_draw_box(41, 0, 10, CANT_COLUMNAS, 1, 0x33);                //Inicio panel CANT_COLUMNASx09
+
+
+    screen_draw_box(44, 4, 3, 9, 1, 0x44); //Panel rick
+    print_dec(score_rick, 7, 5, 45, 0x0F); //Puntaje Inicial
+
+    screen_draw_box(44, 67, 3, 9, 1, 0x11);//Panel morty
+    print_dec(score_morty, 7, 68, 45, 0x0F);//Puntaje Inicial
+
+    //screen_draw_box(42, 26, 7, 26, 1, 0x66);
+    for (int i = 0; i < 10; ++i) {
+
+        if (i < 3) {
+            print("O", 30 + 2 * i, 44, 0x0F);
+        } else {
+            print("-", 30 + 2 * i, 44, 0x0F);
+            print("-", 30 + 2 * i, 46, 0x0F);
+        }
+
+    }
+
+
+}
+
 
 void killcurrent_task() {
     sched_task[current_task].is_alive = FALSE;
@@ -299,109 +326,6 @@ void use_portal_gun() {
     reset_screen();
 }
 
-void screen_init() {
-
-    screen_draw_box(0, 0, CANT_FILAS, CANT_COLUMNAS, 1, 0x55);    //Imicio pantalla CANT_COLUMNASxCANT_FILAS
-    screen_draw_box(41, 0, 10, CANT_COLUMNAS, 1, 0x33);                //Inicio panel CANT_COLUMNASx09
-
-
-    screen_draw_box(44, 4, 3, 9, 1, 0x44); //Panel rick
-    print_dec(score_rick, 7, 5, 45, 0x0F); //Puntaje Inicial
-
-    screen_draw_box(44, 67, 3, 9, 1, 0x11);//Panel morty
-    print_dec(score_morty, 7, 68, 45, 0x0F);//Puntaje Inicial
-
-    //screen_draw_box(42, 26, 7, 26, 1, 0x66);
-    for (int i = 0; i < 10; ++i) {
-
-        if (i < 3) {
-            print("O", 30 + 2 * i, 44, 0x0F);
-        } else {
-            print("-", 30 + 2 * i, 44, 0x0F);
-            print("-", 30 + 2 * i, 46, 0x0F);
-        }
-
-    }
-
-
-}
-
-
-void reset_screen() {
-    //Imicio pantalla CANT_COLUMNASxCANT_FILAS
-    screen_draw_box(0, 0, CANT_FILAS, CANT_COLUMNAS, 1, 0x55);
-    //restaturo semillas
-    for (int i = 0; i < TOTAL_SEEDS; ++i) {
-        if (seedsOnMap[i].assimilated == FALSE) {
-            print("$", seedsOnMap[i].position_x, seedsOnMap[i].position_y, C_FG_WHITE | C_BG_BLACK);
-        }
-    }
-    //Restauro Mr Meeseeks RICK
-    for (int i = 3; i < 13; ++i) {
-        if (sched_task[i].is_alive == TRUE) {
-            print("R", sched_task[i].pos_x, sched_task[i].pos_y, C_FG_WHITE | C_BG_RED);
-        }
-
-    }
-    //Restauro Mr Meeseeks MORTY
-    for (int i = 13; i < 23; ++i) {
-
-        if (sched_task[i].is_alive == TRUE) {
-            print("M", sched_task[i].pos_x, sched_task[i].pos_y, C_FG_WHITE | C_BG_BLUE);
-        }
-    }
-
-    //Seteo puntajes
-    print_dec(score_rick, 7, 5, 45, 0x0F);
-    print_dec(score_morty, 7, 68, 45, 0x0F);
-
-}
-
-
-void spread_megaSeeds() {
-
-    megaSeeds tmp;
-
-    for (uint32_t i = 0; i < TOTAL_SEEDS; i++) {
-        tmp.position_x = rand() % CANT_COLUMNAS;
-        tmp.position_y = rand() % CANT_FILAS;
-        seedsOnMap[i] = tmp;
-        seedsOnMap[i].assimilated = FALSE;
-
-        print("$", tmp.position_x, tmp.position_y, C_FG_WHITE | C_BG_BLACK);
-    }
-
-}
-
-bool move_assimilated(uint32_t pos_x, uint32_t pos_y) {
-    for (int i = 0; i < TOTAL_SEEDS; ++i) {
-
-        if (seedsOnMap[i].assimilated == FALSE) {
-            if (seedsOnMap[i].position_x == pos_x && seedsOnMap[i].position_y == pos_y) {
-                return TRUE;
-            }
-        }
-    }
-    return FALSE;
-
-}
-
-//always take a valid position
-int search_megaSeeds(uint32_t pos_x, uint32_t pos_y) {
-
-    for (int i = 0; i < TOTAL_SEEDS; i++) {
-        if (seedsOnMap[i].position_x == pos_x && seedsOnMap[i].position_y == pos_y) {
-            return i;
-        }
-    }
-    return -1;
-
-}
-
-uint32_t distMan(uint32_t curr_posx, uint32_t curr_posy, int desp_x, int desp_y) {
-    return abs(curr_posx - desp_x) + abs(curr_posy - desp_y);
-}
-
 uint32_t int123_move(int desp_x, int desp_y) {
     uint32_t curr_posx = sched_task[current_task].pos_x;
     uint32_t curr_posy = sched_task[current_task].pos_y;
@@ -530,6 +454,81 @@ void int100_look(uint32_t *position_x, uint32_t *position_y) {
 
 }
 
+
+void reset_screen() {
+    //Imicio pantalla CANT_COLUMNASxCANT_FILAS
+    screen_draw_box(0, 0, CANT_FILAS, CANT_COLUMNAS, 1, 0x55);
+    //restaturo semillas
+    for (int i = 0; i < TOTAL_SEEDS; ++i) {
+        if (seedsOnMap[i].assimilated == FALSE) {
+            print("$", seedsOnMap[i].position_x, seedsOnMap[i].position_y, C_FG_WHITE | C_BG_BLACK);
+        }
+    }
+    //Restauro Mr Meeseeks RICK
+    for (int i = 3; i < 13; ++i) {
+        if (sched_task[i].is_alive == TRUE) {
+            print("R", sched_task[i].pos_x, sched_task[i].pos_y, C_FG_WHITE | C_BG_RED);
+        }
+
+    }
+    //Restauro Mr Meeseeks MORTY
+    for (int i = 13; i < 23; ++i) {
+
+        if (sched_task[i].is_alive == TRUE) {
+            print("M", sched_task[i].pos_x, sched_task[i].pos_y, C_FG_WHITE | C_BG_BLUE);
+        }
+    }
+
+    //Seteo puntajes
+    print_dec(score_rick, 7, 5, 45, 0x0F);
+    print_dec(score_morty, 7, 68, 45, 0x0F);
+
+}
+
+
+void spread_megaSeeds() {
+
+    megaSeeds tmp;
+
+    for (uint32_t i = 0; i < TOTAL_SEEDS; i++) {
+        tmp.position_x = rand() % CANT_COLUMNAS;
+        tmp.position_y = rand() % CANT_FILAS;
+        seedsOnMap[i] = tmp;
+        seedsOnMap[i].assimilated = FALSE;
+
+        print("$", tmp.position_x, tmp.position_y, C_FG_WHITE | C_BG_BLACK);
+    }
+
+}
+
+bool move_assimilated(uint32_t pos_x, uint32_t pos_y) {
+    for (int i = 0; i < TOTAL_SEEDS; ++i) {
+
+        if (seedsOnMap[i].assimilated == FALSE) {
+            if (seedsOnMap[i].position_x == pos_x && seedsOnMap[i].position_y == pos_y) {
+                return TRUE;
+            }
+        }
+    }
+    return FALSE;
+
+}
+
+//always take a valid position
+int search_megaSeeds(uint32_t pos_x, uint32_t pos_y) {
+
+    for (int i = 0; i < TOTAL_SEEDS; i++) {
+        if (seedsOnMap[i].position_x == pos_x && seedsOnMap[i].position_y == pos_y) {
+            return i;
+        }
+    }
+    return -1;
+
+}
+
+uint32_t distMan(uint32_t curr_posx, uint32_t curr_posy, int desp_x, int desp_y) {
+    return abs(curr_posx - desp_x) + abs(curr_posy - desp_y);
+}
 
 //funciones auxiliares
 

@@ -20,6 +20,8 @@ int abs(int number) ;
 void int100_look(uint32_t* position_x, uint32_t* position_y);
 uint32_t int123_move(int position_x, int position_y);
 void spread_megaSeeds();
+bool move_assimilated(uint32_t pos_x, uint32_t pos_y);
+int search_megaSeeds(uint32_t pos_x, uint32_t pos_y);
 
 
 void sched_init();
