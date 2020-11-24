@@ -44,7 +44,7 @@ paddr_t next_esp0(paddr_t* esp0_str);
 bool right_postition(uint32_t pos_x, uint32_t pos_y);
 void reset_screen();
 uint32_t make_positive(int x, int divisor);
-uint32_t distMan(uint32_t curr_posx,uint32_t curr_posy,int desp_x,int desp_y);
+uint32_t distMan(int desp_x,int desp_y);
 
 typedef struct str_sched {
 	uint8_t is_alive;

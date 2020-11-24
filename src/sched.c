@@ -72,16 +72,16 @@ void screen_init() {
     screen_draw_box(44, 67, 3, 9, 1, 0x11);//Panel morty
     print_dec(score_morty, 7, 68, 45, 0x0F);//Puntaje Inicial
 
+    print("R", 15, 44, C_FG_WHITE | C_BG_RED);
+    print("-", 15, 46, 0x0F);
+    print("M", 64, 44, C_FG_WHITE | C_BG_BLUE);
+    print("-", 64, 46, 0x0F);
+
     //screen_draw_box(42, 26, 7, 26, 1, 0x66);
     for (int i = 0; i < 10; ++i) {
 
-        if (i < 3) {
-            print("O", 30 + 2 * i, 44, 0x0F);
-        } else {
             print("-", 30 + 2 * i, 44, 0x0F);
             print("-", 30 + 2 * i, 46, 0x0F);
-        }
-
     }
 
 
@@ -94,7 +94,7 @@ void killcurrent_task() {
         print("GAME OVER", 35, 15, 0x0F);
 
     }
-    //jump_toIdle();
+    jump_toIdle();
 
 }
 
@@ -127,13 +127,13 @@ bool right_postition(uint32_t pos_x, uint32_t pos_y) {
 
 uint32_t int88(paddr_t code_phy, uint32_t pos_x, uint32_t pos_y) {
     if (current_task == RICK || current_task == MORTY) {
-        /*verificar si es una posicion valida*/
+        /*Check if it's a valid position*/
         if (!right_postition(pos_x, pos_y)) {
             killcurrent_task();
             return 0;
         }
 
-        /*if en posx,posy hay una semilla*/
+        /*if there'is a seed in posx,posy*/
         for (uint32_t i = 0; i < TOTAL_SEEDS; i++) {
             if (seedsOnMap[i].position_x == pos_x && seedsOnMap[i].position_y == pos_y) {
                 int index;
@@ -141,16 +141,11 @@ uint32_t int88(paddr_t code_phy, uint32_t pos_x, uint32_t pos_y) {
                     //verf slot
                     index = next_tss(tss_Rickmrms);
                     if (index == -1) {
-                        // jump_toIdle();
                         return 0;
                     } else {
-                        //semilla asimilada
                         seedsOnMap[i].assimilated = TRUE;
-                        /*actualizar puntaje*/
                         score_rick = score_rick + 425;
-                        /*Actualizar pantalla*/
                         reset_screen();
-                        // jump_toIdle();
                         return 0;
 
                     }
@@ -158,16 +153,11 @@ uint32_t int88(paddr_t code_phy, uint32_t pos_x, uint32_t pos_y) {
                     //verf slot
                     index = next_tss(tss_Mortymrms);
                     if (index == -1) {
-                        // jump_toIdle();
                         return 0;
                     } else {
-                        //semilla asimilada
                         seedsOnMap[i].assimilated = TRUE;
-                        /*actualizar puntaje*/
                         score_morty = score_morty + 425;
-                        /*Actualizar pantalla*/
                         reset_screen();
-                        // jump_toIdle();
                         return 0;
                     }
                 }
@@ -175,10 +165,9 @@ uint32_t int88(paddr_t code_phy, uint32_t pos_x, uint32_t pos_y) {
         }
 
         if (current_task == RICK) {
-            //verifico si hay slots disponibles
+            //verf slot
             int index = next_tss(tss_Rickmrms);
             if (index == -1) {
-                // jump_toIdle();
                 return 0;
             } else {
 
@@ -193,15 +182,12 @@ uint32_t int88(paddr_t code_phy, uint32_t pos_x, uint32_t pos_y) {
                 sched_task[index + 3].distCel = 7;
                 sched_task[index + 3].ticks = 2;
 
-
-                //reseteo pantalla? verficar
                 reset_screen();
-                // jump_toIdle();
                 return virt_task;
             }
 
         } else {//morty
-            //verifico si hay slots disponibles
+            //verif slot
             int index = next_tss(tss_Mortymrms);
             if (index == -1) {
                 return 0;
@@ -217,10 +203,7 @@ uint32_t int88(paddr_t code_phy, uint32_t pos_x, uint32_t pos_y) {
                 sched_task[index + 13].distCel = 7;
                 sched_task[index + 13].ticks = 2;
 
-
-                //reseteo pantalla? verficar
                 reset_screen();
-                // jump_toIdle();
                 return virt_task;
             }
         }
@@ -330,18 +313,19 @@ void use_portal_gun() {
 }
 
 uint32_t int123_move(int desp_x, int desp_y) {
+    
+    if (current_task == RICK || current_task == MORTY) {
+        killcurrent_task();
+    }
+    uint32_t max_move_allowed = (uint32_t)sched_task[current_task].distCel;
+    if (distMan(desp_x,desp_y) > max_move_allowed){
+
+    	return 0;
+    }
     uint32_t curr_posx = sched_task[current_task].pos_x;
     uint32_t curr_posy = sched_task[current_task].pos_y;
     uint32_t newpos_x = make_positive((curr_posx + desp_x) % CANT_COLUMNAS, CANT_COLUMNAS);
     uint32_t newpos_y = make_positive((curr_posy + desp_y) % CANT_FILAS, CANT_FILAS);
-
-    if (current_task == RICK || current_task == MORTY) {
-        killcurrent_task();
-    }
-    // if (distMan(curr_posx,curr_posy,desp_x,desp_y) > 7){
-
-    // 	return 0;
-    // }
 
     if (move_assimilated(newpos_x, newpos_y)) {
 
@@ -383,18 +367,12 @@ uint32_t int123_move(int desp_x, int desp_y) {
             index = current_task - 13;
             virt_task = TASK_CODE_MR_MEESEEKS + index * PAGE_SIZE;
             current_tss = tss_Mortymrms[current_task - 13].task_seg;
-        }
-
-        // uint32_t old_posx = sched_task[current_task].pos_x;
-        // uint32_t old_posy = sched_task[current_task].pos_y;
-        // paddr_t old_phy = INICIO_DE_PAGINAS_LIBRES_TAREAS + (2*PAGE_SIZE*old_posx) +(2*PAGE_SIZE*80*old_posy);
-        paddr_t new_phy =
-                INICIO_DE_PAGINAS_LIBRES_TAREAS + (2 * PAGE_SIZE * newpos_x) + (2 * PAGE_SIZE * 80 * newpos_y);
+        }        
+        paddr_t new_phy = INICIO_DE_PAGINAS_LIBRES_TAREAS + (2 * PAGE_SIZE * newpos_x) + (2 * PAGE_SIZE * 80 * newpos_y);
         uint32_t attrS = 0x00000007;
 
-
         //temporal mapping wiht identity mapping
-        uint32_t current_cr3 = current_tss.cr3;
+        uint32_t current_cr3 = rcr3();
         mmu_map_page(current_cr3, new_phy, new_phy, attrS); //4kb
         mmu_map_page(current_cr3, new_phy + PAGE_SIZE, new_phy + PAGE_SIZE, attrS); //4kb
 
@@ -410,6 +388,7 @@ uint32_t int123_move(int desp_x, int desp_y) {
         mmu_unmap_page(current_cr3, new_phy + PAGE_SIZE);
 
         //unmapping old virtual address
+        current_cr3 = current_tss.cr3;//current task cr3
         mmu_unmap_page(current_cr3, virt_task);
         mmu_unmap_page(current_cr3, virt_task + PAGE_SIZE);
 
@@ -459,22 +438,22 @@ void int100_look(uint32_t *position_x, uint32_t *position_y) {
 
 
 void reset_screen() {
-    //Imicio pantalla CANT_COLUMNASxCANT_FILAS
+	//screeen init
     screen_draw_box(0, 0, CANT_FILAS, CANT_COLUMNAS, 1, 0x55);
-    //restaturo semillas
+    //restore seeds
     for (int i = 0; i < TOTAL_SEEDS; ++i) {
         if (seedsOnMap[i].assimilated == FALSE) {
             print("$", seedsOnMap[i].position_x, seedsOnMap[i].position_y, C_FG_WHITE | C_BG_BLACK);
         }
     }
-    //Restauro Mr Meeseeks RICK
+    //restore Mr Meeseeks RICK
     for (int i = 3; i < 13; ++i) {
         if (sched_task[i].is_alive == TRUE) {
             print("R", sched_task[i].pos_x, sched_task[i].pos_y, C_FG_WHITE | C_BG_RED);
         }
 
     }
-    //Restauro Mr Meeseeks MORTY
+    //restore Mr Meeseeks MORTY
     for (int i = 13; i < 23; ++i) {
 
         if (sched_task[i].is_alive == TRUE) {
@@ -482,7 +461,7 @@ void reset_screen() {
         }
     }
 
-    //Seteo puntajes
+    //Set scores
     print_dec(score_rick, 7, 5, 45, 0x0F);
     print_dec(score_morty, 7, 68, 45, 0x0F);
 
@@ -529,8 +508,8 @@ int search_megaSeeds(uint32_t pos_x, uint32_t pos_y) {
 
 }
 
-uint32_t distMan(uint32_t curr_posx, uint32_t curr_posy, int desp_x, int desp_y) {
-    return abs(curr_posx - desp_x) + abs(curr_posy - desp_y);
+uint32_t distMan(int desp_x, int desp_y) {
+    return abs(desp_x) + abs(desp_y);
 }
 
 //funciones auxiliares
@@ -668,13 +647,16 @@ void reset_MrMsCel() {
     for (int i = 3; i < 23; ++i) {
         if (sched_task[i].distCel == 1) {
             sched_task[i].ticks = -1;
-        }
-        if (sched_task[i].ticks == 0) {
-            sched_task[i].ticks = 2;
-            sched_task[i].distCel--;
-        }
-        if (sched_task[i].ticks > 0) {
-            sched_task[i].ticks--;
+        }else{
+        	if (sched_task[i].ticks == 0) {
+        	    sched_task[i].ticks = 2;
+        	    sched_task[i].distCel--;
+        	}else{
+
+        		if (sched_task[i].ticks > 0) {
+        		    sched_task[i].ticks--;
+        		}
+        	}
         }
     }
 }
