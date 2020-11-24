@@ -92,7 +92,7 @@ gdt_entry_t gdt[GDT_COUNT] = {
       },
     [GDT_VIDEO] = //14
         {
-            .limit_15_0 = 0x7FFF,   /* limit[0:15]  */
+            .limit_15_0 = 0x1F3F,   /* limit[0:15]  */
             .base_15_0 = 0x8000,    /* base[0:15]   */   
             .base_23_16 = 0x0B,     /* base[23:16]  */   
             .type = 0x2,            /* type         */

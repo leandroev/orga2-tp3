@@ -61,77 +61,104 @@ y:             dd 0x0
 global _isr%1
 
 _isr%1:
-    sub esp, 5*4
-
-    push edx
+    ;xchg bx, bx
     push eax
+    mov eax, %1
+    cmp eax, 8
+    jb .sin_cod_error
+    je .con_cod_error
+    cmp eax, 17
+    ja .sin_cod_error
+    je .con_cod_error
+    cmp eax, 9
+    je .sin_cod_error
+    cmp eax, 15
+    jb .con_cod_error
+    jae .sin_cod_error
+
+.con_cod_error:
+    pop eax
+    ;push 0      ; cod error ficticio 0
+    jmp .push_parametros
+
+.sin_cod_error:
+    pop eax
+    push 0      ; cod error ficticio 0
+    jmp .push_parametros
+
+.push_parametros:
+    sub esp, 4*4
+    ;push backtrace
+    push eax
+    push ebp
     push es
-        
-    ;obtenemos SS3
     mov eax, [esp+4*12]
-    mov es, ax
-    ;obtenemos ESP3
-    mov eax, [esp+4*11]
+    ;mov es, ax
 
-    ;no se por que esto funciona
-    add eax, 8
-
-    ;buscamos los 5 elementos del stack de nivel 3
-    mov edx, [es:eax]
-    mov [esp+4*7], edx
-    add eax, 4
-    
-    mov edx, [es:eax] 
-    mov [esp+4*6], edx
-    add eax, 4
-
-    mov edx, [es:eax] 
-    mov [esp+4*5], edx
-    add eax, 4
-
-    mov edx, [es:eax] 
-    mov [esp+4*4], edx
-    add eax, 4
-
-    mov edx, [es:eax] 
-    mov [esp+4*3], edx
+    ;backtrace1
+    ;mov eax, [es:ebp+4]
+    mov [esp+3*4], eax
+    ;mov ebp, [es:ebp]
+    ;backtrace2
+    ;mov eax, [es:ebp+4]
+    mov [esp+4*4], eax
+    ;mov ebp, [es:ebp]
+    ;backtrace3
+    ;mov eax, [es:ebp+4]
+    mov [esp+5*4], eax
+    ;mov ebp, [es:ebp]
+    ;backtrace4
+    ;mov eax, [es:ebp+4]
+    mov [esp+6*4], eax
+    ;mov ebp, [es:ebp]
 
     pop es
+    pop ebp
     pop eax
-    pop edx
 
+    ; reservo espacio para el stack
+    sub esp, 3*4
+
+    ;backtrace: 4 ultimas direcciones de retorno
     pushad
+    
     ;colocamos los valores de la tarea en la pila
-    mov eax, [esp+4*16] ;ESP3
-    mov [esp+4*3], eax
-
-    ;push cs
-    mov eax, [esp+4*14] ; CS3
+    mov eax, [esp+4*17] ; CS3
     push eax
 
+    ; esta bien esto o tengo que usar la tss???
     push ds
     push es
     push fs
     push gs
-
+    
     ;push ss
-    mov eax, [esp+4*22] ; SS3
+    mov eax, [esp+4*25] ; SS3
     push eax
 
-    ;pushfd
-    mov eax, [esp+4*21] ;EFLAGS
+    mov eax, [esp+4*25] ;ESP3
+    mov [esp+4*9], eax
+
+    mov eax, [esp+4*24] ;EFLAGS
     push eax
 
-    mov eax, [esp+4*20]
+    mov eax, [esp+4*23] ; eip
     push eax
-    pushad
+
+    call check_screen_debug
+    cmp eax, 1
+    jne .seguir
     call imprimir_registros
     mov eax, %1
     push eax
     call rutina_de_interrupciones
     add esp, 4
+    .seguir:
+    add esp, 8*4
     call killcurrent_task
     popad
+    ; salto el cod de error
+    add esp, 8*4    ; eip <- esp0
     iret
 %endmacro
 

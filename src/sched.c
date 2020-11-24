@@ -532,67 +532,76 @@ uint32_t distMan(uint32_t curr_posx, uint32_t curr_posy, int desp_x, int desp_y)
 
 //funciones auxiliares
 
-void imprimir_registros(uint32_t eip, uint32_t eflags, uint16_t ss, uint16_t gs, uint16_t fs, uint16_t es, uint16_t ds,
-                        uint16_t cs, uint32_t edi, uint32_t esi, uint32_t ebp, uint32_t esp, uint32_t ebx, uint32_t edx,
-                        uint32_t ecx,
-                        uint32_t eax, uint32_t stack1, uint32_t stack2, uint32_t stack3, uint32_t stack4,
-                        uint32_t stack5) {
-    print("eax", 26, 7, 0x0F);
-    print_hex(eax, 8, 30, 7, 0x0F);
-    print("ecx", 26, 9, 0x0F);
-    print_hex(ecx, 8, 30, 9, 0x0F);
-    print("edx", 26, 11, 0x0F);
-    print_hex(edx, 8, 30, 11, 0x0F);
-    print("ebx", 26, 13, 0x0F);
-    print_hex(ebx, 8, 30, 13, 0x0F);
-    print("esp", 26, 15, 0x0F);
-    print_hex(esp, 8, 30, 15, 0x0F);
-    print("ebp", 26, 17, 0x0F);
-    print_hex(ebp, 8, 30, 17, 0x0F);
-    print("esi", 26, 19, 0x0F);
-    print_hex(esi, 8, 30, 19, 0x0F);
-    print("edi", 26, 21, 0x0F);
-    print_hex(edi, 8, 30, 21, 0x0F);
-    print("eip", 26, 23, 0x0F);
-    print_hex(eip, 8, 30, 23, 0x0F);
-    print("cs", 27, 25, 0x0F);
-    print_hex(cs, 4, 30, 25, 0x0F);
-    print("ds", 27, 27, 0x0F);
-    print_hex(ds, 4, 30, 27, 0x0F);
-    print("es", 27, 29, 0x0F);
-    print_hex(es, 4, 30, 29, 0x0F);
-    print("fs", 27, 31, 0x0F);
-    print_hex(fs, 4, 30, 31, 0x0F);
-    print("gs", 27, 33, 0x0F);
-    print_hex(gs, 4, 30, 33, 0x0F);
-    print("ss", 27, 35, 0x0F);
-    print_hex(ss, 4, 30, 35, 0x0F);
-    print("eflags", 26, 37, 0x0F);
-    print_hex(eflags, 8, 33, 37, 0x0F);
-    uint32_t cr0 = rcr0();
-    print("cr0", 39, 8, 0x0F);
-    print_hex(cr0, 8, 44, 8, 0x0F);
-    uint32_t cr2 = rcr2();
-    print("cr2", 39, 10, 0x0F);
-    print_hex(cr2, 8, 44, 10, 0x0F);
-    uint32_t cr3 = rcr3();
-    print("cr3", 39, 12, 0x0F);
-    print_hex(cr3, 8, 44, 12, 0x0F);
-    uint32_t cr4 = rcr4();
-    print("cr4", 39, 14, 0x0F);
-    print_hex(cr4, 8, 44, 14, 0x0F);
-    print("Stack", 40, 27, 0x0F);
-    print_hex(stack1, 8, 40, 28, 0x0F);
-    print_hex(stack2, 8, 40, 29, 0x0F);
-    print_hex(stack3, 8, 40, 30, 0x0F);
-    print_hex(stack4, 8, 40, 31, 0x0F);
-    print_hex(stack5, 8, 40, 32, 0x0F);
-    screen_draw_box(1, 24, 40, 1, 1, 0x00); //pinto linea izquierda
-    screen_draw_box(1, 53, 40, 1, 1, 0x00); //pinto linea derecha
-    screen_draw_box(1, 24, 1, 29, 1, 0x00); //pinto linea horzontal superior
-    screen_draw_box(3, 24, 1, 29, 1, 0x00); //pinto linea horzontal inferior
-    screen_draw_box(2, 25, 1, 28, 1, 0x44); //pinto linea roja intermedia
+void imprimir_registros(uint32_t eip, uint32_t eflags,uint16_t ss,uint16_t gs,uint16_t fs,uint16_t es,uint16_t ds,
+                        uint16_t cs, uint32_t edi,uint32_t esi,uint32_t ebp,uint32_t esp,uint32_t ebx,uint32_t edx,
+                        uint32_t ecx, uint32_t eax,uint32_t stack1,uint32_t stack2,uint32_t stack3,uint32_t bcktrace1,
+                        uint32_t bcktrace2,uint32_t bcktrace3,uint32_t bcktrace4,uint32_t err){
 
+    screen_draw_box(1,24,40,1,1,0x00); //pinto linea izquierda
+    screen_draw_box(1,53,40,1,1,0x00); //pinto linea derecha
+    screen_draw_box(1,24,1,29,1,0x00); //pinto linea horzontal superior
+    screen_draw_box(3,24,1,29,1,0x00); //pinto linea horzontal inferior
+    screen_draw_box(2,25,1,28,1,0x44); //pinto linea roja intermedia
+    screen_draw_box(4,25,36,28,0,0x70); //pinto fondo gris intermedia
+    screen_draw_box(4,25,36,28,0,0x70); //pinto fondo gris intermedia
+
+    print("Tarea ",44,2,C_BG_RED | C_FG_WHITE); // idTarea
+
+    print("eax",26,7,0x7F);
+    print_hex(eax,8,30,7,0x70);
+    print("ebx",26,9,0x7F);
+    print_hex(ebx,8,30,9,0x70);
+    print("ecx",26,11,0x7F);
+    print_hex(ecx,8,30,11,0x70);
+    print("edx",26,13,0x7F);
+    print_hex(edx,8,30,13,0x70);
+    print("esi",26,15,0x7F);
+    print_hex(esi,8,30,15,0x70);
+    print("edi",26,17,0x7F);
+    print_hex(edi,8,30,17,0x70);
+    print("ebp",26,19,0x7F);
+    print_hex(ebp,8,30,19,0x70);
+    print("esp",26,21,0x7F);
+    print_hex(esp,8,30,21,0x70);
+    print("eip",26,23,0x7F);
+    print_hex(eip,8,30,23,0x70);
+    print("cs",27,25,0x7F);
+    print_hex(cs,4,30,25,0x70);
+    print("ds",27,27,0x7F);
+    print_hex(ds,4,30,27,0x70);
+    print("es",27,29,0x7F);
+    print_hex(es,4,30,29,0x70);
+    print("fs",27,31,0x7F);
+    print_hex(fs,4,30,31,0x70);
+    print("gs",27,33,0x7F);
+    print_hex(gs,4,30,33,0x70);
+    print("ss",27,35,0x7F);
+    print_hex(ss,4,30,35,0x70);
+    print("eflags",26,37,0x7F);
+    print_hex(eflags,8,33,37,0x70);
+    uint32_t cr0 = rcr0();
+    print("cr0",40,8,0x7F);
+    print_hex(cr0,8,44,8,0x70);
+    uint32_t cr2 = rcr2();
+    print("cr2",40,10,0x7F);
+    print_hex(cr2,8,44,10,0x70);
+    uint32_t cr3 = rcr3();
+    print("cr3",40,12,0x7F);
+    print_hex(cr3,8,44,12,0x70);
+    uint32_t cr4 = rcr4();
+    print("cr4",40,14,0x7F);
+    print_hex(cr4,8,44,14,0x70);
+    print("err",40,16,0x7F);
+    print_hex(err,8,44,16,0x70);
+    print("Stack",40,20,0x7F);
+    print_hex(stack1,8,40,21,0x70);
+    print_hex(stack2,8,40,22,0x70);
+    print_hex(stack3,8,40,23,0x70);
+    print("Backtrace",40,27,0x7F);
+    print_hex(bcktrace1,8,40,28,0x70);
+    print_hex(bcktrace2,8,40,29,0x70);
+    print_hex(bcktrace3,8,40,30,0x70);
+    print_hex(bcktrace4,8,40,31,0x70);
 
 }
 
