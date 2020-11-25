@@ -422,3 +422,93 @@ next_clock:
                 print_text_pm ebx, 1, 0x0f, 49, 79
                 popad
         ret
+
+isrNumber1:           dd 0x00000000
+isrClock1:            db '|/-\'
+isrNumber2:           dd 0x00000000
+isrClock2:            db '|/-\'
+isrNumber3:           dd 0x00000000
+isrClock3:            db '|/-\'
+isrNumber4:           dd 0x00000000
+isrClock4:            db '|/-\'
+isrNumber5:           dd 0x00000000
+isrClock5:            db '|/-\'
+isrNumber6:           dd 0x00000000
+isrClock6:            db '|/-\'
+isrNumber7:           dd 0x00000000
+isrClock7:            db '|/-\'
+isrNumber8:           dd 0x00000000
+isrClock8:            db '|/-\'
+isrNumber9:           dd 0x00000000
+isrClock9:            db '|/-\'
+isrNumber10:           dd 0x00000000
+isrClock10:            db '|/-\'
+isrNumber11:           dd 0x00000000
+isrClock11:            db '|/-\'
+isrNumber12:           dd 0x00000000
+isrClock12:            db '|/-\'
+isrNumber13:           dd 0x00000000
+isrClock13:            db '|/-\'
+isrNumber14:           dd 0x00000000
+isrClock14:            db '|/-\'
+isrNumber15:           dd 0x00000000
+isrClock15:            db '|/-\'
+isrNumber16:           dd 0x00000000
+isrClock16:            db '|/-\'
+isrNumber17:           dd 0x00000000
+isrClock17:            db '|/-\'
+isrNumber18:           dd 0x00000000
+isrClock18:            db '|/-\'
+isrNumber19:           dd 0x00000000
+isrClock19:            db '|/-\'
+isrNumber20:           dd 0x00000000
+isrClock20:            db '|/-\'
+isrNumber21:           dd 0x00000000
+isrClock21:            db '|/-\'
+isrNumber22:           dd 0x00000000
+isrClock22:            db '|/-\'
+
+
+
+%macro next_clock 3
+global next_clock%3 ; macro para imprimir la rutina de interrupcion de reloj en diferentes posiciones del mapa
+
+next_clock%3:
+        mov edi, [esp + 4]
+        mov esi, [esp + 8]
+        pushad
+        inc DWORD [isrNumber%3]
+        mov ebx, [isrNumber%3]
+        cmp ebx, 0x4
+        jl .ok
+                mov DWORD [isrNumber%3], 0x0
+                mov ebx, 0
+        .ok:
+                add ebx, isrClock%3
+                print_text_pm ebx, 1, 0x0f, edi, esi 
+                popad
+        ret
+%endmacro
+
+next_clock 40, 40, 1
+next_clock 40, 40, 2
+next_clock 40, 40, 3
+next_clock 40, 40, 4
+next_clock 40, 40, 5
+next_clock 40, 40, 6
+next_clock 40, 40, 7
+next_clock 40, 40, 8
+next_clock 40, 40, 9
+next_clock 40, 40, 10
+next_clock 40, 40, 11
+next_clock 40, 40, 12
+next_clock 40, 40, 13
+next_clock 40, 40, 14
+next_clock 40, 40, 15
+next_clock 40, 40, 16
+next_clock 40, 40, 17
+next_clock 40, 40, 18
+next_clock 40, 40, 19
+next_clock 40, 40, 20
+next_clock 40, 40, 21
+next_clock 40, 40, 22

@@ -10,6 +10,7 @@
 #include "colors.h"
 #include "screen.h"
 #include "prng.h"
+#include "isr.h"
 
 uint32_t screen_debug;
 uint32_t act_debug;
@@ -73,20 +74,6 @@ void screen_init() {
 
     screen_draw_box(44, 67, 3, 9, 1, 0x11);//Panel morty
     print_dec(score_morty, 7, 68, 45, 0x0F);//Puntaje Inicial
-
-    print("R", 15, 44, C_FG_WHITE | C_BG_RED);
-    print("-", 15, 46, 0x0F);
-    print("M", 64, 44, C_FG_WHITE | C_BG_BLUE);
-    print("-", 64, 46, 0x0F);
-
-    //screen_draw_box(42, 26, 7, 26, 1, 0x66);
-    for (int i = 0; i < 10; ++i) {
-
-            print("-", 30 + 2 * i, 44, 0x0F);
-            print("-", 30 + 2 * i, 46, 0x0F);
-    }
-
-
 }
 
 
@@ -476,6 +463,142 @@ void reset_screen() {
             print("M", sched_task[i].pos_x, sched_task[i].pos_y, C_FG_WHITE | C_BG_BLUE);
         }
     }
+
+    print("R", 15, 44, C_FG_WHITE | C_BG_RED);
+    print("M", 64, 44, C_FG_WHITE | C_BG_BLUE);
+
+    if(sched_task[1].is_alive == TRUE){
+        next_clock1(46, 15, 1);
+    }else{
+        print("X", 15, 46, C_FG_BLACK | C_BG_BLACK);
+    }
+
+    if(sched_task[2].is_alive == TRUE){
+        next_clock2(46, 64, 2);
+    }else{
+        print("X", 64, 46, C_FG_BLACK | C_BG_BLACK);
+    }
+
+    if(sched_task[3].is_alive == TRUE){
+        next_clock3(43, 17, 3);
+    }else{
+        print("X", 17, 43, C_FG_BLACK | C_BG_BLACK);
+    }
+
+    if(sched_task[4].is_alive == TRUE){
+        next_clock4(43, 22, 4);
+    }else{
+        print("X", 22, 43, C_FG_BLACK | C_BG_BLACK);
+    }
+
+    if(sched_task[5].is_alive == TRUE){
+        next_clock5(43, 27, 5);
+    }else{
+        print("X", 27, 43, C_FG_BLACK | C_BG_BLACK);
+    }    
+
+    if(sched_task[6].is_alive == TRUE){
+        next_clock6(43, 32, 6);
+    }else{
+        print("X", 32, 43, C_FG_BLACK | C_BG_BLACK);
+    }
+
+    if(sched_task[7].is_alive == TRUE){
+        next_clock7(43, 37, 7);
+    }else{
+        print("X", 37, 43, C_FG_BLACK | C_BG_BLACK);
+    }
+
+    if(sched_task[8].is_alive == TRUE){
+        next_clock8(43, 42, 8);
+    }else{
+        print("X", 42, 43, C_FG_BLACK | C_BG_BLACK);
+    }
+
+    if(sched_task[9].is_alive == TRUE){
+        next_clock9(43, 47, 9);
+    }else{
+        print("X", 47, 43, C_FG_BLACK | C_BG_BLACK);
+    }
+
+    if(sched_task[10].is_alive == TRUE){
+        next_clock10(43, 52, 10);
+    }else{
+        print("X", 52, 43, C_FG_BLACK | C_BG_BLACK);
+    }
+
+    if(sched_task[11].is_alive == TRUE){
+        next_clock11(43, 57, 11);
+    }else{
+        print("X", 57, 43, C_FG_BLACK | C_BG_BLACK);
+    }
+
+    if(sched_task[12].is_alive == TRUE){
+        next_clock12(43, 62, 12);
+    }else{
+        print("X", 62, 43, C_FG_BLACK | C_BG_BLACK);
+    }
+
+    if(sched_task[13].is_alive == TRUE){
+        next_clock13(46, 17, 13);
+    }else{
+        print("X", 17, 46, C_FG_BLACK | C_BG_BLACK);
+    }
+
+    if(sched_task[14].is_alive == TRUE){
+        next_clock14(46, 22, 14);
+    }else{
+        print("X", 22, 46, C_FG_BLACK | C_BG_BLACK);
+    }
+
+    if(sched_task[15].is_alive == TRUE){
+        next_clock15(46, 27, 15);
+    }else{
+        print("X", 27, 46, C_FG_BLACK | C_BG_BLACK);
+    }
+    
+    if(sched_task[16].is_alive == TRUE){
+        next_clock16(46, 32, 16);
+    }else{
+        print("X", 32, 46, C_FG_BLACK | C_BG_BLACK);
+    }
+
+    if(sched_task[17].is_alive == TRUE){
+        next_clock17(46, 37, 17);
+    }else{
+        print("X", 37, 46, C_FG_BLACK | C_BG_BLACK);
+    }
+    
+    if(sched_task[18].is_alive == TRUE){
+        next_clock18(46, 42, 18);
+    }else{
+        print("X", 42, 46, C_FG_BLACK | C_BG_BLACK);
+    }
+    
+    if(sched_task[19].is_alive == TRUE){
+        next_clock19(46, 47, 19);
+    }else{
+        print("X", 47, 46, C_FG_BLACK | C_BG_BLACK);
+    }
+
+    if(sched_task[20].is_alive == TRUE){
+        next_clock20(46, 52, 20);
+    }else{
+        print("X", 52, 46, C_FG_BLACK | C_BG_BLACK);
+    }
+    
+    if(sched_task[21].is_alive == TRUE){
+        next_clock21(46, 57, 21);
+    }else{
+        print("X", 57, 46, C_FG_BLACK | C_BG_BLACK);
+    }
+
+    if(sched_task[22].is_alive == TRUE){
+        next_clock22(46, 62, 22);
+    }else{
+        print("X", 62, 46, C_FG_BLACK | C_BG_BLACK);
+    }
+
 
     //Set scores
     print_dec(score_rick, 7, 5, 45, 0x0F);
