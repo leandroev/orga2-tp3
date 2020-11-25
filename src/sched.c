@@ -534,15 +534,17 @@ void imprimir_registros(uint32_t eip, uint32_t eflags,uint16_t ss,uint16_t gs,ui
                         uint32_t ecx, uint32_t eax,uint32_t stack1,uint32_t stack2,uint32_t stack3,uint32_t bcktrace1,
                         uint32_t bcktrace2,uint32_t bcktrace3,uint32_t bcktrace4,uint32_t err){
 
-    screen_draw_box(1,24,40,1,1,0x00); //pinto linea izquierda
-    screen_draw_box(1,53,40,1,1,0x00); //pinto linea derecha
-    screen_draw_box(1,24,1,29,1,0x00); //pinto linea horzontal superior
-    screen_draw_box(3,24,1,29,1,0x00); //pinto linea horzontal inferior
-    screen_draw_box(2,25,1,28,1,0x44); //pinto linea roja intermedia
-    screen_draw_box(4,25,36,28,0,0x70); //pinto fondo gris intermedia
-    screen_draw_box(4,25,36,28,0,0x70); //pinto fondo gris intermedia
+    screen_draw_box(0,24,40,1,1,0x00); //pinto linea izquierda
+    screen_draw_box(0,53,40,1,1,0x00); //pinto linea derecha
+    screen_draw_box(0,24,1,29,1,0x00); //pinto linea horizontal superior
+    screen_draw_box(3,24,1,29,1,0x00); //pinto linea horizontal intermedia
+    screen_draw_box(5,24,1,29,1,0x00); //pinto linea horizontal inferior
+    screen_draw_box(1,25,2,28,1,0x44); //pinto linea roja intermedia
+    screen_draw_box(4,25,1,28,0,0x10); //pinto linea azul intermedia
+    screen_draw_box(6,25,34,28,0,0x70); //pinto fondo gris intermedia
 
-    print("Tarea ",44,2,C_BG_RED | C_FG_WHITE); // idTarea
+    print("Tarea ",26,4,C_BG_BLUE | C_FG_WHITE);
+    print_dec(current_task,2,32,4,C_BG_BLUE | C_FG_WHITE); // idTarea
 
     print("eax",26,7,0x7F);
     print_hex(eax,8,30,7,0x70);
@@ -602,15 +604,20 @@ void imprimir_registros(uint32_t eip, uint32_t eflags,uint16_t ss,uint16_t gs,ui
 
 }
 
+void set_screen_debug(){
+    screen_debug = 1;
+}
+
 void set_modo_debug() {
-    if (screen_debug == 1) {
+    if (act_debug == 1) { // a la expera de una excepcion
+        if(screen_debug == 1){ // ya hubo excepcion
+            screen_debug = 0;
+            reset_screen();
+        }else{              // no hubo excepcion
+            act_debug = 0;
+        }
+    }else{      // desactivar debug mode
         act_debug = 1;
-        screen_debug = 0;
-        //reseteo pantalla
-        reset_screen();
-    } else {
-        screen_debug = 1;
-        act_debug = 0;
     }
 }
 

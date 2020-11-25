@@ -30,7 +30,8 @@ extern int123_move
 extern reset_screen
 
 
-
+extern virtual_valida
+extern set_screen_debug
 extern check_act_debug
 extern set_modo_debug
 extern check_screen_debug
@@ -90,43 +91,66 @@ _isr%1:
     sub esp, 4*4
     ;push backtrace
     push eax
-    push ebp
-    push es
-    mov eax, [esp+4*12]
-    ;mov es, ax
+    push ecx
+    push edx
+    mov edx, ebp
+    mov ecx, 3
 
-    ;backtrace1
-    ;mov eax, [es:ebp+4]
-    mov [esp+3*4], eax
-    ;mov ebp, [es:ebp]
-    ;backtrace2
-    ;mov eax, [es:ebp+4]
-    mov [esp+4*4], eax
-    ;mov ebp, [es:ebp]
-    ;backtrace3
-    ;mov eax, [es:ebp+4]
-    mov [esp+5*4], eax
-    ;mov ebp, [es:ebp]
-    ;backtrace4
-    ;mov eax, [es:ebp+4]
-    mov [esp+6*4], eax
-    ;mov ebp, [es:ebp]
+.loop1:
+    push edx
+    call virtual_valida
+    add esp, 4
+    cmp eax, 1
+    jne .saltar_backtrace
 
-    pop es
-    pop ebp
+    mov eax, [edx+4]
+    mov [esp+ecx*4], eax
+    mov edx, [edx] ; viejo rbp
+    inc ecx
+    cmp ecx,7
+    jne .loop1
+
+.saltar_backtrace:
+    pop edx
+    pop ecx
     pop eax
 
     ; reservo espacio para el stack
     sub esp, 3*4
+    push eax
+    push ecx
+    push edx
 
-    ;backtrace: 4 ultimas direcciones de retorno
+    mov edx, [esp+4*14]; esp3
+    mov ecx, 3
+
+.loop2:
+    push edx
+    call virtual_valida
+    add esp, 4
+    cmp eax, 1
+    jne .saltar_stack
+    ; stack
+    mov eax, [edx] ;[esp3]
+    mov [esp+4*ecx], eax 
+    add edx, 4 ; esp3 +4
+    inc ecx
+    cmp ecx, 6
+    jne .loop2
+    
+.saltar_stack:
+    pop edx
+    pop ecx
+    pop eax
+
+    ;push registros de proposito general
     pushad
     
     ;colocamos los valores de la tarea en la pila
     mov eax, [esp+4*17] ; CS3
     push eax
 
-    ; esta bien esto o tengo que usar la tss???
+    ; push segmentos
     push ds
     push es
     push fs
@@ -145,19 +169,21 @@ _isr%1:
     mov eax, [esp+4*23] ; eip
     push eax
 
-    call check_screen_debug
+    ;call set_modo_debug
+    call check_act_debug
     cmp eax, 1
     jne .seguir
+    call set_screen_debug
     call imprimir_registros
     mov eax, %1
     push eax
     call rutina_de_interrupciones
     add esp, 4
-    .seguir:
+    
+.seguir:
     add esp, 8*4
     call killcurrent_task
-    popad
-    ; salto el cod de error
+    popad ; reestablezco registros de prop gral
     add esp, 8*4    ; eip <- esp0
     iret
 %endmacro
@@ -210,14 +236,8 @@ _isr33:
     in al, 0x60 ; Captura una tecla
     cmp al, 0x15 ; verifico si toque la y
     jne .seguir
-    
     ;activo modo debug
     call set_modo_debug
-    call check_screen_debug
-    cmp eax, 1
-    jne .seguir
-    ;Imprimir registros
-    call imprimir_registros
     .seguir:
     push eax
     call printScanCode ;Rutina para Imprimir el ScanCode

@@ -81,64 +81,81 @@ void rutina_de_interrupciones(int number){ // Dependiendo del número de interru
 
   switch (number){
     case 0:
-        print("Divide error [0]",26, 2, C_BG_RED | C_FG_WHITE);
+        print("Divide error [0]",26, 1, C_BG_RED | C_FG_WHITE);
         break;        
     case 1:
-        print("Debug exception [1]",26, 2, C_BG_RED | C_FG_WHITE);
+        print("Debug exception [1]",26, 1, C_BG_RED | C_FG_WHITE);
         break;
     case 2:
-        print("NMI interrupt [2]",26, 2, C_BG_RED | C_FG_WHITE);
+        print("NMI interrupt [2]",26, 1, C_BG_RED | C_FG_WHITE);
         break;
     case 3:
-        print("Breakpoint [3]",26, 2, C_BG_RED | C_FG_WHITE);
+        print("Breakpoint [3]",26, 1, C_BG_RED | C_FG_WHITE);
         break;
     case 4:
-        print("Overflow [4]",26, 2, C_BG_RED | C_FG_WHITE);
+        print("Overflow [4]",26, 1, C_BG_RED | C_FG_WHITE);
         break;
     case 5:
-        print("BOUND Range Extended [5]",26, 2, C_BG_RED | C_FG_WHITE);
+        print("BOUND Range Extended [5]",26, 1, C_BG_RED | C_FG_WHITE);
         break;        
     case 6:
-        print("Invalid Opcode(Undefined opcode) [6]",26, 2, C_BG_RED | C_FG_WHITE);
+        print("Invalid Opcode [6]",26, 1, C_BG_RED | C_FG_WHITE);
         break;
     case 7:
-        print("Device not available(No math coprocessor) [7]",26, 2, C_BG_RED | C_FG_WHITE);
+        print("Device not available",26, 1, C_BG_RED | C_FG_WHITE);
+        print("(No math coprocessor) [7]",26, 2, C_BG_RED | C_FG_WHITE);
+        
         break;
     case 8:
-        print("Double fault [8]",26, 2, C_BG_RED | C_FG_WHITE);
+        print("Double fault [8]",26, 1, C_BG_RED | C_FG_WHITE);
         break;
     case 9:
-        print("Coprocessor segment overrun(reserved) [9]",26, 2, C_BG_RED | C_FG_WHITE);
+        print("Coprocessor segment",26, 1, C_BG_RED | C_FG_WHITE);
+        print("overrun(reserved) [9]",26, 2, C_BG_RED | C_FG_WHITE);
         break;
     case 10:
-        print("Invalid TSS [10]",26, 2, C_BG_RED | C_FG_WHITE);
+        print("Invalid TSS [10]",26, 1, C_BG_RED | C_FG_WHITE);
         break;
     case 11:
-        print("Segment not present [11]",26, 2, C_BG_RED | C_FG_WHITE);
+        print("Segment not present [11]",26, 1, C_BG_RED | C_FG_WHITE);
         break;
     case 12:
-        print("Stack-segment fault [12]",26, 2, C_BG_RED | C_FG_WHITE);
+        print("Stack-segment fault [12]",26, 1, C_BG_RED | C_FG_WHITE);
         break;
     case 13:
-        print("General protection [13]",26, 2, C_BG_RED | C_FG_WHITE);
+        print("General protection [13]",26, 1, C_BG_RED | C_FG_WHITE);
         break;
     case 14:
-        print("Page fault [14]",26, 2, C_BG_RED | C_FG_WHITE);
+        print("Page fault [14]",26, 1, C_BG_RED | C_FG_WHITE);
         break;
     case 16:
-        print("x87 FPU floating point error(Math fault) [16]",26, 2, C_BG_RED | C_FG_WHITE);
+        print("x87 FPU floating point",26, 1, C_BG_RED | C_FG_WHITE);
+        print("error (Math fault) [16]",26, 2, C_BG_RED | C_FG_WHITE);
         break;
     case 17:
-        print("Alingment check [17]",26, 2, C_BG_RED | C_FG_WHITE);
+        print("Alingment check [17]",26, 1, C_BG_RED | C_FG_WHITE);
         break;
     case 18:
-        print("Machine Check [18]",26, 2, C_BG_RED | C_FG_WHITE);
+        print("Machine Check [18]",26, 1, C_BG_RED | C_FG_WHITE);
         break;
     case 19:
-        print("SIMD floating point-exception [19]",26, 2, C_BG_RED | C_FG_WHITE);
+        print("SIMD floating",26, 1, C_BG_RED | C_FG_WHITE);
+        print("point-exception [19]",26, 2, C_BG_RED | C_FG_WHITE);
         break;        
     default:
         break;
   }
 
+}
+
+uint32_t virtual_valida(uint32_t number){
+  if (number % 4 == 0){
+    if ( (number >= 0x1D00000) & (number < 0x1D04000) ){
+      return 1;
+    }
+    if ( (number >= 0x08000000) & (number < 0x08014000) ){
+      return 1;
+    }
+  }
+  return 0;
 }

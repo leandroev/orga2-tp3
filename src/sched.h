@@ -35,6 +35,7 @@ void imprimir_registros(uint32_t eip, uint32_t eflags,uint16_t ss,uint16_t gs,ui
 						uint32_t bcktrace2,uint32_t bcktrace3,uint32_t bcktrace4,uint32_t err);
 
 void killcurrent_task();
+void set_screen_debug();
 void set_modo_debug();
 uint32_t check_screen_debug();
 uint32_t check_act_debug();
