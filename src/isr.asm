@@ -62,7 +62,6 @@ y:             dd 0x0
 global _isr%1
 
 _isr%1:
-    ;xchg bx, bx
     push eax
     mov eax, %1
     cmp eax, 8
@@ -79,7 +78,6 @@ _isr%1:
 
 .con_cod_error:
     pop eax
-    ;push 0      ; cod error ficticio 0
     jmp .push_parametros
 
 .sin_cod_error:
@@ -101,16 +99,14 @@ _isr%1:
     call virtual_valida
     add esp, 4
     cmp eax, 1
-    jne .saltar_backtrace
-
-    mov eax, [edx+4]
+    mov eax, 0  ; si es invalida pongo 0
+    cmove eax, [edx+4]
     mov [esp+ecx*4], eax
     mov edx, [edx] ; viejo rbp
     inc ecx
     cmp ecx,7
     jne .loop1
 
-.saltar_backtrace:
     pop edx
     pop ecx
     pop eax
@@ -129,16 +125,14 @@ _isr%1:
     call virtual_valida
     add esp, 4
     cmp eax, 1
-    jne .saltar_stack
-    ; stack
-    mov eax, [edx] ;[esp3]
+    mov eax, 0 ; si es invalida pongo 0
+    cmove eax, [edx] ; [esp3]
     mov [esp+4*ecx], eax 
     add edx, 4 ; esp3 +4
     inc ecx
     cmp ecx, 6
     jne .loop2
     
-.saltar_stack:
     pop edx
     pop ecx
     pop eax
@@ -169,25 +163,24 @@ _isr%1:
     mov eax, [esp+4*23] ; eip
     push eax
 
-    ;call set_modo_debug
+    ; modo debug
     call check_act_debug
     cmp eax, 1
-    jne .seguir
+    jne .not_debug_mode
     call set_screen_debug
     call imprimir_registros
     mov eax, %1
     push eax
     call rutina_de_interrupciones
     add esp, 4
-    
-.seguir:
+
+.not_debug_mode:
     add esp, 8*4
     call killcurrent_task
     popad ; reestablezco registros de prop gral
     add esp, 8*4    ; eip <- esp0
     iret
 %endmacro
-
 
 ;; Rutina de atención de las EXCEPCIONES
 ;; -------------------------------------------------------------------------- ;;
