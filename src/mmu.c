@@ -133,7 +133,7 @@ paddr_t mmu_init_task_dir(paddr_t phy_start, vaddr_t virt_star, paddr_t code_sta
 
     /****TAREA****/
 
-    //Mapeo los 16kib  de la tarea 
+    //Mapeo los 4k * pages de la tarea 
     for (size_t i = 0; i < pages; ++i) {
         mmu_map_page(cr3, virt_star + i * PAGE_SIZE, phy_start + i * PAGE_SIZE, attrS); // mapeo 4kb
     }
@@ -141,7 +141,7 @@ paddr_t mmu_init_task_dir(paddr_t phy_start, vaddr_t virt_star, paddr_t code_sta
     //Copio la tarea
     paddr_t cr3Actual = rcr3();
 
-    //Mapeo los 16kib  de la tarea 
+    //Mapeo los 4k * pages de la tarea 
     for (size_t i = 0; i < pages; ++i) {
         mmu_map_page(cr3Actual, virt_star + i * PAGE_SIZE, phy_start + i * PAGE_SIZE, attrS); // mapeo 4kb
     }

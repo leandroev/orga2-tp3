@@ -172,12 +172,12 @@ uint32_t int88(paddr_t code_phy, uint32_t pos_x, uint32_t pos_y) {
             if (index == -1) {
                 return 0;
             } else {
-
+                uint32_t cr3 = tss_rick.cr3;
                 tss_Rickmrms[index].in_use = TRUE;
-                vaddr_t virt_task = TASK_CODE_MR_MEESEEKS + index * PAGE_SIZE;
+                vaddr_t virt_task = TASK_CODE_MR_MEESEEKS + 2 * index * PAGE_SIZE;
                 paddr_t map_phy =
                         INICIO_DE_PAGINAS_LIBRES_TAREAS + (2 * PAGE_SIZE * pos_x) + (2 * PAGE_SIZE * CANT_COLUMNAS * pos_y);
-                task_init(&tss_Rickmrms[index].task_seg, map_phy, virt_task, code_phy, 2, next_esp0(pilas_0));
+                task_init_mr_meeseek(&tss_Rickmrms[index].task_seg, cr3, map_phy, virt_task, code_phy, next_esp0(pilas_0));
                 sched_task[index + 3].is_alive = TRUE;
                 sched_task[index + 3].pos_x = pos_x;
                 sched_task[index + 3].pos_y = pos_y;
@@ -194,11 +194,12 @@ uint32_t int88(paddr_t code_phy, uint32_t pos_x, uint32_t pos_y) {
             if (index == -1) {
                 return 0;
             } else {
+                uint32_t cr3 = tss_morty.cr3;
                 tss_Mortymrms[index].in_use = TRUE;
-                vaddr_t virt_task = TASK_CODE_MR_MEESEEKS + index * PAGE_SIZE;
+                vaddr_t virt_task = TASK_CODE_MR_MEESEEKS + 2 * index * PAGE_SIZE;
                 paddr_t map_phy =
                         INICIO_DE_PAGINAS_LIBRES_TAREAS + (2 * PAGE_SIZE * pos_x) + (2 * PAGE_SIZE * CANT_COLUMNAS * pos_y);
-                task_init(&tss_Mortymrms[index].task_seg, map_phy, virt_task, code_phy, 2, next_esp0(pilas_0));
+                task_init_mr_meeseek(&tss_Mortymrms[index].task_seg, cr3, map_phy, virt_task, code_phy, next_esp0(pilas_0));
                 sched_task[index + 13].is_alive = TRUE;
                 sched_task[index + 13].pos_x = pos_x;
                 sched_task[index + 13].pos_y = pos_y;

@@ -171,3 +171,37 @@ void task_init(tss_t *new_tss, paddr_t phy_task, vaddr_t virt_task, paddr_t task
     }
 }
 
+void task_init_mr_meeseek(tss_t *new_tss, uint32_t cr3, paddr_t phy_task, vaddr_t virt_task, paddr_t task_code, uint32_t pila_0) {
+    *new_tss = (tss_t) {0};
+    new_tss->eip = virt_task;
+    new_tss->cr3 = cr3;//mmu_init_task_dir(phy_task, virt_task, task_code, pages);
+
+    mmu_map_page(cr3, virt_task, phy_task, 0x7);
+    mmu_map_page(cr3, virt_task + PAGE_SIZE, phy_task + PAGE_SIZE, 0x7);
+
+    uint32_t *src = (uint32_t *) task_code;
+    uint32_t *dst = (uint32_t *) virt_task;
+
+    for (size_t i = 0; i < 2048; ++i) {
+        dst[i] = src[i];
+    }
+
+    new_tss->esp = virt_task + 2 * PAGE_SIZE;
+    new_tss->ebp = virt_task + 2 * PAGE_SIZE;
+    new_tss->ss0 = GDT_DATA_0 << 3;
+    new_tss->cs = (GDT_CODE_3 << 3) + 3;
+    new_tss->ds = (GDT_DATA_3 << 3) + 3;
+    new_tss->eflags = 0x202;
+    new_tss->ss = (GDT_DATA_3 << 3) + 3;
+    new_tss->es = (GDT_DATA_3 << 3) + 3;
+    new_tss->ds = (GDT_DATA_3 << 3) + 3;
+    new_tss->fs = (GDT_DATA_3 << 3) + 3;
+    new_tss->gs = (GDT_DATA_3 << 3) + 3;
+    new_tss->iomap = 0xFFFF;
+
+    if (pila_0 == 0) {
+        new_tss->esp0 = mmu_next_free_kernel_page() + PAGE_SIZE;
+    } else {
+        new_tss->esp0 = pila_0;
+    }
+}
