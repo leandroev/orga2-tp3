@@ -22,6 +22,7 @@ uint32_t int123_move(int position_x, int position_y);
 void spread_megaSeeds();
 bool move_assimilated(uint32_t pos_x, uint32_t pos_y);
 int search_megaSeeds(uint32_t pos_x, uint32_t pos_y);
+int modulo(int numero, int base);
 
 
 void sched_init();
@@ -54,6 +55,7 @@ typedef struct str_sched {
 	int pos_y;
 	int distCel;
 	int ticks;
+	uint8_t uses_of_gun;
 }__attribute__((__packed__, aligned (8))) sched;
 
 

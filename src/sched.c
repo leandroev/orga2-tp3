@@ -31,6 +31,7 @@ void sched_init(void) {
         sched_task[i].id = i;
         sched_task[i].is_alive = TRUE;
         sched_task[i].tss_selector = ((i + 16) << 3); //a partir de la 16 se encuentras los tss de cada tarea
+        sched_task[i].uses_of_gun = 0;
     }
 
     for (uint8_t i = 3; i < 23; ++i) {
@@ -41,6 +42,7 @@ void sched_init(void) {
         sched_task[i].id = i;
         sched_task[i].is_alive = FALSE;
         sched_task[i].tss_selector = ((i + 16) << 3); //a partir de la 19 se encuentras los tss de cada tarea
+        sched_task[i].uses_of_gun = TRUE;
     }
     screen_init();
 
@@ -118,7 +120,7 @@ paddr_t next_esp0(paddr_t *esp0_str) {
 }
 
 bool right_postition(uint32_t pos_x, uint32_t pos_y) {
-    if (pos_x < 80 && pos_y < 40) {
+    if (pos_x < CANT_COLUMNAS && pos_y < CANT_FILAS) {
         return TRUE;
     }
     return FALSE;
@@ -174,7 +176,7 @@ uint32_t int88(paddr_t code_phy, uint32_t pos_x, uint32_t pos_y) {
                 tss_Rickmrms[index].in_use = TRUE;
                 vaddr_t virt_task = TASK_CODE_MR_MEESEEKS + index * PAGE_SIZE;
                 paddr_t map_phy =
-                        INICIO_DE_PAGINAS_LIBRES_TAREAS + (2 * PAGE_SIZE * pos_x) + (2 * PAGE_SIZE * 80 * pos_y);
+                        INICIO_DE_PAGINAS_LIBRES_TAREAS + (2 * PAGE_SIZE * pos_x) + (2 * PAGE_SIZE * CANT_COLUMNAS * pos_y);
                 task_init(&tss_Rickmrms[index].task_seg, map_phy, virt_task, code_phy, 2, next_esp0(pilas_0));
                 sched_task[index + 3].is_alive = TRUE;
                 sched_task[index + 3].pos_x = pos_x;
@@ -195,7 +197,7 @@ uint32_t int88(paddr_t code_phy, uint32_t pos_x, uint32_t pos_y) {
                 tss_Mortymrms[index].in_use = TRUE;
                 vaddr_t virt_task = TASK_CODE_MR_MEESEEKS + index * PAGE_SIZE;
                 paddr_t map_phy =
-                        INICIO_DE_PAGINAS_LIBRES_TAREAS + (2 * PAGE_SIZE * pos_x) + (2 * PAGE_SIZE * 80 * pos_y);
+                        INICIO_DE_PAGINAS_LIBRES_TAREAS + (2 * PAGE_SIZE * pos_x) + (2 * PAGE_SIZE * CANT_COLUMNAS * pos_y);
                 task_init(&tss_Mortymrms[index].task_seg, map_phy, virt_task, code_phy, 2, next_esp0(pilas_0));
                 sched_task[index + 13].is_alive = TRUE;
                 sched_task[index + 13].pos_x = pos_x;
@@ -232,17 +234,24 @@ void use_portal_gun() {
         /*Tareas de Rick*/
         //Copiar el código de sched_task[current_task] a la nueva posición
         random_task += 13;
+
         while (sched_task[random_task].is_alive == FALSE) {
             random_task = rand() % 10;
             random_task += 13;
         }
         //Entonces sigue viva
+
+        if(sched_task[random_task].uses_of_gun == FALSE) {
+            return;
+        }
+        sched_task[random_task].uses_of_gun = FALSE;
+
         sched_task[random_task].pos_x = position_x;
         sched_task[random_task].pos_y = position_y;
         random_task -= 13;
 
         virt_task =  + random_task * PAGE_SIZE;
-        new_phy = INICIO_DE_PAGINAS_LIBRES_TAREAS + (2 * PAGE_SIZE * position_x) + (2 * PAGE_SIZE * 80 * position_y);
+        new_phy = INICIO_DE_PAGINAS_LIBRES_TAREAS + (2 * PAGE_SIZE * position_x) + (2 * PAGE_SIZE * CANT_COLUMNAS * position_y);
         current_cr3 = tss_Mortymrms[random_task].task_seg.cr3;
         old_cr3 = rcr3();
 
@@ -276,13 +285,19 @@ void use_portal_gun() {
             random_task = rand() % 10;
             random_task += 3;
         }
+
+        if(sched_task[random_task].uses_of_gun == FALSE) {
+            return;
+        }
+        sched_task[random_task].uses_of_gun = FALSE;
+
         // Sigue viva
         sched_task[random_task].pos_x = position_x;
         sched_task[random_task].pos_y = position_y;
         random_task -= 3;
 
         virt_task = TASK_CODE_MR_MEESEEKS + random_task * PAGE_SIZE;
-        new_phy = INICIO_DE_PAGINAS_LIBRES_TAREAS + (2 * PAGE_SIZE * position_x) + (PAGE_SIZE * 80 * position_y);
+        new_phy = INICIO_DE_PAGINAS_LIBRES_TAREAS + (2 * PAGE_SIZE * position_x) + (PAGE_SIZE * CANT_COLUMNAS * position_y);
         current_cr3 = tss_Rickmrms[random_task].task_seg.cr3;
         old_cr3 = rcr3();
 
@@ -324,8 +339,8 @@ uint32_t int123_move(int desp_x, int desp_y) {
     }
     uint32_t curr_posx = sched_task[current_task].pos_x;
     uint32_t curr_posy = sched_task[current_task].pos_y;
-    uint32_t newpos_x = make_positive((curr_posx + desp_x) % CANT_COLUMNAS, CANT_COLUMNAS);
-    uint32_t newpos_y = make_positive((curr_posy + desp_y) % CANT_FILAS, CANT_FILAS);
+    uint32_t newpos_x = modulo(curr_posx + desp_x, CANT_COLUMNAS);
+    uint32_t newpos_y = modulo(curr_posy + desp_y, CANT_FILAS);
 
     if (move_assimilated(newpos_x, newpos_y)) {
 
@@ -368,7 +383,7 @@ uint32_t int123_move(int desp_x, int desp_y) {
             virt_task = TASK_CODE_MR_MEESEEKS + index * PAGE_SIZE;
             current_tss = tss_Mortymrms[current_task - 13].task_seg;
         }        
-        paddr_t new_phy = INICIO_DE_PAGINAS_LIBRES_TAREAS + (2 * PAGE_SIZE * newpos_x) + (2 * PAGE_SIZE * 80 * newpos_y);
+        paddr_t new_phy = INICIO_DE_PAGINAS_LIBRES_TAREAS + (2 * PAGE_SIZE * newpos_x) + (2 * PAGE_SIZE * CANT_COLUMNAS * newpos_y);
         uint32_t attrS = 0x00000007;
 
         //temporal mapping wiht identity mapping
@@ -586,15 +601,6 @@ void imprimir_registros(uint32_t eip, uint32_t eflags,uint16_t ss,uint16_t gs,ui
     print_hex(bcktrace4,8,40,31,0x70);
 
 }
-
-uint32_t make_positive(int x, int divisor) {
-    if (x < 0) {
-        return x + divisor;
-    } else {
-        return x;
-    }
-}
-
 
 void set_modo_debug() {
     if (screen_debug == 1) {
