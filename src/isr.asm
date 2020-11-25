@@ -97,7 +97,7 @@ _isr%1:
 .loop1:
     push edx
     call virtual_valida
-    add esp, 4
+    pop edx
     cmp eax, 1
     mov eax, 0  ; si es invalida pongo 0
     cmove eax, [edx+4]
@@ -123,7 +123,7 @@ _isr%1:
 .loop2:
     push edx
     call virtual_valida
-    add esp, 4
+    pop edx
     cmp eax, 1
     mov eax, 0 ; si es invalida pongo 0
     cmove eax, [edx] ; [esp3]
