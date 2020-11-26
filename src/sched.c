@@ -351,14 +351,21 @@ uint32_t int88(paddr_t code_phy, uint32_t pos_x, uint32_t pos_y) {
     	sched_task[current_task].distCel  = -1;
         sched_task[current_task].ticks    = -1;
         tss_t current_tss;
+        uint32_t mrms_id;
         if (current_task < 13) {
-            current_tss = tss_Rickmrms[current_task - 3].task_seg;
+        	mrms_id = current_task-3;
+            current_tss = tss_Rickmrms[mrms_id].task_seg;
             tss_Rickmrms[current_task - 3].in_use = FALSE;
         } else {
+        	mrms_id = current_task - 13;
             current_tss = tss_Mortymrms[current_task - 13].task_seg;
-            tss_Mortymrms[current_task - 13].in_use = FALSE;
+            tss_Mortymrms[mrms_id].in_use = FALSE;
         }
         paddr_t pila_0 = ((current_tss.esp0>>12)<<12);
+        vaddr_t virt_task = TASK_CODE_MR_MEESEEKS + 2 * mrms_id * PAGE_SIZE;
+        mmu_unmap_page(current_tss.cr3,virt_task);
+        mmu_unmap_page(current_tss.cr3,virt_task+PAGE_SIZE);
+
         int i = 0;
         while (i < 20) {
             if (pilas_0[i] == 0) {
@@ -507,16 +514,21 @@ uint32_t int123_move(int desp_x, int desp_y) {
         sched_task[current_task].distCel  = -1;
         sched_task[current_task].ticks    = -1;
         tss_t current_tss;
+        uint32_t mrms_id;
         if (current_task < 13) {
+            mrms_id = current_task - 3;
             score_rick = score_rick + 425;
-            current_tss = tss_Rickmrms[current_task - 3].task_seg;
-            tss_Rickmrms[current_task - 3].in_use = FALSE;
+            current_tss = tss_Rickmrms[mrms_id].task_seg;
+            tss_Rickmrms[mrms_id].in_use = FALSE;
         } else {
-            current_tss = tss_Mortymrms[current_task - 13].task_seg;
-            tss_Mortymrms[current_task - 13].in_use = FALSE;
+        	mrms_id = current_task - 13;
             score_morty = score_morty + 425;
-
+            tss_Mortymrms[mrms_id].in_use = FALSE;
+            current_tss = tss_Mortymrms[mrms_id].task_seg;
         }
+        vaddr_t virt_task = TASK_CODE_MR_MEESEEKS + 2 * mrms_id * PAGE_SIZE;
+        mmu_unmap_page(current_tss.cr3,virt_task);
+        mmu_unmap_page(current_tss.cr3,virt_task+PAGE_SIZE);
         paddr_t pila_0 = ((current_tss.esp0>>12)<<12);
         int i = 0;
         while (i < 20) {
@@ -535,13 +547,13 @@ uint32_t int123_move(int desp_x, int desp_y) {
         vaddr_t virt_task;
         tss_t current_tss;
         if (current_task < 13) {
-            current_tss = tss_Rickmrms[current_task - 3].task_seg;
             index = current_task - 3;
+            current_tss = tss_Rickmrms[index].task_seg;
             virt_task = TASK_CODE_MR_MEESEEKS + index * PAGE_SIZE;
         } else {
             index = current_task - 13;
+            current_tss = tss_Mortymrms[index].task_seg;
             virt_task = TASK_CODE_MR_MEESEEKS + index * PAGE_SIZE;
-            current_tss = tss_Mortymrms[current_task - 13].task_seg;
         }        
         paddr_t new_phy = INICIO_DE_PAGINAS_LIBRES_TAREAS + (2 * PAGE_SIZE * newpos_x) + (2 * PAGE_SIZE * CANT_COLUMNAS * newpos_y);
         uint32_t attrS = 0x00000007;
