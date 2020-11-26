@@ -80,7 +80,14 @@ void screen_init() {
 void killcurrent_task() {
     sched_task[current_task].is_alive = FALSE;
     if (current_task == RICK || current_task == MORTY) {
-        print("GAME OVER", 35, 15, 0x0F);
+		
+		if(sched_task[RICK].is_alive == TRUE) {
+			print("RICK WINS", 35, 17, 0x0F);
+		} else if (sched_task[MORTY].is_alive == TRUE) {
+			print("MORTY WINS", 35, 17, 0x0F);
+		}
+
+		print("GAME OVER", 35, 15, 0x0F);
 
     }
     jump_toIdle();
