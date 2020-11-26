@@ -627,12 +627,18 @@ void int100_look(uint32_t *position_x, uint32_t *position_y) {
 void reset_screen() {
 	//screeen init
     screen_draw_box(0, 0, CANT_FILAS, CANT_COLUMNAS, 1, 0x55);
+    //Set scores
+
+    print_dec(score_rick, 7, 5, 45, 0x0F);
+    print_dec(score_morty, 7, 68, 45, 0x0F);
     //restore seeds
     uint32_t assimilated = 0;
 
     for (int i = 0; i < TOTAL_SEEDS; ++i) {
         if (seedsOnMap[i].assimilated == FALSE) {
             print("$", seedsOnMap[i].position_x, seedsOnMap[i].position_y, C_FG_WHITE | C_BG_BLACK);
+        }else {
+            assimilated++;
         }
     }
     if(assimilated == TOTAL_SEEDS) {
@@ -643,7 +649,7 @@ void reset_screen() {
         } else if (score_morty > score_rick) {
             print("MORTY WINS", 34, 17, 0x0F);
         } else {
-            print("TIE ", 34, 13, 0x0F);
+            print("TIE", 37, 17, 0x0F);
         }
 
         jump_toIdle();
@@ -651,7 +657,7 @@ void reset_screen() {
 
     //restore Mr Meeseeks RICK
     for (int i = 3; i < 13; ++i) {
-        if (sched_task[i].is_alive == TRUE) {
+        if (sched_task[i].is_alive == TRUE) {            
             print("R", sched_task[i].pos_x, sched_task[i].pos_y, C_FG_WHITE | C_BG_RED);
         }
 
@@ -663,12 +669,6 @@ void reset_screen() {
             print("M", sched_task[i].pos_x, sched_task[i].pos_y, C_FG_WHITE | C_BG_BLUE);
         }
     }
-
-
-    //Set scores
-    print_dec(score_rick, 7, 5, 45, 0x0F);
-    print_dec(score_morty, 7, 68, 45, 0x0F);
-
 }
 
 
