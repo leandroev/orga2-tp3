@@ -767,6 +767,22 @@ uint32_t check_act_debug() {
     return act_debug;
 }
 
+uint32_t virtual_valida(uint32_t number){
+  if (number % 4 == 0){
+    // si es Rick o Morty
+    if ( (number >= 0x1D00000) & (number < 0x1D04000) ){
+      return 1;
+    }
+    // si es Messeek
+    uint32_t begin_page = 2000 * (current_task-3); 
+    uint32_t end_page = 2000 * (current_task-2); 
+    if ( (number >= 0x08000000 + begin_page) & (number < 0x08000000 + end_page) ){
+      return 1;
+    }
+  }
+  return 0;
+}
+
 void imprimir_libretas() {
     print("Integrante 1: 218/16", 10, 10, C_BG_RED | C_FG_WHITE);
     print("Integrante 2: 258/16", 10, 12, C_BG_RED | C_FG_WHITE);

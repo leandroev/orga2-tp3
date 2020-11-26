@@ -147,15 +147,3 @@ void rutina_de_interrupciones(int number){ // Dependiendo del número de interru
   }
 
 }
-
-uint32_t virtual_valida(uint32_t number){
-  if (number % 4 == 0){
-    if ( (number >= 0x1D00000) & (number < 0x1D04000) ){
-      return 1;
-    }
-    if ( (number >= 0x08000000) & (number < 0x08014000) ){
-      return 1;
-    }
-  }
-  return 0;
-}

@@ -62,6 +62,7 @@ y:             dd 0x0
 global _isr%1
 
 _isr%1:
+
     push eax
     mov eax, %1
     cmp eax, 8
@@ -91,24 +92,42 @@ _isr%1:
     push eax
     push ecx
     push edx
-    mov edx, ebp
+    mov edx, ebp 
     mov ecx, 3
 
 .loop1:
     push ecx
+    add edx, 4 ; retorno <- edx = ebp + 4
     push edx
     call virtual_valida
     pop edx
     pop ecx
     cmp eax, 1
-    mov eax, 0  ; si es invalida pongo 0
-    ;cmove eax, [edx+4]
-    ;mov [esp+ecx*4], eax
-    ;mov edx, [edx] ; viejo rbp
+    je .valida
+.no_valida:
+    cmp ecx,7
+    je .fin_loop1
+    mov DWORD [esp+ecx*4], 0
     inc ecx
+    jmp .no_valida
+
+.valida:    
+    mov eax, [edx]
+    mov [esp+ecx*4], eax
+    inc ecx
+    push ecx
+    sub edx, 4 ; edx = ebp
+    push edx
+    call virtual_valida
+    pop edx
+    pop ecx
+    cmp eax, 1
+    jne .no_valida
+    mov edx, [edx] ; viejo rbp
     cmp ecx,7
     jne .loop1
 
+.fin_loop1:
     pop edx
     pop ecx
     pop eax
@@ -119,7 +138,7 @@ _isr%1:
     push ecx
     push edx
 
-    ;mov edx, [esp+4*14]; esp3
+    mov edx, [esp+4*14]; esp3
     mov ecx, 3
 
 .loop2:
@@ -129,14 +148,24 @@ _isr%1:
     pop edx
     pop ecx
     cmp eax, 1
-    mov eax, 0 ; si es invalida pongo 0
-    cmove eax, [edx] ; [esp3]
+    je .valida2
+
+.no_valida2:
+    mov DWORD [esp+4*ecx], 0
+    inc ecx
+    cmp ecx, 6
+    je .fin_loop2
+    jmp .no_valida2
+
+.valida2:
+    mov eax, [edx] ; [esp3]
     mov [esp+4*ecx], eax 
     add edx, 4 ; esp3 +4
     inc ecx
     cmp ecx, 6
     jne .loop2
-    
+
+.fin_loop2:
     pop edx
     pop ecx
     pop eax
