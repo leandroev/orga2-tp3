@@ -266,7 +266,7 @@ uint32_t int88(paddr_t code_phy, uint32_t pos_x, uint32_t pos_y) {
     if (current_task == RICK || current_task == MORTY) {
         /*Check if it's a valid position*/
         if (!right_postition(pos_x, pos_y)) {
-            killcurrent_task();
+            // killcurrent_task();
             return 0;
         }
 
@@ -335,19 +335,40 @@ uint32_t int88(paddr_t code_phy, uint32_t pos_x, uint32_t pos_y) {
                         INICIO_DE_PAGINAS_LIBRES_TAREAS + (2 * PAGE_SIZE * pos_x) + (2 * PAGE_SIZE * CANT_COLUMNAS * pos_y);
                 task_init_mr_meeseek(&tss_Mortymrms[index].task_seg, cr3, map_phy, virt_task, code_phy, next_esp0(pilas_0));
                 sched_task[index + 13].is_alive = TRUE;
-                sched_task[index + 13].pos_x = pos_x;
-                sched_task[index + 13].pos_y = pos_y;
-                sched_task[index + 13].distCel = 7;
-                sched_task[index + 13].ticks = 2;
+                sched_task[index + 13].pos_x    = pos_x;
+                sched_task[index + 13].pos_y    = pos_y;
+                sched_task[index + 13].distCel  = 7;
+                sched_task[index + 13].ticks    = 2;
 
                 reset_screen();
                 return virt_task;
             }
         }
 
-    } else {
+    } else {//MrMeeseek
 
-        killcurrent_task();
+    	sched_task[current_task].is_alive = FALSE;
+    	sched_task[current_task].distCel  = -1;
+        sched_task[current_task].ticks    = -1;
+        tss_t current_tss;
+        if (current_task < 13) {
+            current_tss = tss_Rickmrms[current_task - 3].task_seg;
+            tss_Rickmrms[current_task - 3].in_use = FALSE;
+        } else {
+            current_tss = tss_Mortymrms[current_task - 13].task_seg;
+            tss_Mortymrms[current_task - 13].in_use = FALSE;
+        }
+        paddr_t pila_0 = ((current_tss.esp0>>12)<<12);
+        int i = 0;
+        while (i < 20) {
+            if (pilas_0[i] == 0) {
+
+                pilas_0[i] = pila_0;
+                i = 20;
+            }
+            i++;
+        }
+        reset_screen();
         return 0;
     }
 }
@@ -483,16 +504,20 @@ uint32_t int123_move(int desp_x, int desp_y) {
         int index = search_megaSeeds(newpos_x, newpos_y);
         seedsOnMap[index].assimilated = TRUE;
         sched_task[current_task].is_alive = FALSE;
+        sched_task[current_task].distCel  = -1;
+        sched_task[current_task].ticks    = -1;
         tss_t current_tss;
         if (current_task < 13) {
             score_rick = score_rick + 425;
             current_tss = tss_Rickmrms[current_task - 3].task_seg;
+            tss_Rickmrms[current_task - 3].in_use = FALSE;
         } else {
             current_tss = tss_Mortymrms[current_task - 13].task_seg;
+            tss_Mortymrms[current_task - 13].in_use = FALSE;
             score_morty = score_morty + 425;
 
         }
-        paddr_t pila_0 = current_tss.esp0;
+        paddr_t pila_0 = ((current_tss.esp0>>12)<<12);
         int i = 0;
         while (i < 20) {
             if (pilas_0[i] == 0) {
