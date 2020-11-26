@@ -95,14 +95,16 @@ _isr%1:
     mov ecx, 3
 
 .loop1:
+    push ecx
     push edx
     call virtual_valida
     pop edx
+    pop ecx
     cmp eax, 1
     mov eax, 0  ; si es invalida pongo 0
-    cmove eax, [edx+4]
-    mov [esp+ecx*4], eax
-    mov edx, [edx] ; viejo rbp
+    ;cmove eax, [edx+4]
+    ;mov [esp+ecx*4], eax
+    ;mov edx, [edx] ; viejo rbp
     inc ecx
     cmp ecx,7
     jne .loop1
@@ -117,13 +119,15 @@ _isr%1:
     push ecx
     push edx
 
-    mov edx, [esp+4*14]; esp3
+    ;mov edx, [esp+4*14]; esp3
     mov ecx, 3
 
 .loop2:
+    push ecx
     push edx
     call virtual_valida
     pop edx
+    pop ecx
     cmp eax, 1
     mov eax, 0 ; si es invalida pongo 0
     cmove eax, [edx] ; [esp3]
@@ -210,6 +214,9 @@ _isr32:
     pushad
     call pic_finish1 ; Indica que la interrupcion fue antendida
     call next_clock ; prit el reloj del sistema
+    call check_screen_debug ; chequeo pantalla debug 
+    cmp eax, 1
+    je .fin    
     call reset_MrMsCel; set MrMs ticks
     call sched_next_task
     str cx
