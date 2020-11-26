@@ -248,7 +248,9 @@ int next_tss(tss_mrms *tss_str) {
 paddr_t next_esp0(paddr_t *esp0_str) {
     for (int i = 0; i < 20; ++i) {
         if (esp0_str[i] != 0) {
-            return esp0_str[i];
+        	paddr_t tmp = esp0_str[i];
+        	esp0_str[i] = 0;
+            return tmp;
         }
     }
     return 0;
