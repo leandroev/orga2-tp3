@@ -271,35 +271,34 @@ uint32_t int88(paddr_t code_phy, uint32_t pos_x, uint32_t pos_y) {
         }
 
         /*if there'is a seed in posx,posy*/
-        for (uint32_t i = 0; i < TOTAL_SEEDS; i++) {
-            if (seedsOnMap[i].position_x == pos_x && seedsOnMap[i].position_y == pos_y) {
-                int index;
-                if (current_task == RICK) {
-                    //verf slot
-                    index = next_tss(tss_Rickmrms);
-                    if (index == -1) {
-                        return 0;
-                    } else {
-                        seedsOnMap[i].assimilated = TRUE;
-                        score_rick = score_rick + 425;
-                        reset_screen();
-                        return 0;
-
-                    }
-                } else {//morty
-                    //verf slot
-                    index = next_tss(tss_Mortymrms);
-                    if (index == -1) {
-                        return 0;
-                    } else {
-                        seedsOnMap[i].assimilated = TRUE;
-                        score_morty = score_morty + 425;
-                        reset_screen();
-                        return 0;
-                    }
+		if (move_assimilated(pos_x,pos_y)){
+        	
+        	int seed_pos = search_megaSeeds(pos_x, pos_y);
+        	int index;
+            if (current_task == RICK) {
+                //verf slot
+                index = next_tss(tss_Rickmrms);
+                if (index == -1) {
+                    return 0;
+                } else {
+                    seedsOnMap[seed_pos].assimilated = TRUE;
+                    score_rick = score_rick + 425;
+                    reset_screen();
+                    return 0;
+                }
+            } else {//morty
+                //verf slot
+                index = next_tss(tss_Mortymrms);
+                if (index == -1) {
+                    return 0;
+                } else {
+                    seedsOnMap[seed_pos].assimilated = TRUE;
+                    score_morty = score_morty + 425;
+                    reset_screen();
+                    return 0;
                 }
             }
-        }
+        }     
 
         if (current_task == RICK) {
             //verf slot
