@@ -242,7 +242,7 @@ ISR 19
 _isr32:
     pushad
     call pic_finish1 ; Indica que la interrupcion fue antendida
-    call next_clock ; prit el reloj del sistema
+    call next_clock ; print el reloj del sistema
     call check_screen_debug ; chequeo pantalla debug 
     cmp eax, 1
     je .fin    

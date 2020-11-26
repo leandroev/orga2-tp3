@@ -15,6 +15,7 @@
 uint32_t screen_debug;
 uint32_t act_debug;
 uint32_t current_task;
+uint32_t previous_task;
 uint32_t score_rick;
 uint32_t score_morty;
 sched sched_task[23];
@@ -24,6 +25,7 @@ void sched_init(void) {
     screen_debug = 0;
     act_debug = 0;
     current_task = 0;
+    previous_task = 0;
     for (uint8_t i = 0; i < 3; ++i) {
         sched_task[i].distCel = -1;
         sched_task[i].ticks = -1;
@@ -55,12 +57,44 @@ void sched_init(void) {
 }
 
 uint16_t sched_next_task() {
-    current_task = (current_task + 1) % 23;
-    while (sched_task[current_task].is_alive == FALSE) {
-
-        current_task = (current_task + 1) % 23;
+    uint32_t next_task;
+    if(current_task == 0 && previous_task == 0){
+        next_task = RICK;
     }
-	print("R", 16, 42, C_FG_WHITE | C_BG_RED);
+    if(previous_task == 0 && current_task == RICK){
+        next_task = MORTY;
+    }else{
+        if(previous_task < 13 && previous_task != MORTY && previous_task != 0){
+            if(previous_task == RICK){
+                next_task = 3;
+            }else{
+                next_task = (previous_task + 1) % 13;
+            }
+            while(sched_task[next_task].is_alive == FALSE){
+                next_task = (next_task + 1) % 13;
+            }
+            if(next_task < RICK){
+                next_task = RICK;
+            }
+        }
+        if(previous_task > 12 || previous_task == MORTY){
+            if(previous_task == MORTY){
+                next_task = 13;
+            }else{
+                next_task = (previous_task + 1) % 23;
+            }
+            while(sched_task[next_task].is_alive == FALSE){
+                next_task = (next_task + 1) % 23;
+            }
+            if(next_task < MORTY){
+                next_task = MORTY;
+            }
+        }
+    }
+    previous_task = current_task;
+    current_task = next_task;
+    
+    print("R", 16, 42, C_FG_WHITE | C_BG_RED);
     print("M", 63, 42, C_FG_WHITE | C_BG_BLUE);
 
 
@@ -385,7 +419,6 @@ uint32_t int88(paddr_t code_phy, uint32_t pos_x, uint32_t pos_y) {
 void use_portal_gun() {
     /* //rand() % 10;
     */
-
     uint32_t random_task = rand() % 10;        //tarea aleatoria del equipo contrario
     uint32_t position_x = rand() % CANT_FILAS;
     uint32_t position_y = rand() % CANT_COLUMNAS;
