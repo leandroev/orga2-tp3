@@ -390,12 +390,14 @@ printScanCode:
 ;;-----------------------------------------------------------------------------;;
 jump_toIdle:
     ; xchg bx,bx
+    pushad
     mov ax, 0x0080
     str cx
     cmp ax, cx
     je .fin
     jmp 0X0080:0
     .fin:
+    popad 
     ret
 
  
