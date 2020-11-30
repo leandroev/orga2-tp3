@@ -595,11 +595,11 @@ uint32_t int123_move(int desp_x, int desp_y) {
         if (current_task < 13) {
             index = current_task - 3;
             current_tss = tss_Rickmrms[index].task_seg;
-            virt_task = TASK_CODE_MR_MEESEEKS + index * PAGE_SIZE;
+            virt_task = TASK_CODE_MR_MEESEEKS + index *2* PAGE_SIZE;
         } else {
             index = current_task - 13;
             current_tss = tss_Mortymrms[index].task_seg;
-            virt_task = TASK_CODE_MR_MEESEEKS + index * PAGE_SIZE;
+            virt_task = TASK_CODE_MR_MEESEEKS + index* 2* PAGE_SIZE;//<--
         }        
         paddr_t new_phy = INICIO_DE_PAGINAS_LIBRES_TAREAS + (2 * PAGE_SIZE * newpos_x) + (2 * PAGE_SIZE * CANT_COLUMNAS * newpos_y);
         uint32_t attrS = 0x00000007;
