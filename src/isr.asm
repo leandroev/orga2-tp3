@@ -62,7 +62,7 @@ y:             dd 0x0
 global _isr%1
 
 _isr%1:
-
+    xchg bx,bx
     push eax
     mov eax, %1
     cmp eax, 8
@@ -248,6 +248,7 @@ _isr32:
     je .fin    
     call reset_MrMsCel; set MrMs ticks
     call sched_next_task
+    ; xchg bx,bx
     str cx
     cmp ax, cx
     je .fin
@@ -388,7 +389,14 @@ printScanCode:
 ;; Rutina de salto a la tarea idle
 ;;-----------------------------------------------------------------------------;;
 jump_toIdle:
+    ; xchg bx,bx
+    mov ax, 0x0080
+    str cx
+    cmp ax, cx
+    je .fin
     jmp 0X0080:0
+    .fin:
+    ret
 
  
 

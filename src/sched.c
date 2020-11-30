@@ -253,6 +253,7 @@ void screen_init() {
 
 
 void killcurrent_task() {
+
     sched_task[current_task].is_alive = FALSE;
     if (current_task == RICK || current_task == MORTY) {
 
@@ -302,35 +303,39 @@ uint32_t int88(paddr_t code_phy, uint32_t pos_x, uint32_t pos_y) {
     if (current_task == RICK || current_task == MORTY) {
         /*Check if it's a valid position*/
         if (!right_postition(pos_x, pos_y)) {
-            // killcurrent_task();
+            jump_toIdle();
             return 0;
         }
 
         /*if there'is a seed in posx,posy*/
 		if (move_assimilated(pos_x,pos_y)){
-        	
+            
         	int seed_pos = search_megaSeeds(pos_x, pos_y);
         	int index;
             if (current_task == RICK) {
                 //verf slot
                 index = next_tss(tss_Rickmrms);
                 if (index == -1) {
+                    jump_toIdle();
                     return 0;
                 } else {
                     seedsOnMap[seed_pos].assimilated = TRUE;
                     score_rick = score_rick + 425;
                     reset_screen();
+                    jump_toIdle();
                     return 0;
                 }
             } else {//morty
                 //verf slot
                 index = next_tss(tss_Mortymrms);
                 if (index == -1) {
+                    jump_toIdle();
                     return 0;
                 } else {
                     seedsOnMap[seed_pos].assimilated = TRUE;
                     score_morty = score_morty + 425;
                     reset_screen();
+                    jump_toIdle();
                     return 0;
                 }
             }
@@ -355,13 +360,15 @@ uint32_t int88(paddr_t code_phy, uint32_t pos_x, uint32_t pos_y) {
                 sched_task[index + 3].ticks = 2;
 
                 reset_screen();
+                jump_toIdle();
                 return virt_task;
-            }
+            } 
 
         } else {//morty
             //verif slot
             int index = next_tss(tss_Mortymrms);
             if (index == -1) {
+                jump_toIdle();
                 return 0;
             } else {
                 uint32_t cr3 = tss_morty.cr3;
@@ -377,6 +384,7 @@ uint32_t int88(paddr_t code_phy, uint32_t pos_x, uint32_t pos_y) {
                 sched_task[index + 13].ticks    = 2;
 
                 reset_screen();
+                jump_toIdle();
                 return virt_task;
             }
         }
@@ -412,6 +420,7 @@ uint32_t int88(paddr_t code_phy, uint32_t pos_x, uint32_t pos_y) {
             i++;
         }
         reset_screen();
+        jump_toIdle();
         return 0;
     }
 }
@@ -532,7 +541,7 @@ uint32_t int123_move(int desp_x, int desp_y) {
     }
     uint32_t max_move_allowed = (uint32_t)sched_task[current_task].distCel;
     if (distMan(desp_x,desp_y) > max_move_allowed){
-
+        jump_toIdle();
     	return 0;
     }
     uint32_t curr_posx = sched_task[current_task].pos_x;
@@ -575,6 +584,8 @@ uint32_t int123_move(int desp_x, int desp_y) {
             i++;
         }
         reset_screen();
+        breakpoint();
+        jump_toIdle();
         return 0;
     } else {
 
@@ -623,6 +634,7 @@ uint32_t int123_move(int desp_x, int desp_y) {
         sched_task[current_task].pos_y = newpos_y;
 
         reset_screen();
+        jump_toIdle();
         return 1;
     }
 }
@@ -632,6 +644,7 @@ void int100_look(uint32_t *position_x, uint32_t *position_y) {
     if (current_task == RICK || current_task == MORTY) {
         *position_x = -1;
         *position_y = -1;
+        jump_toIdle();
     } else if (current_task > MORTY) {
 
         uint32_t tmp_x = abs(sched_task[current_task].pos_x - seedsOnMap[0].position_x);
@@ -654,6 +667,7 @@ void int100_look(uint32_t *position_x, uint32_t *position_y) {
         *position_x = seedsOnMap[mostNearSeed].position_x;
         *position_y = seedsOnMap[mostNearSeed].position_y;
         print("$", seedsOnMap[mostNearSeed].position_x, seedsOnMap[mostNearSeed].position_y, C_FG_WHITE | C_BG_GREEN);
+        jump_toIdle();
     }
 
 }
@@ -735,7 +749,7 @@ bool move_assimilated(uint32_t pos_x, uint32_t pos_y) {
 
 }
 
-//always take a valid position
+
 int search_megaSeeds(uint32_t pos_x, uint32_t pos_y) {
 
     for (int i = 0; i < TOTAL_SEEDS; i++) {
