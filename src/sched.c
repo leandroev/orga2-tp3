@@ -768,7 +768,24 @@ void imprimir_registros(uint32_t eip, uint32_t eflags,uint16_t ss,uint16_t gs,ui
     screen_draw_box(6,25,34,28,0,0x70); //pinto fondo gris intermedia
 
     print("Tarea ",26,4,C_BG_BLUE | C_FG_WHITE);
-    print_dec(current_task,2,32,4,C_BG_BLUE | C_FG_WHITE); // idTarea
+    if(current_task == RICK){
+        print("RICK",32,4,C_BG_BLUE | C_FG_WHITE);
+    }else{
+        if(current_task == MORTY){
+          print("MORTY",32,4,C_BG_BLUE | C_FG_WHITE);  
+        }else{
+            uint32_t tarea;
+            if(current_task < 13){
+                tarea = current_task - 3;
+                print("Meeseek    (RICK)",32,4,C_BG_BLUE | C_FG_WHITE);  
+                print_dec(tarea,2,40,4,C_BG_BLUE | C_FG_WHITE);
+            }else{
+                tarea = current_task - 13;
+                print("Meeseek    (MORTY)",32,4,C_BG_BLUE | C_FG_WHITE);  
+                print_dec(tarea,2,40,4,C_BG_BLUE | C_FG_WHITE);
+            }
+        }
+    }
 
     print("eax",26,7,0x7F);
     print_hex(eax,8,30,7,0x70);
