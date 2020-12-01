@@ -62,7 +62,6 @@ y:             dd 0x0
 global _isr%1
 
 _isr%1:
-    xchg bx,bx
     push eax
     mov eax, %1
     cmp eax, 8
