@@ -232,7 +232,6 @@ _isr32:
     jmp far [sched_task_offset]
     
     .fin:
-    ;call reset_screen
     popad
     iret
 ;; -------------------------------------------------------------------------- ;;

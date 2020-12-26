@@ -326,11 +326,11 @@ int next_tss(tss_mrms *tss_str) {
     return -1;
 }
 
-paddr_t next_esp0(paddr_t *esp0_str) {
+paddr_t next_esp0() {
     for (int i = 0; i < 20; ++i) {
-        if (esp0_str[i] != 0) {
-        	paddr_t tmp = esp0_str[i];
-        	esp0_str[i] = 0;
+        if (pilas_0[i] != 0) {
+        	paddr_t tmp = pilas_0[i];
+        	pilas_0[i] = 0;
             return tmp;
         }
     }
@@ -398,7 +398,7 @@ uint32_t int88(paddr_t code_phy, uint32_t pos_x, uint32_t pos_y) {
                 vaddr_t virt_task = TASK_CODE_MR_MEESEEKS + 2 * index * PAGE_SIZE;
                 paddr_t map_phy =
                         INICIO_DE_PAGINAS_LIBRES_TAREAS + (2 * PAGE_SIZE * pos_x) + (2 * PAGE_SIZE * CANT_COLUMNAS * pos_y);
-                task_init_mr_meeseek(&tss_Rickmrms[index].task_seg, cr3, map_phy, virt_task, code_phy, next_esp0(pilas_0));
+                task_init_mr_meeseek(&tss_Rickmrms[index].task_seg, cr3, map_phy, virt_task, code_phy, next_esp0());
                 sched_task[index + 3].is_alive = TRUE;
                 sched_task[index + 3].pos_x = pos_x;
                 sched_task[index + 3].pos_y = pos_y;
@@ -422,7 +422,7 @@ uint32_t int88(paddr_t code_phy, uint32_t pos_x, uint32_t pos_y) {
                 vaddr_t virt_task = TASK_CODE_MR_MEESEEKS + 2 * index * PAGE_SIZE;
                 paddr_t map_phy =
                         INICIO_DE_PAGINAS_LIBRES_TAREAS + (2 * PAGE_SIZE * pos_x) + (2 * PAGE_SIZE * CANT_COLUMNAS * pos_y);
-                task_init_mr_meeseek(&tss_Mortymrms[index].task_seg, cr3, map_phy, virt_task, code_phy, next_esp0(pilas_0));
+                task_init_mr_meeseek(&tss_Mortymrms[index].task_seg, cr3, map_phy, virt_task, code_phy, next_esp0());
                 sched_task[index + 13].is_alive = TRUE;
                 sched_task[index + 13].pos_x    = pos_x;
                 sched_task[index + 13].pos_y    = pos_y;

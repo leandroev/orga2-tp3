@@ -81,7 +81,7 @@ extern tss_t tss_morty_MrMs8;
 extern tss_t tss_morty_MrMs9;
 
 void tss_init(void);
-void task_init(tss_t* new_tss,paddr_t phy_task, vaddr_t virt_task, paddr_t task_code, size_t pages,uint32_t pila_0);
+void task_init(tss_t* new_tss,paddr_t phy_task, vaddr_t virt_task, paddr_t task_code, size_t pages);
 void task_init_mr_meeseek(tss_t *new_tss, uint32_t cr3, paddr_t phy_task, vaddr_t virt_task, paddr_t task_code, uint32_t pila_0);
 void tss_init_idle(void);
 void tss_init_gdt(void);

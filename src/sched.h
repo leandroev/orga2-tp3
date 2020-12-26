@@ -44,7 +44,7 @@ uint32_t virtual_valida(uint32_t number);
 void screen_init();
 uint32_t int88(paddr_t code_phy,uint32_t pos_x, uint32_t pos_y);
 int next_tss(tss_mrms* tss_str);
-paddr_t next_esp0(paddr_t* esp0_str);
+paddr_t next_esp0();
 bool right_postition(uint32_t pos_x, uint32_t pos_y);
 void reset_screen();
 uint32_t make_positive(int x, int divisor);
