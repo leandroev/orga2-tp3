@@ -479,17 +479,17 @@ void use_portal_gun() {
             }
             //Entonces sigue viva
 
-            if(sched_task[random_task].uses_of_gun == FALSE) {
+            if(sched_task[current_task].uses_of_gun == FALSE) {
                 return;
             }
-            sched_task[random_task].uses_of_gun = FALSE;
+            sched_task[current_task].uses_of_gun = FALSE;
 
             sched_task[random_task].pos_x = position_x;
             sched_task[random_task].pos_y = position_y;
 
             random_task -= 13;
 
-            virt_task =  + random_task * PAGE_SIZE;
+            virt_task =  TASK_CODE_MR_MEESEEKS + random_task * PAGE_SIZE;
             new_phy = INICIO_DE_PAGINAS_LIBRES_TAREAS + (2 * PAGE_SIZE * position_x) + (2 * PAGE_SIZE * CANT_COLUMNAS * position_y);
             current_cr3 = tss_Mortymrms[random_task].task_seg.cr3;
             old_cr3 = rcr3();
@@ -525,10 +525,10 @@ void use_portal_gun() {
                 random_task += 3;
             }
 
-            if(sched_task[random_task].uses_of_gun == FALSE) {
+            if(sched_task[current_task].uses_of_gun == FALSE) {
                 return;
             }
-            sched_task[random_task].uses_of_gun = FALSE;
+            sched_task[current_task].uses_of_gun = FALSE;
 
             // Sigue viva
             sched_task[random_task].pos_x = position_x;
