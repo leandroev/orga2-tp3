@@ -53,7 +53,6 @@ uint32_t distMan(int desp_x,int desp_y);
 typedef struct str_sched {
 	uint8_t is_alive;
 	uint16_t tss_selector;
-	uint8_t id;
 	int pos_x;
 	int pos_y;
 	int distCel;

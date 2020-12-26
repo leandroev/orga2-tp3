@@ -31,7 +31,6 @@ void sched_init(void) {
         sched_task[i].ticks = -1;
         sched_task[i].pos_x = -1;
         sched_task[i].pos_y = -1;
-        sched_task[i].id = i;
         sched_task[i].is_alive = TRUE;
         sched_task[i].tss_selector = ((i + 16) << 3); //a partir de la 16 se encuentras los tss de cada tarea
         sched_task[i].uses_of_gun = 0;
@@ -42,7 +41,6 @@ void sched_init(void) {
         sched_task[i].distCel = -1;
         sched_task[i].pos_x = -1;
         sched_task[i].pos_y = -1;
-        sched_task[i].id = i;
         sched_task[i].is_alive = FALSE;
         sched_task[i].tss_selector = ((i + 16) << 3); //a partir de la 19 se encuentras los tss de cada tarea
         sched_task[i].uses_of_gun = TRUE;
