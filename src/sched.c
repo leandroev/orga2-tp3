@@ -251,7 +251,6 @@ void screen_init() {
     }
 }
 
-
 void killcurrent_task() {
 
     sched_task[current_task].is_alive = FALSE;
@@ -266,7 +265,6 @@ void killcurrent_task() {
 		}
 
 		print("GAME OVER", 35, 15, 0x0F);
-        jump_toIdle();
 
     } else {
         tss_t current_tss;
@@ -295,10 +293,29 @@ void killcurrent_task() {
             i++;
         }
         reset_screen();
-        jump_toIdle();
     }
+    jump_toIdle();
 }
 
+uint32_t check_end_game(){
+    // si alguno de los jugadores ya no esta vivo
+    if(sched_task[RICK].is_alive == FALSE || sched_task[MORTY].is_alive == FALSE){
+        return 1;
+    }
+
+    uint32_t assimilated = 0;
+    for (int i = 0; i < TOTAL_SEEDS; i++) {
+        if (seedsOnMap[i].assimilated == TRUE) {
+            assimilated++;
+        }
+    }
+    // si ya no quedan semillas
+    if(assimilated == TOTAL_SEEDS){
+        return 1;
+    }
+    // el juego sigue
+    return 0; 
+}
 
 int next_tss(tss_mrms *tss_str) {
     for (int i = 0; i < 10; ++i) {
@@ -692,7 +709,7 @@ void reset_screen() {
         } else if (score_morty > score_rick) {
             print("MORTY WINS", 34, 17, 0x0F);
         } else {
-            print("TIE", 37, 17, 0x0F);
+            print("TIE", 34, 17, 0x0F);
         }
 
         jump_toIdle();

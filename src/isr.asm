@@ -14,6 +14,8 @@ extern rutina_de_interrupciones
 extern pic_finish1
 ;--Sched
 extern sched_next_task
+;--check_end_game
+extern check_end_game
 ;--killcurrent task
 extern killcurrent_task
 ;--imprimir registros
@@ -216,6 +218,9 @@ _isr32:
     call pic_finish1 ; Indica que la interrupcion fue antendida
     call next_clock ; print el reloj del sistema
     call check_screen_debug ; chequeo pantalla debug 
+    cmp eax, 1
+    je .fin   
+    call check_end_game ; chequeo juego finalizado
     cmp eax, 1
     je .fin    
     call reset_MrMsCel; set MrMs ticks
