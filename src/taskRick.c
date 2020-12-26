@@ -1,12 +1,17 @@
 #include "stddef.h"
 #include "syscall.h"
+#include "i386.h"
 
 void meeseks1_func(void);
-void meeseks2_func(void);
 
 void task(void) {
-  syscall_meeseeks((uint32_t)&meeseks1_func, 5, 5);
-  syscall_meeseeks((uint32_t)&meeseks2_func, 6, 6);
+  int8_t x, y;
+  for (int j = 0; j < 1; j++) {
+    syscall_meeseeks((uint32_t)&meeseks1_func, 0, 0);
+    for (int i = 0; i < 10; i++) {
+      syscall_look(&x, &y);
+    }
+  }
 
   while (1) {
     __asm volatile("nop");
@@ -14,19 +19,22 @@ void task(void) {
 }
 
 void meeseks1_func(void) {
-  while (1) {
-    for (int i = 0; i < 80; i++) {
-      syscall_move(-1, 0);
-    }
-    syscall_move(0, -1);
-  }
-}
+  int8_t x, y;
 
-void meeseks2_func(void) {
   while (1) {
-    for (int i = 0; i < 80; i++) {
-      syscall_move(1, 0);
-    }
-    syscall_move(0, 1);
+    syscall_look(&x, &y);
+
+    int8_t movx = x;
+    if (movx > 0) movx = 1;
+    if (movx < 0) movx = -1;
+
+    int8_t movy = y;
+    if (movy > 0) movy = 1;
+    if (movy < 0) movy = -1;      
+
+    // Nos movemos a lo sumo 1.
+    if (movx != 0) movy = 0;
+
+    syscall_move(movx, movy);
   }
 }
