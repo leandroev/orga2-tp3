@@ -29,7 +29,7 @@ extern int123_move
 
 extern reset_screen
 
-
+extern chequeo_error_code
 extern virtual_valida
 extern set_screen_debug
 extern check_act_debug
@@ -62,37 +62,29 @@ y:             dd 0x0
 global _isr%1
 
 _isr%1:
-    push eax
+    pushad  ; push registros prop. genereal
     mov eax, %1
-    cmp eax, 8
-    jb .sin_cod_error
+    push eax
+    call chequeo_error_code
+    cmp eax, 1
+    jne .sin_cod_error
     je .con_cod_error
-    cmp eax, 17
-    ja .sin_cod_error
-    je .con_cod_error
-    cmp eax, 9
-    je .sin_cod_error
-    cmp eax, 15
-    jb .con_cod_error
-    jae .sin_cod_error
 
 .con_cod_error:
-    pop eax
+    add esp, 4
     jmp .push_parametros
 
 .sin_cod_error:
-    pop eax
-    push 0      ; cod error ficticio 0
+    add esp, 4
+    popad   ; pop registros prop. genereal
+    push 0      ; cod error ficticio (0)
+    pushad  ; push registros prop. genereal
     jmp .push_parametros
 
 .push_parametros:
-    sub esp, 4*4
-    ;push backtrace
-    push eax
-    push ecx
-    push edx
+    sub esp, 4*4    ; 4 espacios para el backtrace
     mov edx, ebp 
-    mov ecx, 3
+    mov ecx, 0
 
 .loop1:
     push ecx
@@ -104,7 +96,7 @@ _isr%1:
     cmp eax, 1
     je .valida
 .no_valida:
-    cmp ecx,7
+    cmp ecx,4
     je .fin_loop1
     mov DWORD [esp+ecx*4], 0
     inc ecx
@@ -123,22 +115,14 @@ _isr%1:
     cmp eax, 1
     jne .no_valida
     mov edx, [edx] ; viejo rbp
-    cmp ecx,7
+    cmp ecx,4
     jne .loop1
 
 .fin_loop1:
-    pop edx
-    pop ecx
-    pop eax
-
-    ; reservo espacio para el stack
+    ; reservo 3 espacio para el stack
     sub esp, 3*4
-    push eax
-    push ecx
-    push edx
-
-    mov edx, [esp+4*14]; esp3
-    mov ecx, 3
+    mov edx, [esp+4*19]; esp3
+    mov ecx, 0
 
 .loop2:
     push ecx
@@ -152,7 +136,7 @@ _isr%1:
 .no_valida2:
     mov DWORD [esp+4*ecx], 0
     inc ecx
-    cmp ecx, 6
+    cmp ecx, 3
     je .fin_loop2
     jmp .no_valida2
 
@@ -161,17 +145,10 @@ _isr%1:
     mov [esp+4*ecx], eax 
     add edx, 4 ; esp3 +4
     inc ecx
-    cmp ecx, 6
+    cmp ecx, 3
     jne .loop2
 
-.fin_loop2:
-    pop edx
-    pop ecx
-    pop eax
-
-    ;push registros de proposito general
-    pushad
-    
+.fin_loop2:    
     ;colocamos los valores de la tarea en la pila
     mov eax, [esp+4*17] ; CS3
     push eax
@@ -186,10 +163,10 @@ _isr%1:
     mov eax, [esp+4*25] ; SS3
     push eax
 
-    mov eax, [esp+4*25] ;ESP3
-    mov [esp+4*9], eax
+    mov eax, [esp+4*25] ; ESP3
+    mov [esp+4*16], eax
 
-    mov eax, [esp+4*24] ;EFLAGS
+    mov eax, [esp+4*24] ; EFLAGS
     push eax
 
     mov eax, [esp+4*23] ; eip
@@ -204,14 +181,10 @@ _isr%1:
     mov eax, %1
     push eax
     call rutina_de_interrupciones
-    add esp, 4
 
 .not_debug_mode:
-    add esp, 8*4
-    call killcurrent_task
-    popad ; reestablezco registros de prop gral
-    add esp, 8*4    ; eip <- esp0
-    iret
+    call killcurrent_task ; matar tarea y saltar a la idle
+
 %endmacro
 
 ;; Rutina de atención de las EXCEPCIONES
@@ -247,7 +220,6 @@ _isr32:
     je .fin    
     call reset_MrMsCel; set MrMs ticks
     call sched_next_task
-    ; xchg bx,bx
     str cx
     cmp ax, cx
     je .fin
@@ -388,7 +360,6 @@ printScanCode:
 ;; Rutina de salto a la tarea idle
 ;;-----------------------------------------------------------------------------;;
 jump_toIdle:
-    ; xchg bx,bx
     pushad
     mov ax, 0x0080
     str cx

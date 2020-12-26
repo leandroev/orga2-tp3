@@ -30,5 +30,5 @@ extern idt_descriptor_t IDT_DESC;
 
 void idt_init(void);
 void rutina_de_interrupciones(int number);
-
+uint32_t chequeo_error_code(uint32_t number);
 #endif //  __IDT_H__

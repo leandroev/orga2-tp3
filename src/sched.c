@@ -294,8 +294,9 @@ void killcurrent_task() {
             }
             i++;
         }
+        reset_screen();
+        jump_toIdle();
     }
-
 }
 
 
@@ -422,9 +423,6 @@ uint32_t int88(paddr_t code_phy, uint32_t pos_x, uint32_t pos_y) {
     	//sched_task[current_task].is_alive = FALSE;
 
         killcurrent_task();
-
-        reset_screen();
-        jump_toIdle();
         return 0;
     }
 }
@@ -582,7 +580,6 @@ uint32_t int123_move(int desp_x, int desp_y) {
         int index = search_megaSeeds(newpos_x, newpos_y);
         seedsOnMap[index].assimilated = TRUE;
         killcurrent_task();
-        jump_toIdle();
         return 0;
     } else {
 
@@ -765,9 +762,9 @@ uint32_t distMan(int desp_x, int desp_y) {
 //funciones auxiliares
 
 void imprimir_registros(uint32_t eip, uint32_t eflags,uint16_t ss,uint16_t gs,uint16_t fs,uint16_t es,uint16_t ds,
-                        uint16_t cs, uint32_t edi,uint32_t esi,uint32_t ebp,uint32_t esp,uint32_t ebx,uint32_t edx,
-                        uint32_t ecx, uint32_t eax,uint32_t stack1,uint32_t stack2,uint32_t stack3,uint32_t bcktrace1,
-                        uint32_t bcktrace2,uint32_t bcktrace3,uint32_t bcktrace4,uint32_t err){
+                        uint16_t cs, uint32_t stack1,uint32_t stack2,uint32_t stack3,uint32_t bcktrace1,
+                        uint32_t bcktrace2,uint32_t bcktrace3,uint32_t bcktrace4, uint32_t edi,uint32_t esi,uint32_t ebp,uint32_t esp,uint32_t ebx,uint32_t edx,
+                        uint32_t ecx, uint32_t eax,uint32_t err){
 
     screen_draw_box(0,24,40,1,1,0x00); //pinto linea izquierda
     screen_draw_box(0,53,40,1,1,0x00); //pinto linea derecha
@@ -867,9 +864,11 @@ void set_modo_debug() {
             reset_screen();
         }else{              // no hubo excepcion
             act_debug = 0;
+            print("Debug Mode active",10,40,0x00);
         }
-    }else{      // desactivar debug mode
+    }else{      // activar debug mode
         act_debug = 1;
+        print("Debug Mode active",10,40,0x0F);
     }
 }
 

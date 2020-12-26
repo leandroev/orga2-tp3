@@ -147,3 +147,11 @@ void rutina_de_interrupciones(int number){ // Dependiendo del número de interru
   }
 
 }
+
+uint32_t chequeo_error_code(uint32_t number){
+    if(number < 8 || number == 9 || number > 17 || number == 15 || number == 16){
+      return 0;
+    }
+    // else
+    return 1;
+}
