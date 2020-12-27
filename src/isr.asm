@@ -390,6 +390,7 @@ _isr88:
     push eax
     call int88
     add esp, 12
+    mov [esp+4*7], eax
     popad
     iret
 
