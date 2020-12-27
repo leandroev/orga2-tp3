@@ -415,8 +415,8 @@ _isr100: ; y = esp - 1, x = esp
 _isr123:
     sub esp, 4
     pushad
-    push ebx
     push eax
+    push ebx
     call int123_move
     mov [esp+10*4],eax
     add esp, 8
