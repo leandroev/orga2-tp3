@@ -42,6 +42,7 @@ uint32_t check_screen_debug();
 uint32_t check_act_debug();
 uint32_t virtual_valida(uint32_t number);
 void screen_init();
+void game_over();
 uint32_t int88(paddr_t code_phy,uint32_t pos_x, uint32_t pos_y);
 int next_tss(tss_mrms* tss_str);
 paddr_t next_esp0();

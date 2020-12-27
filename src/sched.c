@@ -592,6 +592,7 @@ void use_portal_gun() {
 
         lcr3(old_cr3);
     }
+    reset_screen();
     jump_toIdle();
 }
 
