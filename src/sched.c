@@ -343,13 +343,28 @@ bool right_postition(uint32_t pos_x, uint32_t pos_y) {
 }
 
 
+void game_over() {
+    if(current_task == MORTY) {
+		print("RICK WINS", 34, 17, 0x0F);
+    } else if (current_task == RICK) {
+        print("MORTY WINS", 34, 17, 0x0F);
+    }
+    jump_toIdle();
+}
+
 uint32_t int88(paddr_t code_phy, uint32_t pos_x, uint32_t pos_y) {
     if (current_task == RICK || current_task == MORTY) {
         /*Check if it's a valid position*/
         if (!right_postition(pos_x, pos_y)) {
-            jump_toIdle();
+            game_over();
             return 0;
         }
+
+        if(code_phy < INICIO_DE_PAGINAS_LIBRES_TAREAS) {
+            game_over();
+            return 0;
+        }
+
 
         /*if there'is a seed in posx,posy*/
 		if (move_assimilated(pos_x,pos_y)){
