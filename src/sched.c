@@ -760,14 +760,14 @@ void int100_look(int32_t *position_x, int32_t *position_y) {
         jump_toIdle();
     } else if (current_task > MORTY) {
 
-        uint32_t tmp_x = abs(sched_task[current_task].pos_x - seedsOnMap[0].position_x);
-        uint32_t tmp_y = abs(sched_task[current_task].pos_y - seedsOnMap[0].position_y);
+        uint32_t tmp_x = CANT_COLUMNAS;
+        uint32_t tmp_y = CANT_FILAS;
 
-        uint32_t steps = tmp_x + tmp_y;
-        uint32_t mostNearSeed = 0;
+        uint32_t steps = tmp_x + tmp_y;        // steps más grande que el mapa
+        uint32_t mostNearSeed = TOTAL_SEEDS+1; // semilla fuera de rango
 
 
-        for (uint32_t i = 1; i < TOTAL_SEEDS; i++) {
+        for (uint32_t i = 0; i < TOTAL_SEEDS; i++) {
             if(seedsOnMap[i].assimilated == FALSE) {
                 tmp_x = abs(sched_task[current_task].pos_x - seedsOnMap[i].position_x);
                 tmp_y = abs(sched_task[current_task].pos_y - seedsOnMap[i].position_y);
@@ -779,8 +779,8 @@ void int100_look(int32_t *position_x, int32_t *position_y) {
             }
         }
             
-        *position_x = seedsOnMap[mostNearSeed].position_x - seedsOnMap[current_task].position_x;
-        *position_y = seedsOnMap[mostNearSeed].position_y - seedsOnMap[current_task].position_y;
+        *position_x = seedsOnMap[mostNearSeed].position_x - sched_task[current_task].pos_x;
+        *position_y = seedsOnMap[mostNearSeed].position_y - sched_task[current_task].pos_y;
 
         print("$", seedsOnMap[mostNearSeed].position_x, seedsOnMap[mostNearSeed].position_y, C_FG_WHITE | C_BG_GREEN);
         jump_toIdle();
