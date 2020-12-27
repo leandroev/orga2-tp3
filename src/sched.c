@@ -300,17 +300,6 @@ uint32_t check_end_game(){
     if(sched_task[RICK].is_alive == FALSE || sched_task[MORTY].is_alive == FALSE){
         return 1;
     }
-
-    uint32_t assimilated = 0;
-    for (int i = 0; i < TOTAL_SEEDS; i++) {
-        if (seedsOnMap[i].assimilated == TRUE) {
-            assimilated++;
-        }
-    }
-    // si ya no quedan semillas
-    if(assimilated == TOTAL_SEEDS){
-        return 1;
-    }
     // el juego sigue
     return 0; 
 }
@@ -349,6 +338,7 @@ void game_over() {
     } else if (current_task == RICK) {
         print("MORTY WINS", 34, 17, 0x0F);
     }
+    current_task.is_alive = FALSE;
     jump_toIdle();
 }
 
@@ -458,9 +448,7 @@ uint32_t int88(paddr_t code_phy, uint32_t pos_x, uint32_t pos_y) {
 }
 
 void use_portal_gun() {
-    /* //rand() % 10;
-    */
-    breakpoint();
+
     uint32_t random_task = rand() % 10;        //tarea aleatoria del equipo contrario
     uint32_t position_x = rand() % CANT_COLUMNAS;
     uint32_t position_y = rand() % CANT_FILAS;
@@ -471,174 +459,147 @@ void use_portal_gun() {
     uint32_t attrs = 0x7;
     uint16_t n = 0;
 
+    if (current_task > 2 && current_task < 13) {
+        /*Tareas de Rick*/
+        //Copiar el código de sched_task[current_task] a la nueva posición
+        random_task += 13;
 
-    if(move_assimilated(position_x, position_y)) {
-
-        int seed = search_megaSeeds(position_x, position_y);
-        seedsOnMap[seed].assimilated = TRUE;
-        
-        if(current_task > 2 && current_task < 13) {
-            score_rick+=425;
-        }else if (current_task > 12 && current_task < 23) {
-            score_morty+=425;
+        for (uint16_t i = 13; i < 23; i++) {
+            if(sched_task[i].is_alive == false) {
+                n++;
+            }
         }
 
-        //killcurrent_task();
+        if(n == 10){
+            return;  //No hay Meeseeks contrario
+        }
 
-    } else {
-
-        if (current_task > 2 && current_task < 13) {
-            /*Tareas de Rick*/
-            //Copiar el código de sched_task[current_task] a la nueva posición
+        while (sched_task[random_task].is_alive == FALSE) {
+            random_task = rand() % 10;
             random_task += 13;
-
-            for (uint16_t i = 13; i < 23; i++) {
-                if(sched_task[i].is_alive == false) {
-                    n++;
-                }
-            }
-
-            if(n == 10){
-                return;
-            }
-
-            while (sched_task[random_task].is_alive == FALSE) {
-                random_task = rand() % 10;
-                random_task += 13;
-            }
-            //Entonces sigue viva
-
-            if(sched_task[current_task].uses_of_gun == FALSE) {
-                return;
-            }
-            sched_task[current_task].uses_of_gun = FALSE;
-
-            if(move_assimilated(position_x, position_y)) {
-                int seed = search_megaSeeds(position_x, position_y);
-                seedsOnMap[seed].assimilated = TRUE;
-        
-                if(current_task > 2 && current_task < 13) {
-                    score_morty+=425;
-                }else if (current_task > 12 && current_task < 23) {
-                    score_rick+=425;
-                }
-
-                kill_task(random_task);
-                //Hacer kill de la tarea random
-                reset_screen();
-
-                return;
-            } 
-
-
-            sched_task[random_task].pos_x = position_x;
-            sched_task[random_task].pos_y = position_y;
-
-            random_task -= 13;
-
-            virt_task =  TASK_CODE_MR_MEESEEKS + random_task * PAGE_SIZE;
-            new_phy = INICIO_DE_PAGINAS_LIBRES_TAREAS + (2 * PAGE_SIZE * position_x) + (2 * PAGE_SIZE * CANT_COLUMNAS * position_y);
-            current_cr3 = tss_Mortymrms[random_task].task_seg.cr3;
-            old_cr3 = rcr3();
-
-            lcr3(current_cr3);
-
-            mmu_map_page(current_cr3, new_phy, new_phy, attrs);
-            mmu_map_page(current_cr3, new_phy + PAGE_SIZE, new_phy + PAGE_SIZE, attrs);
-
-            uint32_t *src = (uint32_t *) virt_task;
-            uint32_t *dst = (uint32_t *) new_phy;
-
-            for (int i = 0; i < 2048; ++i) {
-                dst[i] = src[i];
-            }
-
-            mmu_unmap_page(current_cr3, new_phy);
-            mmu_unmap_page(current_cr3, new_phy + PAGE_SIZE);
-
-            mmu_unmap_page(current_cr3, virt_task);
-            mmu_unmap_page(current_cr3, virt_task + PAGE_SIZE);
-
-            mmu_map_page(current_cr3, virt_task, new_phy, attrs);
-            mmu_map_page(current_cr3, virt_task + PAGE_SIZE, new_phy + PAGE_SIZE, attrs);
-
-            lcr3(old_cr3);
-        } else if (current_task > 12 && current_task < 23) {
-            /*Tareas de Morty*/
-            random_task += 3;
-        
-            for (uint16_t i = 3; i < 13; i++) {
-                if(sched_task[i].is_alive == false) {
-                    n++;
-                }
-            }
-
-            if(n == 10){
-                return;
-            }
-
-            while (sched_task[random_task].is_alive == FALSE) {
-                random_task = rand() % 10;
-                random_task += 3;
-            }
-
-            if(sched_task[current_task].uses_of_gun == FALSE) {
-                return;
-            }
-            //sched_task[current_task].uses_of_gun = FALSE;
-
-            if(move_assimilated(position_x, position_y)) {
-                int seed = search_megaSeeds(position_x, position_y);
-                seedsOnMap[seed].assimilated = TRUE;
-        
-                if(current_task > 2 && current_task < 13) {
-                    score_rick+=425;
-                }else if (current_task > 12 && current_task < 23) {
-                    score_morty+=425;
-                }
-
-                kill_task(random_task);
-                //Hacer kill de la tarea random
-
-                return;
-            } 
-
-            // Sigue viva
-            sched_task[random_task].pos_x = position_x;
-            sched_task[random_task].pos_y = position_y;
-            random_task -= 3;
-
-            virt_task = TASK_CODE_MR_MEESEEKS + random_task * PAGE_SIZE;
-            new_phy = INICIO_DE_PAGINAS_LIBRES_TAREAS + (2 * PAGE_SIZE * position_x) + (PAGE_SIZE * CANT_COLUMNAS * position_y);
-            current_cr3 = tss_Rickmrms[random_task].task_seg.cr3;
-            old_cr3 = rcr3();
-
-            lcr3(current_cr3);
-
-            mmu_map_page(current_cr3, new_phy, new_phy, attrs);
-            mmu_map_page(current_cr3, new_phy + PAGE_SIZE, new_phy + PAGE_SIZE, attrs);
-
-            uint32_t *src = (uint32_t *) virt_task;
-            uint32_t *dst = (uint32_t *) new_phy;
-
-            for (int i = 0; i < 2048; ++i) {
-                dst[i] = src[i];
-            }
-
-            mmu_unmap_page(current_cr3, new_phy);
-            mmu_unmap_page(current_cr3, new_phy + PAGE_SIZE);
-
-            mmu_unmap_page(current_cr3, virt_task);
-            mmu_unmap_page(current_cr3, virt_task + PAGE_SIZE);
-
-            mmu_map_page(current_cr3, virt_task, new_phy, attrs);
-            mmu_map_page(current_cr3, virt_task + PAGE_SIZE, new_phy + PAGE_SIZE, attrs);
-
-            lcr3(old_cr3);
         }
-    }
+        //Hay Meeseeks contrario
 
-    reset_screen();
+        if(sched_task[current_task].uses_of_gun == FALSE) {
+            jump_toIdle();
+            return;
+        }
+        sched_task[current_task].uses_of_gun = FALSE;
+
+        if(move_assimilated(position_x, position_y)) {
+            int seed = search_megaSeeds(position_x, position_y);
+            seedsOnMap[seed].assimilated = TRUE;
+            score_morty+=425;
+            kill_task(random_task);
+            //Hacer kill de la tarea random
+            reset_screen();
+            jump_toIdle();
+            return;
+        } 
+
+        sched_task[random_task].pos_x = position_x;
+        sched_task[random_task].pos_y = position_y;
+
+        random_task -= 13;
+
+        virt_task =  TASK_CODE_MR_MEESEEKS + 2 * random_task * PAGE_SIZE;
+        new_phy = INICIO_DE_PAGINAS_LIBRES_TAREAS + (2 * PAGE_SIZE * position_x) + (2 * PAGE_SIZE * CANT_COLUMNAS * position_y);
+        current_cr3 = tss_Mortymrms[random_task].task_seg.cr3;
+        old_cr3 = rcr3();
+
+        lcr3(current_cr3);
+        //mapeo temporal
+        mmu_map_page(current_cr3, new_phy, new_phy, attrs);
+        mmu_map_page(current_cr3, new_phy + PAGE_SIZE, new_phy + PAGE_SIZE, attrs);
+
+        uint32_t *src = (uint32_t *) virt_task;
+        uint32_t *dst = (uint32_t *) new_phy;
+        // copio codigo
+        for (int i = 0; i < 2048; ++i) {
+            dst[i] = src[i];
+        }
+
+        mmu_unmap_page(current_cr3, new_phy);
+        mmu_unmap_page(current_cr3, new_phy + PAGE_SIZE);
+
+        mmu_unmap_page(current_cr3, virt_task);
+        mmu_unmap_page(current_cr3, virt_task + PAGE_SIZE);
+
+        mmu_map_page(current_cr3, virt_task, new_phy, attrs);
+        mmu_map_page(current_cr3, virt_task + PAGE_SIZE, new_phy + PAGE_SIZE, attrs);
+
+        lcr3(old_cr3);
+
+    } else if (current_task > 12 && current_task < 23) {
+        /*Tareas de Morty*/
+        random_task += 3;
+    
+        for (uint16_t i = 3; i < 13; i++) {
+            if(sched_task[i].is_alive == false) {
+                n++;
+            }
+        }
+
+        if(n == 10){
+            return;
+        }
+
+        while (sched_task[random_task].is_alive == FALSE) {
+            random_task = rand() % 10;
+            random_task += 3;
+        }
+
+        if(sched_task[current_task].uses_of_gun == FALSE) {
+            jump_toIdle();
+            return;
+        }
+        sched_task[current_task].uses_of_gun = FALSE;
+
+        if(move_assimilated(position_x, position_y)) {
+            int seed = search_megaSeeds(position_x, position_y);
+            seedsOnMap[seed].assimilated = TRUE;
+            score_rick+=425;
+            kill_task(random_task);
+            //Hacer kill de la tarea random
+            reset_screen();
+            jump_toIdle();
+            return;
+        } 
+
+        // Sigue viva
+        sched_task[random_task].pos_x = position_x;
+        sched_task[random_task].pos_y = position_y;
+        random_task -= 3;
+
+        virt_task = TASK_CODE_MR_MEESEEKS + 2 * random_task * PAGE_SIZE;
+        new_phy = INICIO_DE_PAGINAS_LIBRES_TAREAS + (2 * PAGE_SIZE * position_x) + (PAGE_SIZE * CANT_COLUMNAS * position_y);
+        current_cr3 = tss_Rickmrms[random_task].task_seg.cr3;
+        old_cr3 = rcr3();
+
+        lcr3(current_cr3);
+
+        mmu_map_page(current_cr3, new_phy, new_phy, attrs);
+        mmu_map_page(current_cr3, new_phy + PAGE_SIZE, new_phy + PAGE_SIZE, attrs);
+
+        uint32_t *src = (uint32_t *) virt_task;
+        uint32_t *dst = (uint32_t *) new_phy;
+
+        for (int i = 0; i < 2048; ++i) {
+            dst[i] = src[i];
+        }
+
+        mmu_unmap_page(current_cr3, new_phy);
+        mmu_unmap_page(current_cr3, new_phy + PAGE_SIZE);
+
+        mmu_unmap_page(current_cr3, virt_task);
+        mmu_unmap_page(current_cr3, virt_task + PAGE_SIZE);
+
+        mmu_map_page(current_cr3, virt_task, new_phy, attrs);
+        mmu_map_page(current_cr3, virt_task + PAGE_SIZE, new_phy + PAGE_SIZE, attrs);
+
+        lcr3(old_cr3);
+    }
+    jump_toIdle();
 }
 
 void kill_task(uint32_t task){
@@ -647,7 +608,7 @@ void kill_task(uint32_t task){
     if (task < 13) {
         mrms_id = task-3;
         current_tss = tss_Rickmrms[mrms_id].task_seg;
-        tss_Rickmrms[task - 3].in_use = FALSE;
+        tss_Rickmrms[mrms_id].in_use = FALSE;
         sched_task[task].is_alive = FALSE;
     } else {
         mrms_id = task - 13;
@@ -668,7 +629,6 @@ void kill_task(uint32_t task){
         }
         i++;
     }
-    reset_screen();
 }
 
 
@@ -817,7 +777,7 @@ void reset_screen() {
         } else {
             print("TIE", 34, 17, 0x0F);
         }
-
+        sched_task[RICK].is_alive = FALSE;
         jump_toIdle();
     }
 
