@@ -251,19 +251,11 @@ void screen_init() {
 
 void killcurrent_task() {
 
-    sched_task[current_task].is_alive = FALSE;
     sched_task[current_task].distCel  = -1;
     sched_task[current_task].ticks    = -1;
+    sched_task[current_task].is_alive = FALSE;
     if (current_task == RICK || current_task == MORTY) {
-
-		if(sched_task[RICK].is_alive == TRUE) {
-			print("RICK WINS", 34, 17, 0x0F);
-		} else if (sched_task[MORTY].is_alive == TRUE) {
-			print("MORTY WINS", 34, 17, 0x0F);
-		}
-
-		print("GAME OVER", 35, 15, 0x0F);
-
+        game_over();
     } else {
         tss_t current_tss;
         uint32_t mrms_id;
@@ -338,7 +330,8 @@ void game_over() {
     } else if (current_task == RICK) {
         print("MORTY WINS", 34, 17, 0x0F);
     }
-    current_task.is_alive = FALSE;
+    sched_task[current_task].is_alive = FALSE;
+    print("GAME OVER", 35, 15, 0x0F);
     jump_toIdle();
 }
 
@@ -772,12 +765,15 @@ void reset_screen() {
 
         if(score_rick > score_morty) {
 			print("RICK WINS", 34, 17, 0x0F);
+            sched_task[MORTY].is_alive = FALSE;
         } else if (score_morty > score_rick) {
             print("MORTY WINS", 34, 17, 0x0F);
+            sched_task[RICK].is_alive = FALSE;
         } else {
             print("TIE", 34, 17, 0x0F);
+            sched_task[MORTY].is_alive = FALSE;
+            sched_task[RICK].is_alive = FALSE;
         }
-        sched_task[RICK].is_alive = FALSE;
         jump_toIdle();
     }
 
