@@ -632,7 +632,6 @@ void kill_task(uint32_t task){
 
 
 uint32_t int123_move(int desp_x, int desp_y) {
-    
     if (current_task == RICK || current_task == MORTY) {
         killcurrent_task();
     }
@@ -1013,7 +1012,7 @@ void reset_MrMsCel() {
         if (sched_task[current_task].distCel == 1) {
             sched_task[current_task].ticks = -1;
         }else{
-        	if (sched_task[current_task].ticks == 0) {
+        	if (sched_task[current_task].ticks == 1) {
         	    sched_task[current_task].ticks = 2;
         	    sched_task[current_task].distCel--;
         	}else{
