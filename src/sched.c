@@ -1009,19 +1009,19 @@ int modulo(int numero, int base) {
 }
 
 void reset_MrMsCel() {
-    for (int i = 3; i < 23; ++i) {
-        if (sched_task[i].distCel == 1) {
-            sched_task[i].ticks = -1;
+    if(current_task > 2){
+        if (sched_task[current_task].distCel == 1) {
+            sched_task[current_task].ticks = -1;
         }else{
-        	if (sched_task[i].ticks == 0) {
-        	    sched_task[i].ticks = 2;
-        	    sched_task[i].distCel--;
+        	if (sched_task[current_task].ticks == 0) {
+        	    sched_task[current_task].ticks = 2;
+        	    sched_task[current_task].distCel--;
         	}else{
 
-        		if (sched_task[i].ticks > 0) {
-        		    sched_task[i].ticks--;
+        		if (sched_task[current_task].ticks > 0) {
+        		    sched_task[current_task].ticks--;
         		}
-        	}
-        }
+        	}   
+        }  
     }
 }
