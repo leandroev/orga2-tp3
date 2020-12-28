@@ -128,7 +128,7 @@ paddr_t mmu_init_task_dir(paddr_t phy_start, vaddr_t virt_star, paddr_t code_sta
 
     //Mapeamos los primero 4MB con identity maping
     for (int i = 0; i < 1024; ++i) {
-        mmu_map_page(cr3, i * PAGE_SIZE, i * PAGE_SIZE, attrS);
+        mmu_map_page(cr3, i * PAGE_SIZE, i * PAGE_SIZE, 0x3);
     }
 
     /****TAREA****/

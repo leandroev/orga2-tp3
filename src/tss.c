@@ -155,9 +155,8 @@ void task_init(tss_t *new_tss, paddr_t phy_task, vaddr_t virt_task, paddr_t task
     new_tss->ebp = virt_task + pages * PAGE_SIZE;
     new_tss->esp0 = mmu_next_free_kernel_page() + PAGE_SIZE;
     new_tss->ss0 = GDT_DATA_0 << 3;
-    new_tss->cs = (GDT_CODE_3 << 3) + 3;
-    new_tss->ds = (GDT_DATA_3 << 3) + 3;
     new_tss->eflags = 0x202;
+    new_tss->cs = (GDT_CODE_3 << 3) + 3;
     new_tss->ss = (GDT_DATA_3 << 3) + 3;
     new_tss->es = (GDT_DATA_3 << 3) + 3;
     new_tss->ds = (GDT_DATA_3 << 3) + 3;
@@ -185,9 +184,8 @@ void task_init_mr_meeseek(tss_t *new_tss, uint32_t cr3, paddr_t phy_task, vaddr_
     new_tss->esp = virt_task + 2 * PAGE_SIZE;
     new_tss->ebp = virt_task + 2 * PAGE_SIZE;
     new_tss->ss0 = GDT_DATA_0 << 3;
-    new_tss->cs = (GDT_CODE_3 << 3) + 3;
-    new_tss->ds = (GDT_DATA_3 << 3) + 3;
     new_tss->eflags = 0x202;
+    new_tss->cs = (GDT_CODE_3 << 3) + 3;
     new_tss->ss = (GDT_DATA_3 << 3) + 3;
     new_tss->es = (GDT_DATA_3 << 3) + 3;
     new_tss->ds = (GDT_DATA_3 << 3) + 3;
