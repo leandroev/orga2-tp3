@@ -257,6 +257,9 @@ void killcurrent_task() {
     if (current_task == RICK || current_task == MORTY) {
         game_over();
     } else {
+        sched_task[current_task].posx = -1;
+        sched_task[current_task].posy = -1;
+        sched_task[current_task].uses_of_gun = FALSE;
         tss_t current_tss;
         uint32_t mrms_id;
         if (current_task < 13) {
@@ -596,6 +599,9 @@ void use_portal_gun() {
 }
 
 void kill_task(uint32_t task){
+    sched_task[task].posx = -1;
+    sched_task[task].posy = -1;
+    sched_task[task].uses_of_gun = FALSE;
     tss_t current_tss;
     uint32_t mrms_id;
     if (task < 13) {
