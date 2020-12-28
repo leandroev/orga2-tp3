@@ -108,6 +108,26 @@ uint16_t sched_next_task() {
         print("X", 63, 44, C_FG_BLUE | C_BG_BLACK);
     }
 
+    for (int i = 3; i < 23 ; ++i)
+    {   
+        if (i < 13)
+        {
+            if(sched_task[i].is_alive == TRUE){
+                next_clock3(44, 21+ (i-3)*4, i);
+            }else{
+                print("X", 21 + (i-3)*4, 44, C_FG_RED | C_BG_BLACK);
+            }  
+        }else{
+            if(sched_task[i].is_alive == TRUE){
+                next_clock3(47, 21+ (i-13)*4, i);
+            }else{
+                print("X", 21+ (i-13)*4, 47, C_FG_BLUE | C_BG_BLACK);
+            }
+        }
+          
+    }
+
+    /*
     if(sched_task[3].is_alive == TRUE){
         next_clock3(44, 21, 3);
     }else{
@@ -227,6 +247,7 @@ uint16_t sched_next_task() {
     }else{
         print("X", 57, 47, C_FG_BLUE | C_BG_BLACK);
     }
+    */
     return sched_task[current_task].tss_selector;
 }
 
@@ -609,11 +630,13 @@ void kill_task(uint32_t task){
         current_tss = tss_Rickmrms[mrms_id].task_seg;
         tss_Rickmrms[mrms_id].in_use = FALSE;
         sched_task[task].is_alive = FALSE;
+        print("X", 21 + (mrms_id)*4, 44, C_FG_RED | C_BG_BLACK);
     } else {
         mrms_id = task - 13;
         current_tss = tss_Mortymrms[task - 13].task_seg;
         tss_Mortymrms[mrms_id].in_use = FALSE;
         sched_task[task].is_alive = FALSE;
+        print("X", 21 + (mrms_id)*4, 47, C_FG_BLUE | C_BG_BLACK);
     }
     paddr_t pila_0 = ((current_tss.esp0>>12)<<12);
     vaddr_t virt_task = TASK_CODE_MR_MEESEEKS + 2 * mrms_id * PAGE_SIZE;
