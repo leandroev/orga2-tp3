@@ -330,7 +330,6 @@ void game_over() {
     } else if (current_task == RICK) {
         print("MORTY WINS", 34, 17, 0x0F);
     }
-    sched_task[current_task].is_alive = FALSE;
     print("GAME OVER", 35, 15, 0x0F);
     jump_toIdle();
 }
@@ -339,12 +338,12 @@ uint32_t int88(paddr_t code_phy, uint32_t pos_x, uint32_t pos_y) {
     if (current_task == RICK || current_task == MORTY) {
         /*Check if it's a valid position*/
         if (!right_postition(pos_x, pos_y)) {
-            game_over();
+            killcurrent_task();
             return 0;
         }
 
         if(code_phy < INICIO_DE_PAGINAS_LIBRES_TAREAS) {
-            game_over();
+            killcurrent_task();
             return 0;
         }
 
