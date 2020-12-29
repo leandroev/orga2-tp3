@@ -97,159 +97,6 @@ uint16_t sched_next_task() {
 
     next_clock_aux(current_task);
         
-/*
-    if(sched_task[1].is_alive == TRUE){
-        next_clock1(44, 16, 1);
-    }else{
-        print("X", 16, 44, C_FG_RED | C_BG_BLACK);
-    }
-
-    if(sched_task[2].is_alive == TRUE){
-        next_clock2(44, 63, 2);
-    }else{
-        print("X", 63, 44, C_FG_BLUE | C_BG_BLACK);
-    }
-
-    for (int i = 3; i < 23 ; ++i)
-    {   
-        if (i < 13)
-        {
-            if(sched_task[i].is_alive == TRUE){
-                next_clock3(44, 21+ (i-3)*4, i);
-            }else{
-                print("X", 21 + (i-3)*4, 44, C_FG_RED | C_BG_BLACK);
-            }  
-        }else{
-            if(sched_task[i].is_alive == TRUE){
-                next_clock3(47, 21+ (i-13)*4, i);
-            }else{
-                print("X", 21+ (i-13)*4, 47, C_FG_BLUE | C_BG_BLACK);
-            }
-        }
-          
-    }
-
-    
-    if(sched_task[3].is_alive == TRUE){
-        next_clock3(44, 21, 3);
-    }else{
-        print("X", 21, 44, C_FG_RED | C_BG_BLACK);
-    }
-
-    if(sched_task[4].is_alive == TRUE){
-        next_clock4(44, 25, 4);
-    }else{
-        print("X", 25, 44, C_FG_RED | C_BG_BLACK);
-    }
-
-    if(sched_task[5].is_alive == TRUE){
-        next_clock5(44, 29, 5);
-    }else{
-        print("X", 29, 44, C_FG_RED | C_BG_BLACK);
-    }    
-
-    if(sched_task[6].is_alive == TRUE){
-        next_clock6(44, 33, 6);
-    }else{
-        print("X", 33, 44, C_FG_RED | C_BG_BLACK);
-    }
-
-    if(sched_task[7].is_alive == TRUE){
-        next_clock7(44, 37, 7);
-    }else{
-        print("X", 37, 44, C_FG_RED | C_BG_BLACK);
-    }
-
-    if(sched_task[8].is_alive == TRUE){
-        next_clock8(44, 41, 8);
-    }else{
-        print("X", 41, 44, C_FG_RED | C_BG_BLACK);
-    }
-
-    if(sched_task[9].is_alive == TRUE){
-        next_clock9(44, 45, 9);
-    }else{
-        print("X", 45, 44, C_FG_RED | C_BG_BLACK);
-    }
-
-    if(sched_task[10].is_alive == TRUE){
-        next_clock10(44, 49, 10);
-    }else{
-        print("X", 49, 44, C_FG_RED | C_BG_BLACK);
-    }
-
-    if(sched_task[11].is_alive == TRUE){
-        next_clock11(44, 53, 11);
-    }else{
-        print("X", 53, 44, C_FG_RED | C_BG_BLACK);
-    }
-
-    if(sched_task[12].is_alive == TRUE){
-        next_clock12(44, 57, 12);
-    }else{
-        print("X", 57, 44, C_FG_RED | C_BG_BLACK);
-    }
-
-    if(sched_task[13].is_alive == TRUE){
-        next_clock13(47, 21, 13);
-    }else{
-        print("X", 21, 47, C_FG_BLUE | C_BG_BLACK);
-    }
-
-    if(sched_task[14].is_alive == TRUE){
-        next_clock14(47, 25, 14);
-    }else{
-        print("X", 25, 47, C_FG_BLUE | C_BG_BLACK);
-    }
-
-    if(sched_task[15].is_alive == TRUE){
-        next_clock15(47, 29, 15);
-    }else{
-        print("X", 29, 47, C_FG_BLUE | C_BG_BLACK);
-    }
-    
-    if(sched_task[16].is_alive == TRUE){
-        next_clock16(47, 33, 16);
-    }else{
-        print("X", 33, 47, C_FG_BLUE | C_BG_BLACK);
-    }
-
-    if(sched_task[17].is_alive == TRUE){
-        next_clock17(47, 37, 17);
-    }else{
-        print("X", 37, 47, C_FG_BLUE | C_BG_BLACK);
-    }
-    
-    if(sched_task[18].is_alive == TRUE){
-        next_clock18(47, 41, 18);
-    }else{
-        print("X", 41, 47, C_FG_BLUE | C_BG_BLACK);
-    }
-    
-    if(sched_task[19].is_alive == TRUE){
-        next_clock19(47, 45, 19);
-    }else{
-        print("X", 45, 47, C_FG_BLUE | C_BG_BLACK);
-    }
-
-    if(sched_task[20].is_alive == TRUE){
-        next_clock20(47, 49, 20);
-    }else{
-        print("X", 49, 47, C_FG_BLUE | C_BG_BLACK);
-    }
-    
-    if(sched_task[21].is_alive == TRUE){
-        next_clock21(47, 53, 21);
-    }else{
-        print("X", 53, 47, C_FG_BLUE | C_BG_BLACK);
-    }
-
-    if(sched_task[22].is_alive == TRUE){
-        next_clock22(47, 57, 22);
-    }else{
-        print("X", 57, 47, C_FG_BLUE | C_BG_BLACK);
-    }
-    */
     return sched_task[current_task].tss_selector;
 }
 
@@ -862,9 +709,11 @@ bool move_assimilated(uint32_t pos_x, uint32_t pos_y) {
 int search_megaSeeds(uint32_t pos_x, uint32_t pos_y) {
 
     for (int i = 0; i < TOTAL_SEEDS; i++) {
-        if (seedsOnMap[i].position_x == pos_x && seedsOnMap[i].position_y == pos_y) {
-            return i;
-        }
+    	if (seedsOnMap[i].assimilated == FALSE) {
+        	if (seedsOnMap[i].position_x == pos_x && seedsOnMap[i].position_y == pos_y) {
+            	return i;
+        	}
+    	}
     }
     return -1;
 
