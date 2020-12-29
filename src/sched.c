@@ -991,12 +991,20 @@ uint32_t check_act_debug() {
 uint32_t virtual_valida(uint32_t number){
   if (number % 4 == 0){
     // si es Rick o Morty
-    if ( (number >= 0x1D00000) & (number < 0x1D04000) ){
+   if ( (number >= 0x1D00000) & (number < 0x1D04000) ){
       return 1;
     }
     // si es Messeek
-    uint32_t begin_page = 2000 * (current_task-3); 
-    uint32_t end_page = 2000 * (current_task-2); 
+    int mrms_id = 0;
+    if (current_task > 3 && current_task < 13)
+    {
+        mrms_id = current_task -3;        
+    }else{
+        mrms_id = current_task -13;
+    }
+
+    uint32_t begin_page =  2 * PAGE_SIZE * (mrms_id); 
+    uint32_t end_page = begin_page + 2 * PAGE_SIZE -4; 
     if ( (number >= 0x08000000 + begin_page) & (number < 0x08000000 + end_page) ){
       return 1;
     }

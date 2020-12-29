@@ -85,7 +85,7 @@ _isr%1:
 
 .push_parametros:
     sub esp, 4*4    ; 4 espacios para el backtrace
-    mov edx, ebp 
+    mov edx, [esp+4*6]
     mov ecx, 0
 
 .loop1:
