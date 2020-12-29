@@ -50,6 +50,7 @@ bool right_postition(uint32_t pos_x, uint32_t pos_y);
 void reset_screen();
 uint32_t make_positive(int x, int divisor);
 uint32_t distMan(int desp_x,int desp_y);
+void next_clock_aux(uint32_t id);
 
 typedef struct str_sched {
 	uint8_t is_alive;

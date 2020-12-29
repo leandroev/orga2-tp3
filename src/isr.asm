@@ -52,8 +52,8 @@ sched_task_offset:      dd 0xFFFFFFFF
 sched_task_selector:    dw 0xFFFF
 
 ;; memory
-x:             dd 0x0
-y:             dd 0x0 
+desp_x:             dd 0x0
+desp_y:             dd 0x0 
 
 ;;Seccion de codigo
 
@@ -85,7 +85,7 @@ _isr%1:
 
 .push_parametros:
     sub esp, 4*4    ; 4 espacios para el backtrace
-    mov edx, ebp 
+    mov edx, [esp+4*6]
     mov ecx, 0
 
 .loop1:
@@ -183,6 +183,11 @@ _isr%1:
     mov eax, %1
     push eax
     call rutina_de_interrupciones
+    .check_screen:
+        call jump_toIdle
+        call check_screen_debug
+        cmp eax, 1
+        je .check_screen
 
 .not_debug_mode:
     call killcurrent_task ; matar tarea y saltar a la idle
@@ -402,15 +407,15 @@ _isr89:
 
 _isr100: ; y = esp - 1, x = esp
     pushad
-    mov eax, x 
-    push eax
-    mov ebx, y
+    mov ebx, desp_y
     push ebx
+    mov eax, desp_x
+    push eax
     call int100_look
     add esp, 8
     popad
-    mov eax, [x]
-    mov ebx, [y]
+    mov ebx, [desp_y]
+    mov eax, [desp_x]
     iret
 
 _isr123:

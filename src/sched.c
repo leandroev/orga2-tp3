@@ -95,7 +95,9 @@ uint16_t sched_next_task() {
     print("R", 16, 42, C_FG_WHITE | C_BG_RED);
     print("M", 63, 42, C_FG_WHITE | C_BG_BLUE);
 
-
+    next_clock_aux(current_task);
+        
+/*
     if(sched_task[1].is_alive == TRUE){
         next_clock1(44, 16, 1);
     }else{
@@ -127,7 +129,7 @@ uint16_t sched_next_task() {
           
     }
 
-    /*
+    
     if(sched_task[3].is_alive == TRUE){
         next_clock3(44, 21, 3);
     }else{
@@ -306,6 +308,12 @@ void killcurrent_task() {
             }
             i++;
         }
+        if(current_task < 13){
+            print("X", 21 + (current_task-3)*4, 44, C_FG_RED | C_BG_BLACK);
+        }else{
+            print("X", 21 + (current_task-13)*4, 47, C_FG_BLUE | C_BG_BLACK);
+        }
+        
         reset_screen();
     }
     jump_toIdle();
@@ -354,7 +362,7 @@ void game_over() {
     } else if (current_task == RICK) {
         print("MORTY WINS", 34, 17, 0x0F);
     }
-    print("GAME OVER", 35, 15, 0x0F);
+    print("GAME OVER", 34, 15, 0x0F);
     jump_toIdle();
 }
 
@@ -374,7 +382,6 @@ uint32_t int88(paddr_t code_phy, uint32_t pos_x, uint32_t pos_y) {
 
         /*if there'is a seed in posx,posy*/
 		if (move_assimilated(pos_x,pos_y)){
-            
         	int seed_pos = search_megaSeeds(pos_x, pos_y);
         	int index;
             if (current_task == RICK) {
@@ -410,6 +417,7 @@ uint32_t int88(paddr_t code_phy, uint32_t pos_x, uint32_t pos_y) {
             //verf slot
             int index = next_tss(tss_Rickmrms);
             if (index == -1) {
+                jump_toIdle();
                 return 0;
             } else {
                 uint32_t cr3 = tss_rick.cr3;
@@ -487,6 +495,7 @@ void use_portal_gun() {
         }
 
         if(n == 10){
+            jump_toIdle();
             return;  //No hay Meeseeks contrario
         }
 
@@ -557,6 +566,7 @@ void use_portal_gun() {
         }
 
         if(n == 10){
+            jump_toIdle();
             return;
         }
 
@@ -734,11 +744,10 @@ uint32_t int123_move(int desp_x, int desp_y) {
 }
 
 void int100_look(int32_t *position_x, int32_t *position_y) {
-
     if (current_task == RICK || current_task == MORTY) {
+        jump_toIdle();
         *position_x = -1;
         *position_y = -1;
-        jump_toIdle();
     } else if (current_task > MORTY) {
 
         uint32_t tmp_x = CANT_COLUMNAS;
@@ -759,12 +768,11 @@ void int100_look(int32_t *position_x, int32_t *position_y) {
                 }
             }
         }
+        jump_toIdle();
             
         *position_x = seedsOnMap[mostNearSeed].position_x - sched_task[current_task].pos_x;
         *position_y = seedsOnMap[mostNearSeed].position_y - sched_task[current_task].pos_y;
-
         print("$", seedsOnMap[mostNearSeed].position_x, seedsOnMap[mostNearSeed].position_y, C_FG_WHITE | C_BG_GREEN);
-        jump_toIdle();
     }
 
 }
@@ -789,7 +797,7 @@ void reset_screen() {
         }
     }
     if(assimilated == TOTAL_SEEDS) {
-        print("GAME OVER", 35, 15, 0x0F);
+        print("GAME OVER", 34, 15, 0x0F);
 
         if(score_rick > score_morty) {
 			print("RICK WINS", 34, 17, 0x0F);
@@ -798,7 +806,7 @@ void reset_screen() {
             print("MORTY WINS", 34, 17, 0x0F);
             sched_task[RICK].is_alive = FALSE;
         } else {
-            print("TIE", 34, 17, 0x0F);
+            print("TIE", 37, 17, 0x0F);
             sched_task[MORTY].is_alive = FALSE;
             sched_task[RICK].is_alive = FALSE;
         }
@@ -995,8 +1003,16 @@ uint32_t virtual_valida(uint32_t number){
       return 1;
     }
     // si es Messeek
-    uint32_t begin_page = 2000 * (current_task-3); 
-    uint32_t end_page = 2000 * (current_task-2); 
+    int mrms_id = 0;
+    if (current_task > 3 && current_task < 13)
+    {
+        mrms_id = current_task -3;        
+    }else{
+        mrms_id = current_task -13;
+    }
+
+    uint32_t begin_page = 2 * PAGE_SIZE * (mrms_id)
+    uint32_t end_page = begin_page +  2 * PAGE_SIZE-4;
     if ( (number >= 0x08000000 + begin_page) & (number < 0x08000000 + end_page) ){
       return 1;
     }
@@ -1045,5 +1061,78 @@ void reset_MrMsCel() {
         		}
         	}   
         }  
+    }
+}
+
+void next_clock_aux(uint32_t id){
+    switch (id){
+        case 1:
+            next_clock1(44, 16, 1);
+            break;        
+        case 2:
+            next_clock2(44, 63, 2);
+            break;
+        case 3:
+            next_clock3(44, 21+ (id-3)*4, id);
+            break;
+        case 4:
+            next_clock4(44, 21+ (id-3)*4, id);
+            break;
+        case 5:
+            next_clock5(44, 21+ (id-3)*4, id);
+            break;
+        case 6:
+            next_clock6(44, 21+ (id-3)*4, id);
+            break;        
+        case 7:
+            next_clock7(44, 21+ (id-3)*4, id);
+            break;
+        case 8:
+            next_clock8(44, 21+ (id-3)*4, id);
+            break;
+        case 9:
+            next_clock9(44, 21+ (id-3)*4, id);
+            break;
+        case 10:
+            next_clock10(44, 21+ (id-3)*4, id);
+            break;
+        case 11:
+            next_clock11(44, 21+ (id-3)*4, id);
+            break;
+        case 12:
+            next_clock12(44, 21+ (id-3)*4, id);
+            break;
+        case 13:
+            next_clock13(47, 21+ (id-13)*4, id);
+            break;
+        case 14:
+            next_clock14(47, 21+ (id-13)*4, id);
+            break;
+        case 15:
+            next_clock15(47, 21+ (id-13)*4, id);
+            break;
+        case 16:
+            next_clock16(47, 21+ (id-13)*4, id);
+            break;
+        case 17:
+            next_clock17(47, 21+ (id-13)*4, id);
+            break;
+        case 18:
+            next_clock18(47, 21+ (id-13)*4, id);
+            break;
+        case 19:
+            next_clock19(47, 21+ (id-13)*4, id);
+            break;        
+        case 20:
+            next_clock20(47, 21+ (id-13)*4, id);
+            break;
+        case 21:
+            next_clock21(47, 21+ (id-13)*4, id);
+            break;
+        case 22:
+            next_clock22(47, 21+ (id-13)*4, id);
+            break;
+        default:
+            break;
     }
 }
