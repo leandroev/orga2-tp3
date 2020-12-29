@@ -360,7 +360,7 @@ void game_over() {
     if(current_task == MORTY) {
 		print("RICK WINS", 34, 17, 0x0F);
     } else if (current_task == RICK) {
-        print("MORTY WINS", 34, 17, 0x0F);
+        print(" MORTY WINS", 33, 17, 0x0F);
     }
     print("GAME OVER", 34, 15, 0x0F);
     jump_toIdle();
@@ -803,7 +803,7 @@ void reset_screen() {
 			print("RICK WINS", 34, 17, 0x0F);
             sched_task[MORTY].is_alive = FALSE;
         } else if (score_morty > score_rick) {
-            print("MORTY WINS", 34, 17, 0x0F);
+            print(" MORTY WINS", 33, 17, 0x0F);
             sched_task[RICK].is_alive = FALSE;
         } else {
             print("TIE", 37, 17, 0x0F);
@@ -999,12 +999,14 @@ uint32_t check_act_debug() {
 uint32_t virtual_valida(uint32_t number){
   if (number % 4 == 0){
     // si es Rick o Morty
-   if ( (number >= 0x1D00000) & (number < 0x1D04000) ){
-      return 1;
+    if(current_task == RICK || current_task == MORTY){
+        if ( (number >= 0x1D00000) & (number < 0x1D04000) ){
+            return 1;
+        }
     }
     // si es Messeek
     int mrms_id = 0;
-    if (current_task > 3 && current_task < 13)
+    if (current_task > 2 && current_task < 13)
     {
         mrms_id = current_task -3;        
     }else{
