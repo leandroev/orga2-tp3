@@ -1,5 +1,7 @@
 # organización del computador 2 - tp3 system programming
 
+> para compilar ejecutar archivo Make en src/
+
 El objetivo de este trabajo es realizar una emulación completa de un sistema IBM PC, junto
 con sus operaciones a más bajo nivel que realiza la computadora, en particular definir una tabla de
 descriptores, pasar a modo protegido, interrupciones, habilitar paginación, tareas, etc.   
